@@ -1,0 +1,14 @@
+replicaCount: 1
+
+image:
+  repository: gitlab-registry.cern.ch/dss/eos
+  tag: 4.8.4
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  fst:
+    port: 1095
+  # Will be deprecated at some point by xrdHttp:
+  microhttp:
+    port: 8001

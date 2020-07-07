@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fst.fullname" . }}
+  labels:
+    {{- include "fst.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.fst.port }}
+      targetPort: fst
+      protocol: TCP
+      name: fst
+    - port: {{ .Values.service.microhttp.port }}
+      targetPort: microhttp
+      protocol: TCP
+      name: microhttp
+  selector:
+    {{- include "fst.selectorLabels" . | nindent 4 }}
