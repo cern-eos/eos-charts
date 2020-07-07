@@ -1,10 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "fst.fullname" . }}
   labels:
     {{- include "fst.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ .Chart.Name }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -15,9 +16,7 @@ spec:
         {{- include "fst.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+        - name: eos-fst
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
@@ -52,6 +51,11 @@ spec:
             #   valueFrom:
             #     fieldRef:
             #       fieldPath: spec.nodeName
+            # Inspiration from cockroachdb, in case we need it:
+            # - name: STATEFULSET_NAME
+            #   value: {{ template "fst.fullname" . }}
+            # - name: STATEFULSET_FQDN
+            #   value: {{ template "fst.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
             ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
               - name: EOS_SKIP_SSS_HOSTNAME_MATCH
                 value: "true"
