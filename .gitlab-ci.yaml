@@ -1,0 +1,89 @@
+# FIXME: Ideally, rely on the CI from:
+# include:
+#   - project: 'helm/charts/cern'
+#     ref: master
+#     file: '.gitlab-ci.yml'
+
+variables:
+  HELM_VERSION: v3.2.4
+  HELM_CHART_REPO: eos
+
+stages:
+  - build
+  - deploy
+
+before_script:
+  - mkdir -p .repo
+
+build:
+  stage: build
+  image: gitlab-registry.cern.ch/cloud/ciadm
+  script:
+    - curl -o helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz; mkdir -p helm; tar zxvf helm.tar.gz -C helm; cp helm/linux-amd64/helm /usr/local/bin; rm -rf helm*
+    - for chart in $(ls -d */Chart.yaml | xargs dirname); do helm dep update ${chart}; helm lint ${chart}; helm package ${chart}; done
+  except:
+    - tags
+
+version-check:
+  stage: build
+  image: gitlab-registry.cern.ch/cloud/ciadm
+  script:
+    - |
+        CHART=$(git diff-tree --name-only --no-commit-id HEAD origin/master)
+        for base in $(find . -maxdepth 1 -type f | sed 's|./||' | xargs); do
+            CHART=$(echo ${CHART} | sed "s|${base}||")
+        done
+        if [ "$(echo ${CHART} | wc -w)" = 0 ]; then
+            echo "Changes do not affect charts. skipping"
+            exit 0;
+        elif [ "$(echo ${CHART} | wc -w)" != 1 ]; then
+            echo "ERROR: You can only merge changes on one chart. Please fix before merging again."
+            exit 1;
+        else
+            VDIFF="$(echo "$(git diff origin/master -- $CHART/Chart.yaml)" | grep "\-version:" || true)"
+            if [ "${VDIFF}" == "" ]; then
+                echo "${CHART} is a new chart, not checking version bump"
+                exit 0;
+            fi
+            OLD_CHART_VERSION="$(echo "${VDIFF}" | awk '{print $2}')"
+            # Check and accept if it's a new chart
+            if [ "${OLD_CHART_VERSION}" == "" ]; then
+                echo "${CHART} is a new chart, not checking version bump"
+                exit 0;
+            fi
+            NEW_CHART_VERSION="$(echo "$(git diff origin/master -- $CHART/Chart.yaml)" | grep "+version:" | awk '{print $2}')"
+        fi
+    - |
+        if [ ${NEW_CHART_VERSION} = "" ] || \
+            [ $(expr ${NEW_CHART_VERSION} \<= ${OLD_CHART_VERSION}) -eq 1 ]; then
+            echo "ERROR: Chart version must be higher than existent. Please fix before merging again."
+            exit 1
+        fi
+  except:
+    - tags
+
+deploy:
+  stage: deploy
+  image: gitlab-registry.cern.ch/cloud/ciadm
+  before_script:
+    - curl -o helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz; mkdir -p helm; tar zxvf helm.tar.gz -C helm; cp helm/linux-amd64/helm /usr/local/bin; rm -rf helm*
+  script:
+    - helm repo add ${HELM_CHART_REPO} https://registry.cern.ch/chartrepo/${HELM_CHART_REPO}
+    - helm repo update
+    # helm-push not possible for now as it lacks --sign to pass a provenance file
+    # - helm plugin install https://github.com/chartmuseum/helm-push
+    # - echo $HARBOR_SIGNKEY | base64 -d > secring.gpg
+    - |
+        set -x
+        for chart in $(ls -d */Chart.yaml | xargs dirname); do
+            LOCAL_VERSION=$(grep -R version ${chart}/Chart.yaml | awk '{print $2}')
+            REMOTE_LATEST_VERSION=$(helm search repo ${HELM_CHART_REPO}/${chart} | grep ${HELM_CHART_REPO}/${chart} | awk '{print $2}')
+            if [ -z ${REMOTE_LATEST_VERSION} ] || \
+                [ $(expr ${REMOTE_LATEST_VERSION} \< ${LOCAL_VERSION}) -eq 1 ]; then
+                helm dep update ${chart}
+                helm package ${chart}
+                curl --fail -F "chart=@${chart}-${LOCAL_VERSION}.tgz" https://${HARBOR_USER}:${HARBOR_TOKEN}@registry.cern.ch/api/chartrepo/${HELM_CHART_REPO}/charts
+            fi
+        done
+  only:
+    - tags
