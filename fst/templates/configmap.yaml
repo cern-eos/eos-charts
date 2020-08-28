@@ -9,25 +9,25 @@ data:
     #!/bin/bash
 
     # sysconfig
-    sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm1.eos-mgm1.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/sysconfig/eos
-    sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq.eos-mq.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/sysconfig/eos
-    sed -i 's/eostest.cern.ch/eos-mgm1.eos-mgm1.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/sysconfig/eos
+    sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/sysconfig/eos
+    sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/sysconfig/eos
+    sed -i 's/eostest.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/sysconfig/eos
 
     # fuse
-    sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm1.eos-mgm1.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/eos/fuse*.conf
+    sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/eos/fuse*.conf
 
-    # krb
+    # krb - @todo change to actual kdc fqdn in krb5.conf file
     sed -i 's/eos-kdc.eoscluster.cern.ch/eos-kdc.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/krb5.conf
-    [ -f /kdc_mit.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm1.eos-mgm1.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc_mit.sh || true
-    [ -f /kdc.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm1.eos-mgm1.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc.sh || true
+    [ -f /kdc_mit.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc_mit.sh || true
+    [ -f /kdc.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc.sh || true
 
     # mgm
-    sed -i 's/eos-qdb.eoscluster.cern.ch/eos-qdb.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/xrd.cf.*
+    sed -i 's/eos-qdb.eoscluster.cern.ch/eos-qdb-0.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/xrd.cf.*
 
     # fst
-    sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm1.eos-mgm1.{{ .Release.Namespace }}.svc.cluster.local/g' /eos_fst_setup.sh
-    sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq.eos-mq.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/xrd.cf.*
-    echo 'fstofs.qdbcluster eos-qdb.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777' >> /etc/xrd.cf.fst
+    sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /eos_fst_setup.sh
+    sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/xrd.cf.*
+    echo 'fstofs.qdbcluster eos-qdb-0.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777' >> /etc/xrd.cf.fst
 
     # use Quarkdb
     # sed -i 's/libEosNsInMemory/libEosNsQuarkdb/g' /etc/xrd.cf.mgm
@@ -40,7 +40,7 @@ data:
     # sed -i 's@DATADIR=/home/data/@DATADIR=/volumes/mnt/home/data/@g' eos_fst_setup.sh eos_setup.sh
 
     # test scripts.
-    sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq/g' /usr/sbin/eos-instance-test-ci # @todo tmp, then re-code the files
+    sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq-0/g' /usr/sbin/eos-instance-test-ci # @todo tmp, then re-code the files
     # testing 'eos-drain-test' because it is not included in eos ubuntu-based images
     [ -f /usr/sbin/eos-drain-test ] && sed -i 's/eos-fst4.eoscluster.cern.ch/eos-fst4.eos-fst4.{{ .Release.Namespace }}.svc.cluster.local/g' /usr/sbin/eos-drain-test || true
 
