@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mq.fullname" . }}-config
+  labels:
+    {{- include "mq.labels" . | nindent 4 }}
+data:
+  configure.sh: |
+    #!/bin/bash
+
+    # sysconfig
+    sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/sysconfig/eos
+    sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/sysconfig/eos
+    sed -i 's/eostest.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/sysconfig/eos
+
+    # fuse
+    sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/eos/fuse*.conf
+
+    # krb - @todo change to actual kdc fqdn in krb5.conf file
+    sed -i 's/eos-kdc.eoscluster.cern.ch/eos-kdc.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/krb5.conf
+    [ -f /kdc_mit.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc_mit.sh || true
+    [ -f /kdc.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc.sh || true
+
+    # mgm
+    sed -i 's/eos-qdb.eoscluster.cern.ch/eos-qdb-0.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/xrd.cf.*
+
+    # fst
+    sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /eos_fst_setup.sh
+    sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/xrd.cf.*
+    echo 'fstofs.qdbcluster eos-qdb-0.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777' >> /etc/xrd.cf.fst
+
+    # use Quarkdb
+    # sed -i 's/libEosNsInMemory/libEosNsQuarkdb/g' /etc/xrd.cf.mgm
+
+    # if using multiple MGMs
+    # echo 'export EOS_USE_QDB_MASTER=1' >> /etc/sysconfig/eos
+    # echo 'mgmofs.cfgtype quarkdb' >> /etc/xrd.cf.mgm
+
+    # if persistent volumes are attached, let fst data be on persistent volumes
+    # sed -i 's@DATADIR=/home/data/@DATADIR=/volumes/mnt/home/data/@g' eos_fst_setup.sh eos_setup.sh
+
+    # test scripts.
+    sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq-0/g' /usr/sbin/eos-instance-test-ci # @todo tmp, then re-code the files
+    # testing 'eos-drain-test' because it is not included in eos ubuntu-based images
+    [ -f /usr/sbin/eos-drain-test ] && sed -i 's/eos-fst4.eoscluster.cern.ch/eos-fst4.eos-fst4.{{ .Release.Namespace }}.svc.cluster.local/g' /usr/sbin/eos-drain-test || true
+
+    # set the geotag and instance name (optional)
+    # sed -i 's/docker/kuber/g' /etc/sysconfig/eos
+    # sed -i 's/docker/kuber/g' /eos_mgm_fs_setup.sh

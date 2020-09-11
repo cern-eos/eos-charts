@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mq.fullname" . }}
+  labels:
+    {{- include "mq.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ .Values.service.xrootd_mq.port }}
+      targetPort: xrootd-mq
+      protocol: TCP
+      name: xrootd-mq
+  selector:
+    {{- include "mq.selectorLabels" . | nindent 4 }}

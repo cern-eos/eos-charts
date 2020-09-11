@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "mgm.fullname" . }}
+  labels:
+    {{- include "mgm.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "mgm.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "mgm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "mgm.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: eos-mgm
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - sleep infinity;
+          ports:
+            - name: xrootd-mgm
+              containerPort: 1094
+              protocol: TCP
+            - name: xrootd-sync
+              containerPort: 1096
+              protocol: TCP
+            - name: xrootd-http
+              containerPort: 8000
+              protocol: TCP
+            - name: fusex
+              containerPort: 1100
+              protocol: TCP
+          env:
+            # leave it aside until the qdb chart is done
+            # - name: EOS_QUARKDB_HOSTPORT
+            #   value: "eos-qdb.eos-qdb.%%%NAMESPACE%%%.svc.cluster.local:7777"
+            # Inspiration from cockroachdb, in case we need it:
+            # - name: STATEFULSET_NAME
+            #   value: {{ template "mgm.fullname" . }}
+            # - name: STATEFULSET_FQDN
+            #   value: {{ template "mgm.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+            ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
+              - name: EOS_SKIP_SSS_HOSTNAME_MATCH
+                value: "true"
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: ["SYS_PTRACE"]
+          # startupProbe when deployed on kubectl >= 1.16
+          # exec:
+          #   command:
+          #   - /volumes/configmap/configure.sh
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          volumeMounts:
+            - name: configmap-volume
+              mountPath: /volumes/configmap/configure.sh
+              subPath: configure.sh
+      volumes:
+        - name: configmap-volume
+          configMap:
+            name: {{ include "mgm.fullname" . }}-config
+            defaultMode: 0755

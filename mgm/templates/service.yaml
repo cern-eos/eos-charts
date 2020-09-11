@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mgm.fullname" . }}
+  labels:
+    {{- include "mgm.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ .Values.service.xrootd_mgm.port }}
+      targetPort: xrootd-mgm
+      protocol: TCP
+      name: xrootd-mgm
+    - port: {{ .Values.service.xrootd_sync.port }}
+      targetPort: xrootd-sync
+      protocol: TCP
+      name: xrootd-sync
+    - port: {{ .Values.service.xrootd_http.port }}
+      targetPort: xrootd-http
+      protocol: TCP
+      name: xrootd-http
+    - port: {{ .Values.service.fusex.port }}
+      targetPort: fusex
+      protocol: TCP
+      name: fusex
+  selector:
+    {{- include "mgm.selectorLabels" . | nindent 4 }}

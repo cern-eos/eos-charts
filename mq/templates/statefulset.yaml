@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "mq.fullname" . }}
+  labels:
+    {{- include "mq.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "mq.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "mq.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "mq.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: eos-mq
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - sleep infinity;
+          ports:
+            - name: xrootd-mq
+              containerPort: 1097
+              protocol: TCP
+          env:
+            # Inspiration from cockroachdb, in case we need it:
+            # - name: STATEFULSET_NAME
+            #   value: {{ template "mq.fullname" . }}
+            # - name: STATEFULSET_FQDN
+            #   value: {{ template "mq.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+            ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
+              - name: EOS_SKIP_SSS_HOSTNAME_MATCH
+                value: "true"
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: ["SYS_PTRACE"]
+          # startupProbe when deployed on kubectl >= 1.16
+          # exec:
+          #   command:
+          #   - /volumes/configmap/configure.sh
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          volumeMounts:
+            - name: configmap-volume
+              mountPath: /volumes/configmap/configure.sh
+              subPath: configure.sh
+      volumes:
+        - name: configmap-volume
+          configMap:
+            name: {{ include "mq.fullname" . }}-config
+            defaultMode: 0755
