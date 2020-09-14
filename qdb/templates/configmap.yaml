@@ -16,18 +16,18 @@ data:
     # fuse
     sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/eos/fuse*.conf
 
-    # krb
+    # krb - @todo change to actual kdc fqdn in krb5.conf file
     sed -i 's/eos-kdc.eoscluster.cern.ch/eos-kdc.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/krb5.conf
-    [ -f /kdc_mit.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm1.eos-mgm1.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc_mit.sh || true
-    [ -f /kdc.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm1.eos-mgm1.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc.sh || true
+    [ -f /kdc_mit.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc_mit.sh || true
+    [ -f /kdc.sh ] && sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /kdc.sh || true
 
     # mgm
-    sed -i 's/eos-qdb.eoscluster.cern.ch/eos-qdb.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/xrd.cf.*
+    sed -i 's/eos-qdb.eoscluster.cern.ch/eos-qdb-0.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/xrd.cf.*
 
     # fst
     sed -i 's/eos-mgm1.eoscluster.cern.ch/eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local/g' /eos_fst_setup.sh
     sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local/g' /etc/xrd.cf.*
-    echo 'fstofs.qdbcluster eos-qdb.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777' >> /etc/xrd.cf.fst
+    echo 'fstofs.qdbcluster eos-qdb-0.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777' >> /etc/xrd.cf.fst
 
     # use Quarkdb
     # sed -i 's/libEosNsInMemory/libEosNsQuarkdb/g' /etc/xrd.cf.mgm
