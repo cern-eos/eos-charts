@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qdb.fullname" . }}
+  labels:
+    {{- include "qdb.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ .Values.service.xrootd_qdb_http.port }}
+      targetPort: xrootd-qdb-http
+      protocol: TCP
+      name: xrootd-http
+  selector:
+    {{- include "qdb.selectorLabels" . | nindent 4 }}

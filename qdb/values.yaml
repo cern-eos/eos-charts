@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  repository: gitlab-registry.cern.ch/dss/eos
+  tag: 4.8.4
+  pullPolicy: Always
+
+service:
+  xrootd_qdb_http:
+    port: 7777
