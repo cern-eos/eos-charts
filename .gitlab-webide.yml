@@ -1,0 +1,6 @@
+terminal:
+# This can be any image that has the necessary runtime environment for your project.
+ image: gitlab-registry.cern.ch/cloud/ciadm
+ before_script:
+ - yum update
+ script: sleep 3
