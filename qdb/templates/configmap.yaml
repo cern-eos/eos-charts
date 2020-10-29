@@ -5,3 +5,11 @@ metadata:
   labels:
     {{- include "qdb.labels" . | nindent 4 }}
 data:
+  xrd.cf.quarkdb: |
+    if exec xrootd
+      xrd.port 7777
+      xrd.protocol redis:7777 /usr/lib64/libXrdQuarkDB.so
+      redis.mode standalone
+      redis.password_file /etc/eos.keytab
+      redis.database /var/quarkdb/node-0
+    fi

@@ -37,8 +37,8 @@ spec:
           {{- include "qdb.startupProbe" . | nindent 10 }}
           volumeMounts:
             - name: configmap-volume
-              mountPath: /volumes/configmap/configure.sh
-              subPath: configure.sh
+              mountPath: /etc/xrd.cf.quarkdb
+              subPath: xrd.cf.quarkdb
             - name: quarkdb-volume
               mountPath: /var/quarkdb
       initContainers:
@@ -55,7 +55,7 @@ spec:
         - name: configmap-volume
           configMap:
             name: {{ include "qdb.fullname" . }}-config
-            defaultMode: 0755
+            defaultMode: 0644
         - name: quarkdb-volume
           hostPath:
             path: /var/k8s/{{ include "qdb.name" . }}-data
