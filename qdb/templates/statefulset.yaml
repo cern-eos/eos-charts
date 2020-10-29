@@ -20,8 +20,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
-          args:
-            - sleep infinity;
+          args: ["/usr/bin/xrootd -n qdb -c /etc/xrd.cf.quarkdb -l /var/log/eos/xrdlog.qdb -Rdaemon"]   # TODO: Check how to do the LD_LIBRARY_PRELOAD magic.
           ports:
             - name: xrootd-qdb-http
               containerPort: 7777
