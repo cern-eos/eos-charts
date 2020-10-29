@@ -26,28 +26,7 @@ spec:
               containerPort: 7777
               protocol: TCP
           env:
-            ### PodInfo ###
-            #- name: PODINFO_NAME
-            #  valueFrom:
-            #    fieldRef:
-            #      fieldPath: metadata.name
-            #- name: PODINFO_NAMESPACE
-            #  valueFrom:
-            #    fieldRef:
-            #      fieldPath: metadata.namespace
-            #- name: PODINFO_IP
-            #  valueFrom:
-            #    fieldRef:
-            #      fieldPath: status.podIP
-            #- name: PODINFO_NODE_IP
-            #  valueFrom:
-            #    fieldRef:
-            #      fieldPath: status.hostIP
-            #- name: PODINFO_NODE_NAME
-            #  valueFrom:
-            #    fieldRef:
-            #      fieldPath: spec.nodeName
-            ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
+            # work around current Kubernetes setup issues. This should *NOT* be enabled in production
               - name: EOS_SKIP_SSS_HOSTNAME_MATCH
                 value: "true"
           securityContext:
