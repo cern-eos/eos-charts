@@ -56,8 +56,12 @@ spec:
             - name: configmap-volume
               mountPath: /volumes/configmap/configure.sh
               subPath: configure.sh
+            - name: mq-logs
+              mountPath: /var/log/eos
       volumes:
         - name: configmap-volume
           configMap:
             name: {{ include "mq.fullname" . }}-config
             defaultMode: 0755
+        - name: mq-logs
+          emptyDir: {}
