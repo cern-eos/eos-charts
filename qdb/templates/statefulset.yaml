@@ -36,7 +36,7 @@ spec:
               add: ["SYS_PTRACE"]
           {{- include "qdb.startupProbe" . | nindent 10 }}
           volumeMounts:
-            - name: configmap-volume
+            - name: quarkdb-cfgmap-xrd-cf-quarkdb
               mountPath: /etc/xrd.cf.quarkdb
               subPath: xrd.cf.quarkdb
             - name: quarkdb-data
@@ -54,9 +54,9 @@ spec:
               mountPath: /var/quarkdb   # `quarkdb-create` fails if the folder already exists,
                                         # hence we mount the parent
       volumes:
-        - name: configmap-volume
+        - name: quarkdb-cfgmap-xrd-cf-quarkdb
           configMap:
-            name: {{ include "qdb.fullname" . }}-config
+            name: {{ include "qdb.fullname" . }}-xrd-cf-quarkdb
             defaultMode: 0644
         - name: quarkdb-data
           hostPath:
