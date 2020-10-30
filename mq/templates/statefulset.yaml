@@ -53,15 +53,25 @@ spec:
           #     path: /
           #     port: http
           volumeMounts:
-            - name: configmap-volume
-              mountPath: /volumes/configmap/configure.sh
-              subPath: configure.sh
+            - name: mq-cfgmap-xrd-cf-mq
+              mountPath: /etc/xrd.cf.mq
+              subPath: xrd.cf.mq
+            - name: mq-cfgmap-sysconfig-eos
+              mountPath: /etc/sysconfig/eos
+              subPath: eos
             - name: mq-logs
               mountPath: /var/log/eos
       volumes:
-        - name: configmap-volume
+        - name: mq-cfgmap-xrd-cf-mq
           configMap:
-            name: {{ include "mq.fullname" . }}-config
-            defaultMode: 0755
+            name: {{ include "mq.fullname" . }}-cfgmap-xrd-cf-mq
+            defaultMode: 0644
+        - name: mq-cfgmap-sysconfig-eos
+          configMap:
+            name: {{ include "mq.fullname" . }}-cfgmap-sysconfig-eos
+            defaultMode: 0644
+            items:
+            - key: sysconfig_eos
+              path: eos
         - name: mq-logs
           emptyDir: {}
