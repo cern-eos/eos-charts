@@ -41,6 +41,8 @@ spec:
               subPath: xrd.cf.quarkdb
             - name: quarkdb-data
               mountPath: /var/quarkdb
+            - name: quarkdb-logs
+              mountPath: /var/log/eos
       initContainers:
         - name: eos-qdb-init0-quarkdb-create
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -60,4 +62,5 @@ spec:
           hostPath:
             path: /var/k8s/data/{{ include "qdb.name" . }}-data
             type: DirectoryOrCreate
-
+        - name: quarkdb-logs
+          emptyDir: {}
