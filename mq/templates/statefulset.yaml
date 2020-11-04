@@ -20,8 +20,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
-          args:
-            - sleep infinity;
+          args: ["/usr/bin/xrootd -n mq -c /etc/xrd.cf.mq -l /var/log/eos/xrdlog.mq -Rdaemon"]   # TODO: Check which xrootd binary should be used
           ports:
             - name: xrootd-mq
               containerPort: 1097
