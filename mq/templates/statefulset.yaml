@@ -32,9 +32,6 @@ spec:
             #   value: {{ template "mq.fullname" . }}
             # - name: STATEFULSET_FQDN
             #   value: {{ template "mq.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-            ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
-              - name: EOS_SKIP_SSS_HOSTNAME_MATCH
-                value: "true"
           envFrom:
             - configMapRef:
                 name: {{ include "mq.fullname" . }}-cfgmap-sysconfig-eos
