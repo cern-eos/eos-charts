@@ -45,8 +45,9 @@ spec:
             # - name: STATEFULSET_FQDN
             #   value: {{ template "mgm.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
             ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
-              - name: EOS_SKIP_SSS_HOSTNAME_MATCH
-                value: "true"
+          envFrom:
+            - configMapRef:
+                name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true
@@ -66,11 +67,15 @@ spec:
           #     port: http
           {{- include "mgm.startupProbe" . | nindent 10 }}
           volumeMounts:
-            - name: configmap-volume
-              mountPath: /volumes/configmap/configure.sh
-              subPath: configure.sh
+            - name: mgm-cfgmap-xrd-cf-mgm
+              mountPath: /etc/xrd.cf.mgm
+              subPath: xrd.cf.mgm
+            - name: mgm-logs
+              mountPath: /var/log/eos
       volumes:
-        - name: configmap-volume
+        - name: mgm-cfgmap-xrd-cf-mgm
           configMap:
-            name: {{ include "mgm.fullname" . }}-config
+            name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
             defaultMode: 0755
+        - name: mgm-logs
+          emptyDir: {}
