@@ -15,6 +15,12 @@ spec:
       labels:
         {{- include "mgm.selectorLabels" . | nindent 8 }}
     spec:
+      # TODO: Create an init container that:
+      # 1. Start the xroot daemon as MGM
+      # 2. Cofnigures basic authentication via SSS
+      # 3. Saves the config
+      # 4. Exits
+      # Such init container shares the /var/eos directory such that the main xrootd daemon in the main container will read from there and load the pre-configured SSS authentication
       containers:
         - name: eos-mgm
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -70,6 +76,10 @@ spec:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
+            - name: mgm-data
+              # TODO: to be verified
+              # TODO: Not sure if we have to pre-create directories there
+              mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
       volumes:
@@ -77,5 +87,9 @@ spec:
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
             defaultMode: 0755
+        - name: mgm-data
+          hostPath:
+            path: /var/k8s/data/{{ include "mgm.name" . }}-data
+            type: DirectoryOrCreate
         - name: mgm-logs
           emptyDir: {}

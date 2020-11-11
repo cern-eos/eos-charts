@@ -25,14 +25,17 @@ data:
     # SSS authentication
     sec.protocol sss -c /etc/eos.keytab -s /etc/eos.keytab
     # KRB  authentication
-    sec.protocol krb5 /etc/eos.krb5.keytab host/<host>@TEST.EOS
+    #TODO: (Enrico, 10/11) Disable krb5
+    ##sec.protocol krb5 /etc/eos.krb5.keytab host/<host>@TEST.EOS
     # GSI authentication
     #sec.protocol gsi -crl:0 -cert:/etc/grid-security/daemon/hostcert.pem -key:/etc/grid-security/daemon/hostkey.pem -gridmap:/etc/grid-security/grid-mapfile -d:0 -gmapopt:2
     
     ###########################################################
     sec.protbind localhost.localdomain unix sss
     sec.protbind localhost unix sss
-    sec.protbind * only krb5 sss unix
+    #sec.protbind * only krb5 sss unix
+    #TODO: (Enrico, 10/11) Disable krb5
+    sec.protbind * only sss unix
     ###########################################################
     mgmofs.fs /
     mgmofs.targetport 1095
@@ -41,7 +44,6 @@ data:
     ###########################################################
     #mgmofs.trace all debug
     # this URL can be overwritten by EOS_BROKER_URL defined in /etc/sysconfig/eos
-    
     mgmofs.broker root://eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     # this name can be overwritten by EOS_INSTANCE_NAME defined in /etc/sysconfig/eos
     mgmofs.instance eosdockertest
