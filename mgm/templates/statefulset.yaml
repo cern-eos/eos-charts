@@ -76,10 +76,15 @@ spec:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
-            - name: mgm-data
-              # TODO: to be verified
-              # TODO: Not sure if we have to pre-create directories there
-              mountPath: /var/eos
+            - name: mgm-logs
+              mountPath: /var/log/eos
+      initContainers:
+        - name: eos-mgm-init0-logfolder-create
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args: ["for fld in mgm tx; do mkdir /var/log/eos/$fld && chown daemon:daemon /var/log/eos/$fld; done"]
+          volumeMounts:
             - name: mgm-logs
               mountPath: /var/log/eos
       volumes:
@@ -87,9 +92,5 @@ spec:
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
             defaultMode: 0755
-        - name: mgm-data
-          hostPath:
-            path: /var/k8s/data/{{ include "mgm.name" . }}-data
-            type: DirectoryOrCreate
         - name: mgm-logs
           emptyDir: {}
