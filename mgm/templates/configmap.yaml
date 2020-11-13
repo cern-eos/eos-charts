@@ -235,11 +235,11 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "mgm.fullname" . }}-cfgmap-eos-init
+  name: {{ include "mgm.fullname" . }}-cfgmap-mgm-init
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
 data:
-  eos_init.sh: |
+  mgm_init.sh: |
     #!/bin/bash
 
     handle_exit_condition () {
