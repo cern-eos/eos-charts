@@ -20,8 +20,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
-          args:
-            - sleep infinity;
+          args: ["/usr/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mq -Rdaemon"]   # TODO: Check which xrootd binary should be used
           ports:
             - name: xrootd-mgm
               containerPort: 1094
@@ -104,7 +103,6 @@ spec:
             allowPrivilegeEscalation: true
             capabilities:
               add: ["SYS_PTRACE"]
-          #command: ["/usr/bin/sleep", "infinity"]
           command: ["/bin/bash", "/root/auth_init.sh"]
           volumeMounts:
             - name: mgm-cfgmap-xrd-cf-mgm
