@@ -30,27 +30,6 @@ spec:
               containerPort: 8001
               protocol: TCP
           env:
-            # Let the container know where is it running
-            # - name: PODINFO_NAME
-            #   valueFrom:
-            #     fieldRef:
-            #       fieldPath: metadata.name
-            # - name: PODINFO_NAMESPACE
-            #   valueFrom:
-            #     fieldRef:
-            #       fieldPath: metadata.namespace
-            # - name: PODINFO_IP
-            #   valueFrom:
-            #     fieldRef:
-            #       fieldPath: status.podIP
-            # - name: PODINFO_NODE_IP
-            #   valueFrom:
-            #     fieldRef:
-            #       fieldPath: status.hostIP
-            # - name: PODINFO_NODE_NAME
-            #   valueFrom:
-            #     fieldRef:
-            #       fieldPath: spec.nodeName
             # Inspiration from cockroachdb, in case we need it:
             # - name: STATEFULSET_NAME
             #   value: {{ template "fst.fullname" . }}
