@@ -92,7 +92,7 @@ spec:
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
-        - name: eos-mgm-init2-auth-init
+        - name: eos-mgm-init2-eos-init
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
@@ -103,7 +103,7 @@ spec:
             allowPrivilegeEscalation: true
             capabilities:
               add: ["SYS_PTRACE"]
-          command: ["/bin/bash", "/root/auth_init.sh"]
+          command: ["/bin/bash", "/root/eos_init.sh"]
           volumeMounts:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
@@ -112,17 +112,17 @@ spec:
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
-            - name: mgm-cfgmap-auth-init
-              mountPath: /root/auth_init.sh
-              subPath: auth_init.sh
+            - name: mgm-cfgmap-eos-init
+              mountPath: /root/eos_init.sh
+              subPath: eos_init.sh
       volumes:
         - name: mgm-cfgmap-xrd-cf-mgm
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
             defaultMode: 0755
-        - name: mgm-cfgmap-auth-init
+        - name: mgm-cfgmap-eos-init
           configMap:
-            name: {{ include "mgm.fullname" . }}-cfgmap-auth-init
+            name: {{ include "mgm.fullname" . }}-cfgmap-eos-init
             defaultMode: 0755
         - name: mgm-data
           emptyDir: {}

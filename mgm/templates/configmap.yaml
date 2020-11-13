@@ -235,11 +235,11 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "mgm.fullname" . }}-cfgmap-auth-init
+  name: {{ include "mgm.fullname" . }}-cfgmap-eos-init
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
 data:
-  auth_init.sh: |
+  eos_init.sh: |
     #!/bin/bash
 
     handle_exit_condition () {
@@ -292,6 +292,10 @@ data:
     done
     echo "INFO: MGM is online."
 
+
+    ### Authentication
+    echo "INFO: Configuring authentication..."
+
     # Enable SSS
     echo "INFO: Enabling SSS..."
     eos -b vid enable sss
@@ -302,13 +306,48 @@ data:
     eos -b vid set membership daemon +sudo
     handle_exit_condition $? "Error adding user daemon to sudoers"
 
+    echo "INFO: ✓ EOS autentication initialized successfully."
+
+
+    ### Spaces and quota
+    #
+    # TODO: Space information is not loaded?!
+    #
+    # BUG!!
+    # Space information is stored in the config file.
+    # The MGM loads it at the next boot:
+    # 201113 16:48:16 time=1605286096.702141 func=LoadConfig               level=NOTE  logid=06fe7f84-25d0-11eb-935c-0242ac110008 unit=mgm@eos-mgm-0.eos-mgm.default.svc.cluster.local:1094 tid=00007f1d9327a880 source=FileConfigEngine:243           tident=<service> sec=      uid=0 gid=0 name= geo="" IN ==> global:/config/eosdockertest/space/default#autorepair => off
+    # 201113 16:48:16 time=1605286096.702161 func=LoadConfig               level=NOTE  logid=06fe7f84-25d0-11eb-935c-0242ac110008 unit=mgm@eos-mgm-0.eos-mgm.default.svc.cluster.local:1094 tid=00007f1d9327a880 source=FileConfigEngine:243           tident=<service> sec=      uid=0 gid=0 name= geo="" IN ==> global:/config/eosdockertest/space/default#balancer => off
+    # 201113 16:48:16 time=1605286096.702171 func=LoadConfig               level=NOTE  logid=06fe7f84-25d0-11eb-935c-0242ac110008 unit=mgm@eos-mgm-0.eos-mgm.default.svc.cluster.local:1094 tid=00007f1d9327a880 source=FileConfigEngine:243           tident=<service> sec=      uid=0 gid=0 name= geo="" IN ==> global:/config/eosdockertest/space/default#balancer.node.ntx => 2
+    #
+    # But then `space ls` is empty
+    # [root@eos-mgm-0 /]# eos space ls
+    # [root@eos-mgm-0 /]# 
+    #
+    echo "INFO: Configuring space and quota..."
+
+    # Define default space
+    echo "INFO: Defining space default..."
+    eos -b space define default
+    handle_exit_condition $? "Error defining space default"
+
+    # Activate default space
+    echo "INFO: Activating space default..."
+    eos -b space set default on
+    handle_exit_condition $? "Error activating space default"
+
+    ## # Turn-off quota for space default
+    ## echo "INFO: Turning off quota for space default..."
+    ## eos -b space quota default off
+    ## handle_exit_condition $? "Error turning off quota for space default"
+
+
+    ### Save config and leave
     echo "INFO: Saving configuration..."
-    eos -b config save deafult -f
+    eos -b config save default -f
     handle_exit_condition $? "Error saving configuration"
 
-    echo "INFO: EOS autentication initialized successfully."
     exit 0
-
 
     # useradd eos_k8s_admin
     # eos -b vid set membership eos_k8s_admin +sudo
