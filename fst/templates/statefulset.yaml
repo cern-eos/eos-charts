@@ -36,8 +36,12 @@ spec:
             # - name: STATEFULSET_FQDN
             #   value: {{ template "fst.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
             ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
-              - name: EOS_SKIP_SSS_HOSTNAME_MATCH
-                value: "true"
+            - name: EOS_MGM_URL
+              value: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
+            # TODO: Move EOS_MGM_URL into /etc/sysconfig/eos env vars
+          envFrom:
+            - configMapRef:
+                name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true
@@ -57,11 +61,60 @@ spec:
           #     port: http
           {{- include "fst.startupProbe" . | nindent 10 }}
           volumeMounts:
-            - name: configmap-volume
-              mountPath: /volumes/configmap/configure.sh
-              subPath: configure.sh
+            - name: fst-cfgmap-xrd-cf-fst
+              mountPath: /etc/xrd.cf.fst
+              subPath: xrd.cf.fst
+            ## TODO: What about the data at /var/eos/md/... ?
+            ##   Should this be persisted?
+            ## - name: fst-data
+            ##   mountPath: /var/eos
+            - name: fst-storage
+              mountPath: /fst_storage
+            - name: fst-logs
+              mountPath: /var/log/eos
+      initContainers:
+        - name: eos-fst-init0-chown-storage
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args: ["chown daemon:daemon /fst_storage"]
+          volumeMounts:
+            - name: fst-storage
+              mountPath: /fst_storage
+        - name: eos-fst-init1-fst-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: EOS_MGM_URL
+              value: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
+          envFrom:
+            - configMapRef:
+                name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: ["SYS_PTRACE"]
+          command: ["/bin/sleep", "infinity"]
+          volumeMounts:
+            - name: fst-cfgmap-xrd-cf-fst
+              mountPath: /etc/xrd.cf.fst
+              subPath: xrd.cf.fst
+            - name: fst-storage
+              mountPath: /fst_storage
+            - name: fst-cfgmap-fst-init
+              mountPath: /root/fst_init.sh
+              subPath: fst_init.sh
       volumes:
-        - name: configmap-volume
+        - name: fst-cfgmap-xrd-cf-fst
           configMap:
-            name: {{ include "fst.fullname" . }}-config
+            name: {{ include "fst.fullname" . }}-cfgmap-xrd-cf-fst
             defaultMode: 0755
+        - name: fst-cfgmap-fst-init
+          configMap:
+            name: {{ include "fst.fullname" . }}-cfgmap-fst-init
+            defaultMode: 0755
+        - name: fst-storage
+          emptyDir: {}
+        - name: fst-logs
+          emptyDir: {}
