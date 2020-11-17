@@ -261,9 +261,11 @@ data:
     eos -r 0 0 -b space set default on
     # TODO: BUG!
 
+    ### Set this node to on
+    eos -r 0 0 -b node set `hostname -f`:1095 on
+
     ### Register filesystem
     eos -r 0 0 -b fs add -m ${id} $UUID `hostname -f`:1095 $DATADIR default $CONFIG
-    eos -r 0 0 -b node set `hostname -f`:1095 on
-    eos -r 0 0 -b boot ${id}
+    eos -r 0 0 -b fs boot ${id}
 
     exit 0
