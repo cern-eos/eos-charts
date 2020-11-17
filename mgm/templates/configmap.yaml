@@ -87,8 +87,8 @@ data:
     mgmofs.centraldrain true
 
     ##### Namespace plugin implementation #####################
-    mgmofs.nslib /usr/lib64/libEosNsInMemory.so
-    #mgmofs.nslib /usr/lib64/libEosNsQuarkdb.so
+    #mgmofs.nslib /usr/lib64/libEosNsInMemory.so
+    mgmofs.nslib /usr/lib64/libEosNsQuarkdb.so
     mgmofs.qdbcluster eos-qdb-0.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777
     mgmofs.qdbpassword_file /etc/eos.keytab
 
