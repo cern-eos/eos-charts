@@ -20,8 +20,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
-          args:
-            - sleep infinity;
+          args: ["/usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.mq -Rdaemon"]
           ports:
             - name: fst
               containerPort: 1095
@@ -38,7 +37,6 @@ spec:
             ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
             - name: EOS_MGM_URL
               value: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
-            # TODO: Move EOS_MGM_URL into /etc/sysconfig/eos env vars
           envFrom:
             - configMapRef:
                 name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
@@ -95,7 +93,7 @@ spec:
             allowPrivilegeEscalation: true
             capabilities:
               add: ["SYS_PTRACE"]
-          command: ["/bin/sleep", "infinity"]
+          command: ["/bin/bash", "/root/fst_init.sh"]
           volumeMounts:
             - name: fst-cfgmap-xrd-cf-fst
               mountPath: /etc/xrd.cf.fst
