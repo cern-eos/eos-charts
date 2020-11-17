@@ -44,6 +44,7 @@ data:
     ###########################################################
     #mgmofs.trace all debug
     # this URL can be overwritten by EOS_BROKER_URL defined in /etc/sysconfig/eos
+    # TODO: Removing this breaks the link between FSTs and MGM. Check!
     mgmofs.broker root://eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     
     # configuration and namespace location
