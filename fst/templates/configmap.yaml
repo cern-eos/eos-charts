@@ -213,28 +213,27 @@ data:
     echo "INFO: Starting FST..."
     /usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -m -b -Rdaemon >/dev/null 2>&1
 
-    ## TODO: Check the MGM is online before proceeding
-    ## # Wait for the FST to be online
-    ## echo "INFO: Waiting for the FST to be online..."
-    ## max_wait=60
-    ## sleep=5
-    ## start_time=$(date +%s)
-    ## rc=-1
-    ## while [ $rc -ne 0 ];
-    ## do
-    ##   timeout --preserve-status $sleep eos ns >/dev/null 2>&1
-    ##   rc=$?
-    ##   sleep $sleep
+    # Check the MGM is online before registering the node and the filesystem
+    echo "INFO: Checking the MGM is online..."
+    max_wait=60
+    sleep=5
+    start_time=$(date +%s)
+    rc=-1
+    while [ $rc -ne 0 ];
+    do
+      timeout --preserve-status $sleep eos -r 0 0 -b ns >/dev/null 2>&1
+      rc=$?
+      sleep $sleep
 
-    ##   # Bail out after max_wait
-    ##   tot_wait=$(($(date +%s)-start_time))
-    ##   echo "        $tot_wait seconds... (timeout at $max_wait)"
-    ##   if [ $tot_wait -ge $max_wait ]; then
-    ##     echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
-    ##     exit 1
-    ##   fi
-    ## done
-    ## echo "INFO: MGM is online."
+      # Bail out after max_wait
+      tot_wait=$(($(date +%s)-start_time))
+      echo "        $tot_wait seconds... (timeout at $max_wait)"
+      if [ $tot_wait -ge $max_wait ]; then
+        echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
+        exit 1
+      fi
+    done
+    echo "INFO: MGM is online."
 
 
     # TODO: Improve here!!
@@ -243,15 +242,12 @@ data:
     DATADIR=/fst_storage
     SPACE=default
     CONFIG=rw
-    GEOTAG="docker::test"       # This is duplicated in /etc/eos/sysconfig
-    # TODO
 
     # If there is an eos fsid || fsuuid, bail out
     if [ -f $DATADIR/.eosfsid ] || [ -f $DATADIR/.eosfsuuid ]; then
       echo "FS IDs already exist. Not cofiguring any further"
       exit 0
     fi
-
 
     ### Configure filesystem identifiers
     echo "$UUID" > $DATADIR/.eosfsuuid
@@ -260,7 +256,6 @@ data:
     ### Register space (!! THIS IS A BUG !!)
     # TODO: BUG!
     eos -r 0 0 -b space define default
-    eos -r 0 0 -b space set default on
     # TODO: BUG!
 
     ### Set this node to on
@@ -268,6 +263,12 @@ data:
 
     ### Register filesystem
     eos -r 0 0 -b fs add -m ${id} $UUID `hostname -f`:1095 $DATADIR default $CONFIG
-    eos -r 0 0 -b fs boot ${id}
+    # eos -r 0 0 -b fs boot ${id} # TODO: Check -- Does not seem to be needed
+
+    ### Activate space (!! THIS IS A BUG !!)
+    # The file system will stay `offline` if the space is not set to on after the FS gets registered
+    # TODO: BUG!
+    eos -r 0 0 -b space set default on
+    # TODO: BUG!
 
     exit 0
