@@ -45,8 +45,6 @@ data:
     #mgmofs.trace all debug
     # this URL can be overwritten by EOS_BROKER_URL defined in /etc/sysconfig/eos
     mgmofs.broker root://eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
-    # this name can be overwritten by EOS_INSTANCE_NAME defined in /etc/sysconfig/eos
-    mgmofs.instance eosdockertest
     
     # configuration and namespace location
     mgmofs.configdir /var/eos/config
