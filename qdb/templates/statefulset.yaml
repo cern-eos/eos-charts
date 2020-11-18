@@ -59,8 +59,9 @@ spec:
             name: {{ include "qdb.fullname" . }}-xrd-cf-quarkdb
             defaultMode: 0644
         - name: quarkdb-data
-          hostPath:
-            path: /var/k8s/data/{{ include "qdb.name" . }}-data
-            type: DirectoryOrCreate
+          emptyDir: {}
+          # hostPath:
+            # path: /var/k8s/data/{{ include "qdb.name" . }}-data
+            # type: DirectoryOrCreate
         - name: quarkdb-logs
           emptyDir: {}

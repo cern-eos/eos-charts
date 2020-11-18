@@ -38,6 +38,11 @@ data:
     ###########################################################
     mq.queue /eos/
 
+    ##### QuarkDB #############################################
+    mq.qdbcluster eos-qdb-0.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777
+    mq.qdbpassword_file /etc/eos.keytab
+    ###########################################################
+
 ---
 apiVersion: v1
 kind: ConfigMap

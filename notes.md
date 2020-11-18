@@ -28,6 +28,8 @@ chown -R daemon:daemon /var/quarkdb/node-0
 ```
 2. Start the xrtood process for quarkdb when the container starts
   - TODO: Investigate how to do the LD_PRELOAD magic
+  - @note (faluchet) We build and consume the docker images, thus we know if/where it is located.
+          Then, the env var can be appended to (the equivalent of) /etc/sysconfig/eos, e.g LD_PRELOAD="/usr/lib/libjemalloc.so"
 3. `/etc/xrd.cf.quarkdb` is now a configMap
 4. Logs go to an emptyDir
 
