@@ -61,3 +61,32 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+StartupProbe definition
+*/}}
+{{- define "qdb.startupProbe" -}}
+  {{- if .Values.startupProbe.enabled }}
+startupProbe:
+    {{- if .Values.startupProbe.tcpSocket }}
+  tcpSocket:
+    host: {{ .Values.startupProbe.tcpSocket.host }}
+    port: {{ .Values.startupProbe.tcpSocket.port }}
+    {{- end }}
+  failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+  periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+{{- else }}
+  {{- if .Values.global }}
+    {{- with .Values.global }}
+      {{- if .qdb.startupProbe.enabled }}
+startupProbe:
+  tcpSocket:
+    host: {{ $.Release.Name }}-mgm
+    port: {{ .service.xrootd_mgm.port }}
+  failureThreshold: {{ .qdb.startupProbe.failureThreshold }}
+  periodSeconds: {{ .qdb.startupProbe.periodSeconds }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

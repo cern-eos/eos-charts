@@ -64,6 +64,7 @@ spec:
           #   httpGet:
           #     path: /
           #     port: http
+          {{- include "mgm.startupProbe" . | nindent 10 }}
           volumeMounts:
             - name: configmap-volume
               mountPath: /volumes/configmap/configure.sh

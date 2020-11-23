@@ -59,8 +59,8 @@ version-check:
             echo "ERROR: Chart version must be higher than existent. Please fix before merging again."
             exit 1
         fi
-  except:
-    - tags
+  only:
+    - master
 
 deploy:
   stage: deploy
