@@ -11,3 +11,11 @@ service:
   # Will be deprecated at some point by xrdHttp:
   microhttp:
     port: 8001
+
+startupProbe:
+  enabled: false
+  tcpSocket:
+    host: mgm.outside.the.cluster
+    port: 1094
+  failureThreshold: 40
+  periodSeconds: 10

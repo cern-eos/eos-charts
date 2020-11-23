@@ -7,11 +7,19 @@ metadata:
 spec:
   clusterIP: None
   ports:
+    {{- if .Values.global }}
+    - port: {{ .Values.global.service.fst.port }}
+    {{- else }}
     - port: {{ .Values.service.fst.port }}
+    {{- end }}
       targetPort: fst
       protocol: TCP
       name: fst
+    {{- if .Values.global }}
+    - port: {{ .Values.global.service.microhttp.port }}
+    {{- else }}
     - port: {{ .Values.service.microhttp.port }}
+    {{- end }}
       targetPort: microhttp
       protocol: TCP
       name: microhttp

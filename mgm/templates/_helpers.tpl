@@ -61,3 +61,32 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+StartupProbe definition
+*/}}
+{{- define "mgm.startupProbe" -}}
+  {{- if .Values.startupProbe.enabled }}
+startupProbe:
+    {{- if .Values.startupProbe.tcpSocket }}
+  tcpSocket:
+    host: {{ .Values.startupProbe.tcpSocket.host }}
+    port: {{ .Values.startupProbe.tcpSocket.port }}
+    {{- end }}
+  failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+  periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+{{- else }}
+  {{- if .Values.global }}
+    {{- with .Values.global }}
+      {{- if .mgm.startupProbe.enabled }}
+startupProbe:
+  tcpSocket:
+    host: {{ $.Release.Name }}-mgm
+    port: {{ .service.xrootd_mq.port }}
+  failureThreshold: {{ .mgm.startupProbe.failureThreshold }}
+  periodSeconds: {{ .mgm.startupProbe.periodSeconds }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

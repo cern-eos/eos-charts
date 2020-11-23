@@ -56,18 +56,7 @@ spec:
             allowPrivilegeEscalation: true
             capabilities:
               add: ["SYS_PTRACE"]
-          # startupProbe when deployed on kubectl >= 1.16
-          # exec:
-          #   command:
-          #   - /volumes/configmap/configure.sh
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
+          {{- include "qdb.startupProbe" . | nindent 10 }}
           volumeMounts:
             - name: configmap-volume
               mountPath: /volumes/configmap/configure.sh

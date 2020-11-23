@@ -14,3 +14,11 @@ service:
     port: 8000
   fusex:
     port: 1100
+
+startupProbe:
+  enabled: false
+  tcpSocket:
+    host: mq.outside.the.cluster
+    port: 1097
+  failureThreshold: 40
+  periodSeconds: 10

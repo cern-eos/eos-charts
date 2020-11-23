@@ -8,3 +8,11 @@ image:
 service:
   xrootd_qdb_http:
     port: 7777
+
+startupProbe:
+  enabled: false
+  tcpSocket:
+    host: mgm.outside.the.cluster
+    port: 1094
+  failureThreshold: 40
+  periodSeconds: 10
