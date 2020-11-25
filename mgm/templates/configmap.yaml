@@ -340,6 +340,15 @@ data:
     ## eos -b space quota default off
     ## handle_exit_condition $? "Error turning off quota for space default"
 
+    # Set recycle bin # @todo review
+    eos chmod 3711 /eos/dockertest/proc/recycle # drwx--s--+   1 root     root
+    eos chmod 2755 /eos                         # drwxr-sr-+   1 root     root
+    eos attr set default=replica /eos
+    eos attr set sys.recycle="/eos/${EOS_INSTANCE_NAME:3}/proc/recycle/" /eos/
+    eos recycle config --size 10G
+    eos recycle config --inodes 10M
+    eos recycle config --lifetime 604800        # a week
+    eos recycle config --ratio 0.2
 
     ### Save config and leave
     echo "INFO: Saving configuration..."
