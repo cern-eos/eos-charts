@@ -112,7 +112,30 @@ spec:
           configMap:
             name: {{ include "fst.fullname" . }}-cfgmap-fst-init
             defaultMode: 0755
-        - name: fst-storage
-          emptyDir: {}
         - name: fst-logs
           emptyDir: {}
+  {{- if not .Values.persistence.enabled }}
+        - name: fst-storage
+          emptyDir: {}
+  {{- else }}
+  volumeClaimTemplates:
+    - metadata:
+        name: fst-storage
+        {{- if .Values.persistence.annotations }}
+        annotations:
+          {{- toYaml .Values.persistence.annotations | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- toYaml .Values.persistence.accessModes | nindent 10 }}
+        resources:
+          requests:
+            storage: "{{ .Values.persistence.size }}"
+      {{- if .Values.persistence.storageClass }}
+      {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+      {{- else }}
+        storageClassName: "{{ .Values.persistence.storageClass }}"
+      {{- end }}
+    {{- end }}
+  {{- end }}
