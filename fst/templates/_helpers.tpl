@@ -87,8 +87,6 @@ startupProbe:
   periodSeconds: {{ .fst.startupProbe.periodSeconds }}
         {{- end }}
       {{- end }}
-    {{- else }}
-startupProbe: nil
     {{- end }}
   {{- end }}
 {{- end }}
