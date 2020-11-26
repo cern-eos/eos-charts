@@ -3,7 +3,7 @@ apiVersion: v2
 name: mq
 type: application
 version: 0.0.1
-appVersion: 4.8.4
+appVersion: 4.8.23
 #
 description: An EOS MQ chart
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg 

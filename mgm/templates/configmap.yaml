@@ -47,7 +47,7 @@ data:
     # TODO: Removing this breaks the link between FSTs and MGM. Check!
     mgmofs.broker root://eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     
-    # configuration and namespace location
+    # configuration and namespace location @note `mgmofs.cfgtype quarkdb` will move it to qdb
     mgmofs.configdir /var/eos/config
     mgmofs.metalog /var/eos/md
     mgmofs.txdir /var/eos/tx
@@ -90,6 +90,7 @@ data:
     mgmofs.nslib /usr/lib64/libEosNsQuarkdb.so
     mgmofs.qdbcluster eos-qdb-0.eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777
     mgmofs.qdbpassword_file /etc/eos.keytab
+    mgmofs.cfgtype quarkdb
 
 ---
 apiVersion: v1
