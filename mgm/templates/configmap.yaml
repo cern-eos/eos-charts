@@ -52,7 +52,7 @@ data:
     mgmofs.metalog /var/eos/md
     mgmofs.txdir /var/eos/tx
     mgmofs.authdir /var/eos/auth
-    mgmofs.qosdir /var/eos/qos
+    # mgmofs.qosdir /var/eos/qos
     
     # report store path
     mgmofs.reportstorepath /var/eos/report
@@ -70,7 +70,7 @@ data:
     mgmofs.autosaveconfig true
     
     # QoS configuration file
-    mgmofs.qoscfg /var/eos/qos/qos.conf
+    # mgmofs.qoscfg /var/eos/qos/qos.conf
     
     # this has to be defined if we have a failover configuration via alias - can be overwritten by EOS_MGM_ALIAS in /etc/sysconfig/eos
     #mgmofs.alias eosdev.cern.ch
@@ -140,8 +140,8 @@ data:
   #EOS_NOTIFY: "mail -s `date +%s`-`hostname`-eos-notify $EOS_MAIL_CC"
   # Allow UTF-8 path names excluding only CR,LF
   EOS_UTF8: ""
-  # Enable QoS support
-  EOS_ENABLE_QOS: ""
+  # Enable QoS support @todo (faluchet) /var/eos/qos/ and /var/eos/qos/qos.conf are not found on the container.. investigate
+  # EOS_ENABLE_QOS: ""
   # Enable Converter Engine
   EOS_CONVERTER_DRIVER: !!integer 1
   # Enable core dumps initiated internally 
@@ -272,7 +272,7 @@ data:
 
     # Wait for the MGM to be online
     echo "INFO: Waiting for the MGM to be online..."
-    max_wait=60
+    max_wait=600
     sleep=5
     start_time=$(date +%s)
     rc=-1
