@@ -47,13 +47,16 @@ data:
     # TODO: Removing this breaks the link between FSTs and MGM. Check!
     mgmofs.broker root://eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     
-    # configuration and namespace location @note `mgmofs.cfgtype quarkdb` will move it to qdb
+    # configuration and namespace location @note `mgmofs.cfgtype quarkdb` will move some to qdb
     mgmofs.configdir /var/eos/config
     mgmofs.metalog /var/eos/md
     mgmofs.txdir /var/eos/tx
     mgmofs.authdir /var/eos/auth
-    # mgmofs.qosdir /var/eos/qos
+    # mgmofs.qosdir /var/eos/qos # @note (faluchet) see note on Qos Support
     
+    # QoS configuration file
+    # mgmofs.qoscfg /var/eos/qos/qos.conf # @note (faluchet) see note on Qos Support
+
     # report store path
     mgmofs.reportstorepath /var/eos/report
     
@@ -69,9 +72,6 @@ data:
     # this enables that every change get's immedeatly stored to the active configuration - can be overwritten by EOS_AUTOSAVE_CONFIG defined in /etc/sysconfig/eos
     mgmofs.autosaveconfig true
     
-    # QoS configuration file
-    # mgmofs.qoscfg /var/eos/qos/qos.conf
-    
     # this has to be defined if we have a failover configuration via alias - can be overwritten by EOS_MGM_ALIAS in /etc/sysconfig/eos
     #mgmofs.alias eosdev.cern.ch
     
@@ -81,10 +81,6 @@ data:
     # Set the front end port number for incoming authentication requests
     mgmofs.authport 15555
     
-    # Set the drain configuration
-    # TODO: remove this config optino once 4.5.y branch is retired
-    mgmofs.centraldrain true
-
     ##### Namespace plugin implementation #####################
     #mgmofs.nslib /usr/lib64/libEosNsInMemory.so
     mgmofs.nslib /usr/lib64/libEosNsQuarkdb.so
@@ -140,7 +136,11 @@ data:
   #EOS_NOTIFY: "mail -s `date +%s`-`hostname`-eos-notify $EOS_MAIL_CC"
   # Allow UTF-8 path names excluding only CR,LF
   EOS_UTF8: ""
-  # Enable QoS support @todo (faluchet) /var/eos/qos/ and /var/eos/qos/qos.conf are not found on the container.. investigate
+  # Enable QoS support
+  # @note (faluchet) requires mgmofs.qos* path to exists.
+  # By default, they are on /var/eos/ with all the "rest"; but they are shadowed if /var/eos is an emptyDir{}!
+  # And, btw, why do we accept to shadow them in the first place?
+  # Disable QoS support (for the moment)
   # EOS_ENABLE_QOS: ""
   # Enable Converter Engine
   EOS_CONVERTER_DRIVER: !!integer 1

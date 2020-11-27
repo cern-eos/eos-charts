@@ -114,6 +114,11 @@ spec:
               mountPath: /root/mgm_init.sh
               subPath: mgm_init.sh
       volumes:
+        # @note having an `emptyDir: {}` mounted at `mountPath: /some/path` will "mask/erase"
+        # everything pre-existing in the container located at /some/path.
+        # i.e. the eos-server puts by default some necessary files and folder in /var/eos/;
+        # mounting an emptyDir there, will thus mask/erase those files, leaving indeed just an empty directory!
+        # Bitten with /var/eos/qos* with eos v4.8.20+, QoS support enabled, and default mgmofs.qos* paths...
         - name: mgm-cfgmap-xrd-cf-mgm
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
@@ -124,8 +129,11 @@ spec:
             defaultMode: 0755
         - name: mgm-data
           emptyDir: {}
-          #hostPath:
-          #  path: /var/k8s/data/{{ include "mgm.name" . }}-dataX_001
-          #  type: DirectoryOrCreate
+          # hostPath:
+            # path: /var/k8s/volumes/{{ include "mgm.name" . }}/mgm-data
+            # type: DirectoryOrCreate
         - name: mgm-logs
           emptyDir: {}
+          # hostPath:
+            # path: /var/k8s/volumes/{{ include "mgm.name" . }}-mgm-logs
+            # type: DirectoryOrCreate
