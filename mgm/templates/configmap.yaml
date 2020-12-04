@@ -241,6 +241,7 @@ metadata:
 data:
   mgm_init.sh: |
     #!/bin/bash
+    set -x
 
     handle_exit_condition () {
       local rc=$1
