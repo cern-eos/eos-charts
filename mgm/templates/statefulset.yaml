@@ -84,6 +84,8 @@ spec:
             # - name: STATEFULSET_FQDN
             #   value: {{ template "mgm.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
             ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
+            - name: LD_PRELOAD
+              value: "/usr/lib64/libjemalloc.so.1"
           envFrom:
             - configMapRef:
                 name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos
