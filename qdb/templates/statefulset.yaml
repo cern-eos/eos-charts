@@ -15,6 +15,15 @@ spec:
       labels:
         {{- include "qdb.selectorLabels" . | nindent 8 }}
     spec:
+      initContainers:
+        - name: eos-qdb-init0-quarkdb-create
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args: ["if [ ! -d /var/quarkdb/node-0 ]; then quarkdb-create --path /var/quarkdb/node-0 && chown -R daemon:daemon /var/quarkdb/node-0; fi"]
+          volumeMounts:
+            - name: quarkdb-data
+              mountPath: /var/quarkdb   # `quarkdb-create` fails if the folder already exists, hence we mount the parent.
       containers:
         - name: eos-qdb
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -43,16 +52,6 @@ spec:
               mountPath: /var/quarkdb
             - name: quarkdb-logs
               mountPath: /var/log/eos
-      initContainers:
-        - name: eos-qdb-init0-quarkdb-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/bin/sh", "-c"]
-          args: ["if [ ! -d /var/quarkdb/node-0 ]; then quarkdb-create --path /var/quarkdb/node-0 && chown -R daemon:daemon /var/quarkdb/node-0; fi"]
-          volumeMounts:
-            - name: quarkdb-data
-              mountPath: /var/quarkdb   # `quarkdb-create` fails if the folder already exists,
-                                        # hence we mount the parent
       volumes:
         - name: quarkdb-cfgmap-xrd-cf-quarkdb
           configMap:

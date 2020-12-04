@@ -15,6 +15,39 @@ spec:
       labels:
         {{- include "fst.selectorLabels" . | nindent 8 }}
     spec:
+      initContainers:
+        - name: eos-fst-init0-chown-storage
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args: ["chown daemon:daemon /fst_storage"]
+          volumeMounts:
+            - name: fst-storage
+              mountPath: /fst_storage
+        - name: eos-fst-init1-fst-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: EOS_MGM_URL
+              value: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
+          envFrom:
+            - configMapRef:
+                name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: ["SYS_PTRACE"]
+          command: ["/bin/bash", "/root/fst_init.sh"]
+          volumeMounts:
+            - name: fst-cfgmap-xrd-cf-fst
+              mountPath: /etc/xrd.cf.fst
+              subPath: xrd.cf.fst
+            - name: fst-storage
+              mountPath: /fst_storage
+            - name: fst-cfgmap-fst-init
+              mountPath: /root/fst_init.sh
+              subPath: fst_init.sh
       containers:
         - name: eos-fst
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -70,39 +103,6 @@ spec:
               mountPath: /fst_storage
             - name: fst-logs
               mountPath: /var/log/eos
-      initContainers:
-        - name: eos-fst-init0-chown-storage
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/bin/sh", "-c"]
-          args: ["chown daemon:daemon /fst_storage"]
-          volumeMounts:
-            - name: fst-storage
-              mountPath: /fst_storage
-        - name: eos-fst-init1-fst-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: EOS_MGM_URL
-              value: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
-          envFrom:
-            - configMapRef:
-                name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
-          securityContext:
-            privileged: true
-            allowPrivilegeEscalation: true
-            capabilities:
-              add: ["SYS_PTRACE"]
-          command: ["/bin/bash", "/root/fst_init.sh"]
-          volumeMounts:
-            - name: fst-cfgmap-xrd-cf-fst
-              mountPath: /etc/xrd.cf.fst
-              subPath: xrd.cf.fst
-            - name: fst-storage
-              mountPath: /fst_storage
-            - name: fst-cfgmap-fst-init
-              mountPath: /root/fst_init.sh
-              subPath: fst_init.sh
       volumes:
         - name: fst-cfgmap-xrd-cf-fst
           configMap:

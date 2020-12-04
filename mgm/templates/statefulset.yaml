@@ -15,6 +15,46 @@ spec:
       labels:
         {{- include "mgm.selectorLabels" . | nindent 8 }}
     spec:
+      initContainers:
+        - name: eos-mgm-init0-logfolder-create
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args: ["for fld in mgm tx; do mkdir /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
+          volumeMounts:
+            - name: mgm-logs
+              mountPath: /var/log/eos
+        - name: eos-mgm-init1-nsqueue-create
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args: ["for fld in ns-queue; do mkdir /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]
+          volumeMounts:
+            - name: mgm-data
+              mountPath: /var/eos
+        - name: eos-mgm-init2-mgm-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: ["SYS_PTRACE"]
+          command: ["/bin/bash", "/root/mgm_init.sh"]
+          volumeMounts:
+            - name: mgm-cfgmap-xrd-cf-mgm
+              mountPath: /etc/xrd.cf.mgm
+              subPath: xrd.cf.mgm
+            - name: mgm-data
+              mountPath: /var/eos
+            - name: mgm-logs
+              mountPath: /var/log/eos
+            - name: mgm-cfgmap-mgm-init
+              mountPath: /root/mgm_init.sh
+              subPath: mgm_init.sh
       containers:
         - name: eos-mgm
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -73,46 +113,6 @@ spec:
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
-      initContainers:
-        - name: eos-mgm-init0-logfolder-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/bin/sh", "-c"]
-          args: ["for fld in mgm tx; do mkdir /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
-          volumeMounts:
-            - name: mgm-logs
-              mountPath: /var/log/eos
-        - name: eos-mgm-init1-nsqueue-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/bin/sh", "-c"]
-          args: ["for fld in ns-queue; do mkdir /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]
-          volumeMounts:
-            - name: mgm-data
-              mountPath: /var/eos
-        - name: eos-mgm-init2-mgm-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos
-          securityContext:
-            privileged: true
-            allowPrivilegeEscalation: true
-            capabilities:
-              add: ["SYS_PTRACE"]
-          command: ["/bin/bash", "/root/mgm_init.sh"]
-          volumeMounts:
-            - name: mgm-cfgmap-xrd-cf-mgm
-              mountPath: /etc/xrd.cf.mgm
-              subPath: xrd.cf.mgm
-            - name: mgm-data
-              mountPath: /var/eos
-            - name: mgm-logs
-              mountPath: /var/log/eos
-            - name: mgm-cfgmap-mgm-init
-              mountPath: /root/mgm_init.sh
-              subPath: mgm_init.sh
       volumes:
         # @note having an `emptyDir: {}` mounted at `mountPath: /some/path` will "mask/erase"
         # everything pre-existing in the container located at /some/path.
