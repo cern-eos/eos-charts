@@ -1,0 +1,142 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
+  labels:
+    {{- include "fst.labels" . | nindent 4 }}
+data:
+  # ************************************************************************ #
+  # EOS, the CERN Disk Storage System - Copyright (C) 2011 CERN/Switzerland  #
+  # ************************************************************************ #
+  # Environment variables from /etc/sysconfig/eos                            #
+  # ************************************************************************ #
+  # Should we run with another limit on the core file size other than the default?
+  DAEMON_COREFILE_LIMIT: unlimited
+  # Disable the KRB5 replay cache
+  KRB5RCACHETYPE: none
+  # Skip hostname match for SSS authentication in docker setup
+  # TODO: work around k8s setup issues. This should *NOT* be enabled in production
+  EOS_SKIP_SSS_HOSTNAME_MATCH: !!integer 1
+  # What roles should the xroot daemon run for.
+  # TODO: Shouldn't we just set the role played by this very container?
+  # @note (faluchet) This is actually more of an utility then something needed.
+  #       i.e. usually this var is tested in case of "systemd deployments", where
+  #       (yet more) utility scripts launch services like eos@mq, eos@fst1 and so on.
+  #       I believe it could be dropped at once. Same everywhere
+  XRD_ROLES: "mq sync mgm fst1 fst2 fst3 fst4 fst5 fst6"
+  
+  # ------------------------------------------------------------------
+  # EOS Configuration
+  # ------------------------------------------------------------------
+  # User std::shared_timed_mutex instead of the pthread_rwlock_*
+  EOS_USE_SHARED_MUTEX: !!integer 1
+  # The EOS instance name
+  EOS_INSTANCE_NAME: eosdockertest
+  # The EOS configuration to load after daemon start
+  EOS_AUTOLOAD_CONFIG: default
+  # The EOS broker URL 
+  EOS_BROKER_URL: root://eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
+  # The EOS host geo location tag used to sort hosts into geographical (rack) locations 
+  EOS_GEOTAG: "docker::test"
+  # The fully qualified hostname of MGM master1
+  EOS_MGM_MASTER1: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
+  # The fully qualified hostname of MGM master2
+  EOS_MGM_MASTER2: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
+  # The alias which selects master 1 or 2
+  EOS_MGM_ALIAS: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
+  # The mail notification in case of fail-over
+  #EOS_MAIL_CC: "apeters@mail.cern.ch"
+  #EOS_NOTIFY: "mail -s `date +%s`-`hostname`-eos-notify $EOS_MAIL_CC"
+  # Allow UTF-8 path names excluding only CR,LF
+  EOS_UTF8: ""
+  # Enable QoS support
+  EOS_ENABLE_QOS: ""
+  # Enable Converter Engine
+  EOS_CONVERTER_DRIVER: !!integer 1
+  # Enable core dumps initiated internally 
+  #EOS_CORE_DUMP
+  # Disable shutdown/signal handlers for debugging
+  #EOS_NO_SHUTDOWN
+  
+  #-------------------------------------------------------------------------------
+  # FST Configuration
+  #-------------------------------------------------------------------------------
+  # Stream timeout for operations
+  #EOS_FST_STREAM_TIMEOUT: 300
+  # Specify in seconds how often FSTs should query for new delete operations
+  # Set the polling interval for deletions to 5 seconds for the rm tests to
+  # run faster. This controls how often the FTS request deletions from the MGM.
+  EOS_FST_DELETE_QUERY_INTERVAL: !!integer 5
+  # Number of threads for transfer operations (Balance, Drain or Transfer actions)
+  EOS_FST_TRANSFER_THREAD_POOL: !!integer 20
+  
+  #-------------------------------------------------------------------------------
+  # FST External Storage Configuration
+  #-------------------------------------------------------------------------------
+  # Set number of connection retries
+  EOS_FST_CONNECTION_RETRY: !!integer 1
+  # Set S3 access credentials
+  #EOS_FST_S3_ACCESS_KEY: ""
+  #EOS_FST_S3_SECRET_KEY: ""
+  # Set S3 theoretical storage size
+  EOS_FST_S3_STORAGE_SIZE: !!integer 20000000000
+  # Set HTTPS X509 certificate path
+  #EOS_FST_HTTPS_X509_CERTIFICATE_PATH: ""
+  
+  # ------------------------------------------------------------------
+  # FUSE Configuration
+  # ------------------------------------------------------------------
+  # The mount directory for 'eosd' 
+  EOS_FUSE_MOUNTDIR: /eos/
+  # The MGM host from where to do the initial mount
+  EOS_FUSE_MGM_ALIAS: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
+  # Enable FUSE debugging mode (default off)
+  #EOS_FUSE_DEBUG: 1
+  # Disable parallel IO mode (default on)
+  #EOS_FUSE_NOPIO: 1
+  # Disable multi-threading in FUSE (default on)
+  #EOS_FUSE_NO_MT: 1
+  
+  # ------------------------------------------------------------------
+  # HTTPD Configuration
+  # ------------------------------------------------------------------
+  # Enable multi-threaded httpd
+  EOS_HTTP_THREADPOOL: "epoll"
+  EOS_HTTP_THREADPOOL_SIZE: !!integer 16
+  
+  #-------------------------------------------------------------------------------
+  # GRPC Configuration
+  #-------------------------------------------------------------------------------
+  # GRPC port - set to 0 to disable GRPC
+  EOS_MGM_GRPC_PORT: !!integer 50051
+  
+  # ------------------------------------------------------------------
+  # Federation Configuration
+  # ------------------------------------------------------------------
+  # The host[:port] name of the meta manager (global redirector)
+  #EOS_FED_MANAGER: eos.cern.ch:1094
+  # The port of the PSS xrootd server
+  #EOS_PSS_PORT: 1098
+  # The hostname[:port] of the EOS MGM service
+  #EOS_PSS_MGM: $EOS_MGM_ALIAS:1094
+  # The path which should be proxied (/ for all)
+  #EOS_PSS_PATH: /
+  
+  # ------------------------------------------------------------------
+  # Test Configuration
+  # ------------------------------------------------------------------
+  # mail notification for failed tests
+  #EOS_TEST_MAILNOTIFY: apeters@mail.cern.ch
+  # SMS notification for failed tests
+  #EOS_TEST_GSMNOTIFY: "0041764875002@mail2sms.cern.ch"
+  # Instance name :  name of directory at deepness 2 /eos/<instance>/
+  #EOS_TEST_INSTANCE: "dev"
+  # MGM host redirector
+  #EOS_TEST_REDIRECTOR: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.loca
+  # local test output directory
+  #EOS_TEST_TESTSYS: /tmp/eos-instance-test
+  # time to lock re-sending of SMS for consecutively failing tests
+  #EOS_TEST_GSMLOCKTIME: 3600
+  # max. time given to the test to finish
+  #EOS_TEST_TESTTIMESLICE: 300
+
