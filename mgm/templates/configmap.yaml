@@ -254,15 +254,27 @@ data:
       fi
     }
 
+    ##
+    ## Check if a previous configuration already exists. If so, don't touch.
+    ##
+    ## Previous version based on the existence of /var/eos/config
+    ## Now, we chack if `default` configuration exists with `eos config ls`
+    ##
+    ## echo "INFO: Looking for previous EOS configurations..."
+    ## if [ -d /var/eos/config/ ]; then
+    ##   if [ $(find /var/eos/config -maxdepth 1 -type d | wc -l) -gt 1 ]; then
+    ##     echo "  ✓ EOS configurations found. Exiting."
+    ##     exit 0
+    ##   fi
+    ## fi
+    ## echo "  ✓ None found. Configuring..."
+    ##
 
-    # Check if a previous configuration already exists
-    #   If so, don't touch.
+    # Check if a previous configuration already exists. If so, don't touch.
     echo "INFO: Looking for previous EOS configurations..."
-    if [ -d /var/eos/config/ ]; then
-      if [ $(find /var/eos/config -maxdepth 1 -type d | wc -l) -gt 1 ]; then
-        echo "  ✓ EOS configurations found. Exiting."
-        exit 0
-      fi
+    if [ $(eos -b config ls | grep -w 'default' | wc -l) -eq 1 ]; then
+      echo "  ✓ EOS configurations found. Exiting."
+      exit 0
     fi
     echo "  ✓ None found. Configuring..."
 
@@ -353,6 +365,7 @@ data:
 
     ### Save config and leave
     echo "INFO: Saving configuration..."
+    eos -b config save instance_bootstrap -f
     eos -b config save default -f
     handle_exit_condition $? "Error saving configuration"
 
