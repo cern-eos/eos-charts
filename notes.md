@@ -27,9 +27,6 @@ quarkdb-create --path /var/quarkdb/node-0
 chown -R daemon:daemon /var/quarkdb/node-0
 ```
 2. Start the xrtood process for quarkdb when the container starts
-  - TODO: Investigate how to do the LD_PRELOAD magic
-  - @note (faluchet) We build and consume the docker images, thus we know if/where it is located.
-          Then, the env var can be appended to (the equivalent of) /etc/sysconfig/eos, e.g LD_PRELOAD="/usr/lib/libjemalloc.so"
 3. `/etc/xrd.cf.quarkdb` is now a configMap
 4. Logs go to an emptyDir
 
@@ -59,7 +56,6 @@ m of duplication across charts remains.
 #### Questions
 1. Who need /etc/sysconfig/eos? All EOS and not QuarkDB?
 2. xrootd binary. Can we have only one instead of `/opt/eos/xrootd//bin/xroot` || `/usr/bin/xrootd`? This seems to apply to all the EOS processes but not the xrootd for QuarkDB
-2b. xrootd for QuarkDB does instaed the LD_LIBRARY_PRELOAD magic.
 3. What if I want to share a configmap template across several charts?
 4. Should we use a well-defined location inside the container for config files which land there via configmaps? E.g., /var/k8s/config/etc/sysconfig/eos ?
 	- Otherwise, I am happy (ugly) mounting over files that already exist
