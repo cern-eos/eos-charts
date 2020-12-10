@@ -19,11 +19,13 @@ spec:
         - name: eos-qdb-init0-quarkdb-create
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/bin/sh", "-c"]
-          args: ["if [ ! -d /var/quarkdb/node-0 ]; then quarkdb-create --path /var/quarkdb/node-0 && chown -R daemon:daemon /var/quarkdb/node-0; fi"]
+          command: ["/bin/bash", "/root/qdb_create.sh"]
           volumeMounts:
             - name: quarkdb-data
               mountPath: /var/quarkdb   # `quarkdb-create` fails if the folder already exists, hence we mount the parent.
+            - name: quarkdb-cfgmap-qdb-create
+              mountPath: /root/qdb_create.sh
+              subPath: qdb_create.sh
       containers:
         - name: eos-qdb
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -59,10 +61,11 @@ spec:
           configMap:
             name: {{ include "qdb.fullname" . }}-xrd-cf-quarkdb
             defaultMode: 0644
+        - name: quarkdb-cfgmap-qdb-create
+          configMap:
+            name: {{ include "qdb.fullname" . }}-cfgmap-qdb-create
+            defaultMode: 0755
         - name: quarkdb-data
           emptyDir: {}
-          # hostPath:
-            # path: /var/k8s/data/{{ include "qdb.name" . }}-data
-            # type: DirectoryOrCreate
         - name: quarkdb-logs
           emptyDir: {}

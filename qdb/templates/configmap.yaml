@@ -13,3 +13,23 @@ data:
       redis.password_file /etc/eos.keytab
       redis.database /var/quarkdb/node-0
     fi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "qdb.fullname" . }}-cfgmap-qdb-create
+  labels:
+    {{- include "qdb.labels" . | nindent 4 }}
+data:
+  qdb_create.sh: |
+    #!/bin/bash
+    set -x
+
+    if [ ! -d /var/quarkdb/node-0 ]; then
+      quarkdb-create --path /var/quarkdb/node-0
+      chown -R daemon:daemon /var/quarkdb/node-0
+    fi
+
+    exit 0
+
