@@ -30,7 +30,7 @@ data:
   # The EOS configuration to load after daemon start
   EOS_AUTOLOAD_CONFIG: default
   # The EOS broker URL 
-  EOS_BROKER_URL: root://eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
+  EOS_BROKER_URL: root://eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
   # The EOS host geo location tag used to sort hosts into geographical (rack) locations 
   EOS_GEOTAG: "docker::test"
   # The fully qualified hostname of MGM master1

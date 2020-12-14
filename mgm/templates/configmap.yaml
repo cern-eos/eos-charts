@@ -43,9 +43,7 @@ data:
     #mgmofs.authorize 1
     ###########################################################
     #mgmofs.trace all debug
-    # this URL can be overwritten by EOS_BROKER_URL defined in /etc/sysconfig/eos
-    # TODO: Removing this breaks the link between FSTs and MGM. Check!
-    mgmofs.broker root://eos-mq-0.eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
+    mgmofs.broker root://eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     
     # configuration and namespace location @note `mgmofs.cfgtype quarkdb` will move some to qdb
     mgmofs.configdir /var/eos/config
