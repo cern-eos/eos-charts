@@ -19,43 +19,6 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "qdb.fullname" . }}-cfgmap-finalize-config
-  labels:
-    {{- include "qdb.labels" . | nindent 4 }}
-data:
-  finalize_config.sh: |
-    #!/bin/bash
-    set -x
-
-    # Number of replicas of QuarkDB
-    #   Determines whether it should run in stanalone mode or as part of a raft cluster.
-    #   This is set by Helm in values.yaml
-    REPLICA_COUNT={{ .Values.replicaCount }}
-    echo "INFO: Number of desired replicas is $REPLICA_COUNT"
-    
-    if [ $REPLICA_COUNT -eq 2 ]; then
-      echo "ERROR: Cannot start QaurkDB with two replicas. Please choose 1 for standalone or 3+ for raft cluster".
-      exit 1
-    fi
-
-    if [ $REPLICA_COUNT -eq 1 ]; then
-      echo "INFO: Configuring QuarkDB in standalone mode"
-      sed "s/#redis.mode#to_be_configured/redis.mode standalone/g" /root/quarkdb-config/input/xrd.cf.quarkdb.partial > /root/quarkdb-config/output/xrd.cf.quarkdb
-    fi
-    if [ $REPLICA_COUNT -ge 3 ]; then
-      echo "INFO: Configuring QuarkDB in raft cluster mode ($REPLICA_COUNT nodes)"
-      sed "s/#redis.mode#to_be_configured/redis.mode raft\n  redis.myself `hostname -f`:7777/g" /root/quarkdb-config/input/xrd.cf.quarkdb.partial > /root/quarkdb-config/output/xrd.cf.quarkdb
-    fi
-
-    echo "INFO: Printing QuarkDB configuration from /etc/xrd.cf.quarkdb"
-    cat /root/quarkdb-config/output/xrd.cf.quarkdb
-    exit 0
-
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: {{ include "qdb.fullname" . }}-cfgmap-qdb-create
   labels:
     {{- include "qdb.labels" . | nindent 4 }}
@@ -77,9 +40,16 @@ data:
 
     if [ $REPLICA_COUNT -eq 1 ]; then
       echo "INFO: Initializing QuarkDB in standalone mode"
-      if [ ! -d /var/quarkdb/node-0 ]; then
-        quarkdb-create --path /var/quarkdb/node-0
-        chown -R daemon:daemon /var/quarkdb/node-0
+      STORAGE_PATH='/var/quarkdb/node-0'
+      if [ ! -d "$STORAGE_PATH" ]; then
+        # Prepare configuration file
+        #   This is not used by quarkdb-create, but will be needed at runtime
+        cat /root/qdb-config/input/xrd.cf.quarkdb.partial | \
+          sed 's@#redis.mode#to_be_configured@redis.mode standalone@' | \
+          sed "s@#redis.database#to_be_configured@redis.database $STORAGE_PATH@" > /root/qdb-config/output/xrd.cf.quarkdb
+        # Create QuarkDB in standalone mode
+        quarkdb-create --path $STORAGE_PATH
+        chown -R daemon:daemon $STORAGE_PATH
       fi
     fi
     if [ $REPLICA_COUNT -ge 3 ]; then
@@ -106,7 +76,13 @@ data:
       STORAGE_PATH="$PATH_PREFIX$THIS_REPLICA"
       echo "INFO: My storage path is $STORAGE_PATH" 
 
-      # 2. Define cluster peers
+      # 2. Prepare configuration file
+      #   This is not used by quarkdb-create, but will be needed at runtime
+      cat /root/qdb-config/input/xrd.cf.quarkdb.partial | \
+        sed "s@#redis.mode#to_be_configured@redis.mode raft\n  redis.myself `hostname -f`:7777@g" | \
+        sed "s@#redis.database#to_be_configured@redis.database $STORAGE_PATH@" > /root/qdb-config/output/xrd.cf.quarkdb
+      
+      # 3. Define cluster peers
       NODES=""
       for i in $(seq 0 $((REPLICA_COUNT-1)))
       do
@@ -114,13 +90,16 @@ data:
         if [ $i -eq $THIS_REPLICA ]; then
           continue
         fi
-        PEER=$(echo $THIS_FQDN | sed "s/-$THIS_REPLICA./-$i./")
+        PEER=$(echo $THIS_FQDN | sed "s@-$THIS_REPLICA.@-$i.@")
         NODES=$(echo $NODES,$PEER:7777)
       done
       NODES=$(echo $NODES | cut -c 2-)  # Trim the leading comma
 
-      # 3. Create the cluster
+      # 4. Create the cluster
       quarkdb-create --path $STORAGE_PATH --clusterID $CLUSTER_ID --nodes $NODES 
       chown -R daemon:daemon $STORAGE_PATH
     fi
+
+    echo "INFO: Printing QuarkDB configuration from /etc/xrd.cf.quarkdb"
+    cat /root/qdb-config/output/xrd.cf.quarkdb
     exit 0

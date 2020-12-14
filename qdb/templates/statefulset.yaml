@@ -27,26 +27,18 @@ spec:
             - name: quarkdb-cfgmap-qdb-create
               mountPath: /root/qdb_create.sh
               subPath: qdb_create.sh
-        - name: eos-qdb-init1-finalize-config
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["bash", "/root/finalize_config.sh"]
-          volumeMounts:
-            - name: quarkdb-cfgmap-finalize-config
-              mountPath: /root/finalize_config.sh
-              subPath: finalize_config.sh
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-partial
-              mountPath: /root/quarkdb-config/input/xrd.cf.quarkdb.partial
+              mountPath: /root/qdb-config/input/xrd.cf.quarkdb.partial
               subPath: xrd.cf.quarkdb.partial
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
-              mountPath: /root/quarkdb-config/output
+              mountPath: /root/qdb-config/output
       containers:
         - name: eos-qdb
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          # command: ["/bin/sh", "-c"]
-          # args: ["/usr/bin/xrootd -n qdb -c /etc/xrd.cf.quarkdb -l /var/log/eos/xrdlog.qdb -Rdaemon"]
-          command: ["/bin/sleep", "infinity"]
+          command: ["/bin/sh", "-c"]
+          args: ["/usr/bin/xrootd -n qdb -c /etc/xrd.cf.quarkdb -l /var/log/eos/xrdlog.qdb -Rdaemon"]
+          #command: ["/bin/sleep", "infinity"]
           ports:
             - name: xrootd-qdb-http
               containerPort: 7777
@@ -72,19 +64,15 @@ spec:
             - name: quarkdb-logs
               mountPath: /var/log/eos
       volumes:
+        - name: quarkdb-cfgmap-qdb-create
+          configMap:
+            name: {{ include "qdb.fullname" . }}-cfgmap-qdb-create
+            defaultMode: 0755
         - name: quarkdb-cfgmap-xrd-cf-quarkdb-partial
           configMap:
             name: {{ include "qdb.fullname" . }}-xrd-cf-quarkdb-partial
         - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
           emptyDir: {}
-        - name: quarkdb-cfgmap-finalize-config
-          configMap:
-            name: {{ include "qdb.fullname" . }}-cfgmap-finalize-config
-            defaultMode: 0755
-        - name: quarkdb-cfgmap-qdb-create
-          configMap:
-            name: {{ include "qdb.fullname" . }}-cfgmap-qdb-create
-            defaultMode: 0755
         - name: quarkdb-data
           emptyDir: {}
         - name: quarkdb-logs

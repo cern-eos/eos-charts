@@ -1,7 +1,7 @@
 # Set replicaCount to:
 #   1 for standalone operation
 #   3 (or more) to create a 
-replicaCount: 3
+replicaCount: 1
 
 # The clusted ID is just a random string that identifies the cluster uniquely
 #   See the docs at https://quarkdb.web.cern.ch/quarkdb/docs/master/configuration/
