@@ -86,10 +86,6 @@ data:
       NODES=""
       for i in $(seq 0 $((REPLICA_COUNT-1)))
       do
-        echo $i $THIS_REPLICA
-        if [ $i -eq $THIS_REPLICA ]; then
-          continue
-        fi
         PEER=$(echo $THIS_FQDN | sed "s@-$THIS_REPLICA.@-$i.@")
         NODES=$(echo $NODES,$PEER:7777)
       done
