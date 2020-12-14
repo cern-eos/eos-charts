@@ -18,8 +18,7 @@ data:
   # TODO: work around k8s setup issues. This should *NOT* be enabled in production
   EOS_SKIP_SSS_HOSTNAME_MATCH: !!integer 1
   # What roles should the xroot daemon run for.
-  # TODO: Shouldn't we just set the role played by this very container?
-  XRD_ROLES: "mq sync mgm fst1 fst2 fst3 fst4 fst5 fst6"
+  XRD_ROLES: "mq"
   
   # ------------------------------------------------------------------
   # EOS Configuration

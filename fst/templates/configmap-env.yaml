@@ -18,12 +18,7 @@ data:
   # TODO: work around k8s setup issues. This should *NOT* be enabled in production
   EOS_SKIP_SSS_HOSTNAME_MATCH: !!integer 1
   # What roles should the xroot daemon run for.
-  # TODO: Shouldn't we just set the role played by this very container?
-  # @note (faluchet) This is actually more of an utility then something needed.
-  #       i.e. usually this var is tested in case of "systemd deployments", where
-  #       (yet more) utility scripts launch services like eos@mq, eos@fst1 and so on.
-  #       I believe it could be dropped at once. Same everywhere
-  XRD_ROLES: "mq sync mgm fst1 fst2 fst3 fst4 fst5 fst6"
+  XRD_ROLES: "fst"
   
   # ------------------------------------------------------------------
   # EOS Configuration
