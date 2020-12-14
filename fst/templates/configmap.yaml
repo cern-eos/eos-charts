@@ -69,10 +69,6 @@ data:
     #   - geotag
     #   should all be values and not hardcoded
 
-    # Start the FST process in background so that we can run other commands
-    echo "INFO: Starting FST..."
-    /usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -m -b -Rdaemon >/dev/null 2>&1
-
     # Check the MGM is online before registering the node and the filesystem
     echo "INFO: Checking the MGM is online..."
     max_wait=60
@@ -95,6 +91,9 @@ data:
     done
     echo "INFO: MGM is online."
 
+    # Start the FST process in background so that we can run other commands
+    echo "INFO: Starting FST..."
+    /usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -m -b -Rdaemon >/dev/null 2>&1
 
     # TODO: Improve here!!!
     # @note $id is commodity used in the legacy script, 
