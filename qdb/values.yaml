@@ -1,4 +1,11 @@
-replicaCount: 1
+# Set replicaCount to:
+#   1 for standalone operation
+#   3 (or more) to create a 
+replicaCount: 3
+
+# The clusted ID is just a random string that identifies the cluster uniquely
+#   See the docs at https://quarkdb.web.cern.ch/quarkdb/docs/master/configuration/
+clusterID: ef96c44c44b247cabd6a83d405521337
 
 image:
   repository: gitlab-registry.cern.ch/dss/eos

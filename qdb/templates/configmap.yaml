@@ -1,18 +1,56 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "qdb.fullname" . }}-xrd-cf-quarkdb
+  name: {{ include "qdb.fullname" . }}-xrd-cf-quarkdb-partial
   labels:
     {{- include "qdb.labels" . | nindent 4 }}
 data:
-  xrd.cf.quarkdb: |
+  xrd.cf.quarkdb.partial: |
     if exec xrootd
       xrd.port 7777
       xrd.protocol redis:7777 /usr/lib64/libXrdQuarkDB.so
-      redis.mode standalone
       redis.password_file /etc/eos.keytab
-      redis.database /var/quarkdb/node-0
+      #redis.database#to_be_configured
+      #redis.mode#to_be_configured
     fi
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "qdb.fullname" . }}-cfgmap-finalize-config
+  labels:
+    {{- include "qdb.labels" . | nindent 4 }}
+data:
+  finalize_config.sh: |
+    #!/bin/bash
+    set -x
+
+    # Number of replicas of QuarkDB
+    #   Determines whether it should run in stanalone mode or as part of a raft cluster.
+    #   This is set by Helm in values.yaml
+    REPLICA_COUNT={{ .Values.replicaCount }}
+    echo "INFO: Number of desired replicas is $REPLICA_COUNT"
+    
+    if [ $REPLICA_COUNT -eq 2 ]; then
+      echo "ERROR: Cannot start QaurkDB with two replicas. Please choose 1 for standalone or 3+ for raft cluster".
+      exit 1
+    fi
+
+    if [ $REPLICA_COUNT -eq 1 ]; then
+      echo "INFO: Configuring QuarkDB in standalone mode"
+      sed "s/#redis.mode#to_be_configured/redis.mode standalone/g" /root/quarkdb-config/input/xrd.cf.quarkdb.partial > /root/quarkdb-config/output/xrd.cf.quarkdb
+    fi
+    if [ $REPLICA_COUNT -ge 3 ]; then
+      echo "INFO: Configuring QuarkDB in raft cluster mode ($REPLICA_COUNT nodes)"
+      sed "s/#redis.mode#to_be_configured/redis.mode raft\n  redis.myself `hostname -f`:7777/g" /root/quarkdb-config/input/xrd.cf.quarkdb.partial > /root/quarkdb-config/output/xrd.cf.quarkdb
+    fi
+
+    echo "INFO: Printing QuarkDB configuration from /etc/xrd.cf.quarkdb"
+    cat /root/quarkdb-config/output/xrd.cf.quarkdb
+    exit 0
+
 
 ---
 apiVersion: v1
@@ -26,10 +64,63 @@ data:
     #!/bin/bash
     set -x
 
-    if [ ! -d /var/quarkdb/node-0 ]; then
-      quarkdb-create --path /var/quarkdb/node-0
-      chown -R daemon:daemon /var/quarkdb/node-0
+    # Number of replicas of QuarkDB
+    #   Determines whether it should run in stanalone mode or as part of a raft cluster.
+    #   This is set by Helm in values.yaml
+    REPLICA_COUNT={{ .Values.replicaCount }}
+    echo "INFO: Number of desired replicas is $REPLICA_COUNT"
+
+    if [ $REPLICA_COUNT -eq 2 ]; then
+      echo "ERROR: Cannot start QaurkDB with two replicas. Please choose 1 for standalone or 3+ for raft cluster".
+      exit 1
     fi
 
-    exit 0
+    if [ $REPLICA_COUNT -eq 1 ]; then
+      echo "INFO: Initializing QuarkDB in standalone mode"
+      if [ ! -d /var/quarkdb/node-0 ]; then
+        quarkdb-create --path /var/quarkdb/node-0
+        chown -R daemon:daemon /var/quarkdb/node-0
+      fi
+    fi
+    if [ $REPLICA_COUNT -ge 3 ]; then
+      echo "INFO: Initializing QuarkDB in raft cluster mode ($REPLICA_COUNT nodes)"
 
+      # Cluster ID of QuarkDB (used only in raft mode)
+      #   This is set by Helm in values.yaml
+      #   Docs: https://quarkdb.web.cern.ch/quarkdb/docs/master/configuration/
+      CLUSTER_ID={{ .Values.clusterID }}
+
+      THIS_FQDN=$(hostname -f)
+      echo "INFO: My FQDN is $THIS_FQDN"
+
+      # Infer the replica number of this container
+      #   This is based on the last field of the hostname being the ordinal for this container
+      #   (`hostname -s` and split using '-' as delimiter)
+      #   Docs: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-network-id
+      THIS_REPLICA=$(hostname -s | rev | cut -d '-' -f 1 | rev)
+      echo "INFO: I am replica no. $THIS_REPLICA"
+
+      # Create the cluster in raft mode
+      #   1. Define storage path
+      PATH_PREFIX="/var/quarkdb/node-"
+      STORAGE_PATH="$PATH_PREFIX$THIS_REPLICA"
+      echo "INFO: My storage path is $STORAGE_PATH" 
+
+      # 2. Define cluster peers
+      NODES=""
+      for i in $(seq 0 $((REPLICA_COUNT-1)))
+      do
+        echo $i $THIS_REPLICA
+        if [ $i -eq $THIS_REPLICA ]; then
+          continue
+        fi
+        PEER=$(echo $THIS_FQDN | sed "s/-$THIS_REPLICA./-$i./")
+        NODES=$(echo $NODES,$PEER:7777)
+      done
+      NODES=$(echo $NODES | cut -c 2-)  # Trim the leading comma
+
+      # 3. Create the cluster
+      quarkdb-create --path $STORAGE_PATH --clusterID $CLUSTER_ID --nodes $NODES 
+      chown -R daemon:daemon $STORAGE_PATH
+    fi
+    exit 0
