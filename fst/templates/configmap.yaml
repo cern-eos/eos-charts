@@ -100,7 +100,12 @@ data:
     # @note $id is commodity used in the legacy script, 
     # but one does not actually need an ordered sequence of ids (let alone it being the same for every fst)
     # UUID=$(uuidgen) would be enough, but maybe unpractical? Take a decision.
-    id=$((1 + $RANDOM % 1000))
+    #
+    #   Enrico (14/12) on id=$((1 + $RANDOM % 1000))
+    #     Random in range 1000 might not be random enough
+    #     Make it dependent on the stateful set FQDN for now.
+    THIS_REPLICA=$(hostname -s | rev | cut -d '-' -f 1 | rev)
+    id=$((1000+$THIS_REPLICA))
     UUID=fst${id}
     DATADIR=/fst_storage
     SPACE=default
