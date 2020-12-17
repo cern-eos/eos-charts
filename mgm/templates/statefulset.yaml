@@ -109,9 +109,6 @@ spec:
           image: "{{ .Values.nslcd.image.repository }}:{{ .Values.nslcd.image.tag }}"
           imagePullPolicy: {{ .Values.nslcd.image.pullPolicy | default .Values.image.pullPolicy }}
           volumeMounts:
-            - name: cfgmap-nsswitch-conf
-              mountPath: /etc/nsswitch.conf
-              subPath: nsswitch.conf
             - name: nslcd-cfgmap-nslcd-conf
               mountPath: /etc/nslcd.conf
               subPath: nslcd.conf
