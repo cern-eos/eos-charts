@@ -108,6 +108,11 @@ spec:
           #     port: http
           {{- include "mgm.startupProbe" . | nindent 10 }}
           volumeMounts:
+            - name: nscd-socket
+              mountPath: /run/nscd
+            - name: cfgmap-nsswitch-conf
+              mountPath: /etc/nsswitch.conf
+              subPath: nsswitch.conf
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
@@ -115,7 +120,42 @@ spec:
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
+        - name: nslcd
+          image: "{{ .Values.nslcd.image.repository }}:{{ .Values.nslcd.image.tag }}"
+          imagePullPolicy: {{ .Values.nslcd.image.pullPolicy | default .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: cfgmap-nsswitch-conf
+              mountPath: /etc/nsswitch.conf
+              subPath: nsswitch.conf
+            - name: nslcd-cfgmap-nslcd-conf
+              mountPath: /etc/nslcd.conf
+              subPath: nslcd.conf
+            - name: nslcd-socket
+              mountPath: /run/nslcd
+        - name: nscd
+          image: "{{ .Values.nscd.image.repository }}:{{ .Values.nscd.image.tag }}"
+          imagePullPolicy: {{ .Values.nscd.image.pullPolicy | default .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: cfgmap-nsswitch-conf
+              mountPath: /etc/nsswitch.conf
+              subPath: nsswitch.conf
+            - name: nslcd-socket
+              mountPath: /run/nslcd
+            - name: nscd-socket
+              mountPath: /run/nscd
       volumes:
+        - name: nslcd-cfgmap-nslcd-conf
+          configMap:
+            name: {{ include "mgm.fullname" . }}-cfgmap-nslcd-conf
+            defaultMode: 0600
+        - name: cfgmap-nsswitch-conf
+          configMap:
+            name: {{ include "mgm.fullname" . }}-cfgmap-nsswitch-conf
+            defaultMode: 0600
+        - name: nslcd-socket
+          emptyDir: {}
+        - name: nscd-socket
+          emptyDir: {}
         # @note having an `emptyDir: {}` mounted at `mountPath: /some/path` will "mask/erase"
         # everything pre-existing in the container located at /some/path.
         # i.e. the eos-server puts by default some necessary files and folder in /var/eos/;
