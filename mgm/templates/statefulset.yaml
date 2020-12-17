@@ -94,18 +94,6 @@ spec:
             allowPrivilegeEscalation: true
             capabilities:
               add: ["SYS_PTRACE"]
-          # startupProbe when deployed on kubectl >= 1.16
-          # exec:
-          #   command:
-          #   - /volumes/configmap/configure.sh
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
           {{- include "mgm.startupProbe" . | nindent 10 }}
           volumeMounts:
             - name: nscd-socket
@@ -155,11 +143,6 @@ spec:
         - name: nscd-socket
           emptyDir:
             medium: Memory
-        # @note having an `emptyDir: {}` mounted at `mountPath: /some/path` will "mask/erase"
-        # everything pre-existing in the container located at /some/path.
-        # i.e. the eos-server puts by default some necessary files and folder in /var/eos/;
-        # mounting an emptyDir there, will thus mask/erase those files, leaving indeed just an empty directory!
-        # Bitten with /var/eos/qos* with eos v4.8.20+, QoS support enabled, and default mgmofs.qos* paths...
         - name: mgm-cfgmap-xrd-cf-mgm
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
