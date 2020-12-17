@@ -20,7 +20,6 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/bash", "/root/qdb_create.sh"]
-          #command: ["/bin/sleep", "infinity"]
           volumeMounts:
             - name: quarkdb-data
               mountPath: /var/quarkdb   # `quarkdb-create` fails if the folder already exists, hence we mount the parent.
@@ -38,7 +37,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n qdb -c /etc/xrd.cf.quarkdb -l /var/log/eos/xrdlog.qdb -Rdaemon"]
-          #command: ["/bin/sleep", "infinity"]
           ports:
             - name: xrootd-qdb-http
               containerPort: 7777
