@@ -20,7 +20,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
-          args: ["for fld in mgm tx; do mkdir /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
+          args: ["for fld in mgm tx; do mkdir -p /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
           volumeMounts:
             - name: mgm-logs
               mountPath: /var/log/eos
@@ -28,7 +28,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
-          args: ["for fld in ns-queue; do mkdir /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]
+          args: ["for fld in ns-queue; do mkdir -p /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]
           volumeMounts:
             - name: mgm-data
               mountPath: /var/eos
