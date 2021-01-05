@@ -24,7 +24,7 @@ spec:
           volumeMounts:
             - name: mgm-logs
               mountPath: /var/log/eos
-        - name: eos-mgm-init1-nsqueue-create
+        - name: eos-mgm-init1-vareos-create
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
