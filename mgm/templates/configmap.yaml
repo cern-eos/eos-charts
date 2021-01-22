@@ -37,6 +37,7 @@ data:
     #TODO: (Enrico, 10/11) Disable krb5
     sec.protbind * only sss unix
     ###########################################################
+    mgmofs.instance {{ .Values.mgmofs.instance }}
     mgmofs.fs /
     mgmofs.targetport 1095
     #mgmofs.authlib libXrdAliceTokenAcc.so
@@ -110,51 +111,40 @@ data:
       fi
     }
 
+    init_probe() {
+            local cmd=$@
+            local max_wait=60
+            local sleep=5
+            start_time=$(date +%s)
+            rc=-1
+            while [ $rc -ne 0 ];
+            do
+              timeout --preserve-status $sleep $cmd
+              rc=$?
+              sleep $sleep
+
+              # Bail out after max_wait
+              tot_wait=$(($(date +%s)-start_time))
+              echo "        $tot_wait seconds... (timeout at $max_wait)"
+              if [ $tot_wait -ge $max_wait ]; then
+                echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
+                exit 1
+              fi
+            done
+        }
 
     # Start the MGM process in background so that we can run other commands
     echo "INFO: Starting MGM..."
     /usr/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -m -b -Rdaemon >/dev/null 2>&1
 
     # Wait for the MGM to be online
-    echo "INFO: Waiting for the MGM to be online..."
-    max_wait=600
-    sleep=5
-    start_time=$(date +%s)
-    rc=-1
-    while [ $rc -ne 0 ];
-    do
-      timeout --preserve-status $sleep eos ns >/dev/null 2>&1
-      rc=$?
-      sleep $sleep
-
-      # Bail out after max_wait
-      tot_wait=$(($(date +%s)-start_time))
-      echo "        $tot_wait seconds... (timeout at $max_wait)"
-      if [ $tot_wait -ge $max_wait ]; then
-        echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
-        exit 1
-      fi
-    done
+    echo "INFO: Checking the MGM is online..."
+    init_probe eos -r 0 0 ns >/dev/null 2>&1
     echo "INFO: MGM is online."
 
 
-    ##
-    ## Check if a previous configuration already exists. If so, don't touch.
-    ##
-    ## Previous version based on the existence of /var/eos/config
-    ## Now, we chack if `default` configuration exists with `eos config ls`
-    ##
-    ## echo "INFO: Looking for previous EOS configurations..."
-    ## if [ -d /var/eos/config/ ]; then
-    ##   if [ $(find /var/eos/config -maxdepth 1 -type d | wc -l) -gt 1 ]; then
-    ##     echo "  ✓ EOS configurations found. Exiting."
-    ##     exit 0
-    ##   fi
-    ## fi
-    ## echo "  ✓ None found. Configuring..."
-    ##
-
     # Check if a previous configuration already exists. If so, don't touch.
+    # @note (faluchet) shouldn't it check for `instance_bootstrap` ??
     echo "INFO: Looking for previous EOS configurations..."
     if [ $(eos -b config ls | grep -w 'default' | wc -l) -eq 1 ]; then
       echo "  ✓ EOS configurations found. Exiting."
@@ -196,9 +186,12 @@ data:
     #
     echo "INFO: Configuring space and quota..."
 
-    # Define default space
+    # Define spare and default spaces
+    echo "INFO: Defining space spare..."
+    eos -b space define spare
+    handle_exit_condition $? "Error defining space spare"
     echo "INFO: Defining space default..."
-    eos -b space define default
+    eos -b space define default {{ .Values.spaceDefineDefault.groupSize }} {{ .Values.spaceDefineDefault.groupMod }}
     handle_exit_condition $? "Error defining space default"
 
     # Activate default space
@@ -212,14 +205,14 @@ data:
     ## handle_exit_condition $? "Error turning off quota for space default"
 
     # Set recycle bin # @todo review
-    eos chmod 3711 /eos/dockertest/proc/recycle # drwx--s--+   1 root     root
-    eos chmod 2755 /eos                         # drwxr-sr-+   1 root     root
-    eos attr set default=replica /eos
-    eos attr set sys.recycle="/eos/${EOS_INSTANCE_NAME:3}/proc/recycle/" /eos/
-    eos recycle config --size 10G
-    eos recycle config --inodes 10M
-    eos recycle config --lifetime 604800        # a week
-    eos recycle config --ratio 0.2
+    # eos chmod 3711 /eos/{{ trimPrefix "eos" .Values.mgmofs.instance }}/proc/recycle   # drwx--s--+   1 root     root
+    # eos chmod 2755 /eos                                                               # drwxr-sr-+   1 root     root
+    # eos attr set default=replica /eos
+    # eos attr set sys.recycle="/eos/{{ trimPrefix "eos" .Values.mgmofs.instance }}/proc/recycle/" /eos/
+    # eos recycle config --size {{ .Values.recycleConfig.size }}
+    # eos recycle config --inodes {{ .Values.recycleConfig.inodes }}
+    # eos recycle config --lifetime {{ .Values.recycleConfig.lifetime }}
+    # eos recycle config --ratio {{ .Values.recycleConfig.ratio }}
 
     ### Save config and leave
     echo "INFO: Saving configuration..."
@@ -231,4 +224,3 @@ data:
 
     # useradd eos_k8s_admin
     # eos -b vid set membership eos_k8s_admin +sudo
-

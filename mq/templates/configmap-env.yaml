@@ -14,7 +14,7 @@ data:
   DAEMON_COREFILE_LIMIT: unlimited
   # Disable the KRB5 replay cache
   KRB5RCACHETYPE: none
-  # Skip hostname match for SSS authentication in docker setup
+  # Skip hostname match for SSS authentication in k8s setup
   # TODO: work around k8s setup issues. This should *NOT* be enabled in production
   EOS_SKIP_SSS_HOSTNAME_MATCH: !!integer 1
   # What roles should the xroot daemon run for.
@@ -25,14 +25,8 @@ data:
   # ------------------------------------------------------------------
   # User std::shared_timed_mutex instead of the pthread_rwlock_*
   EOS_USE_SHARED_MUTEX: !!integer 1
-  # The EOS instance name
-  EOS_INSTANCE_NAME: eosdockertest
-  # The EOS configuration to load after daemon start
-  EOS_AUTOLOAD_CONFIG: default
-  # The EOS broker URL 
-  EOS_BROKER_URL: root://eos-mq.{{ .Release.Namespace }}.svc.cluster.local
   # The EOS host geo location tag used to sort hosts into geographical (rack) locations 
-  EOS_GEOTAG: "docker::test"
+  EOS_GEOTAG: "k8s::test"
   # The fully qualified hostname of MGM master1
   EOS_MGM_MASTER1: eos-mgm-0.eos-mgm.{{ .Release.Namespace }}.svc.cluster.local
   # The fully qualified hostname of MGM master2
@@ -43,7 +37,7 @@ data:
   #EOS_MAIL_CC: "apeters@mail.cern.ch"
   #EOS_NOTIFY: "mail -s `date +%s`-`hostname`-eos-notify $EOS_MAIL_CC"
   # Allow UTF-8 path names excluding only CR,LF
-  EOS_UTF8: ""
+  EOS_UTF8: "1"
   # Enable QoS support
   EOS_ENABLE_QOS: ""
   # Enable Converter Engine

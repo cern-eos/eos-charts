@@ -26,6 +26,7 @@ data:
     ofs.osslib libEosFstOss.so
     ofs.tpc pgm /usr/bin/xrdcp
     ###########################################################
+    fstofs.broker root://eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     fstofs.autoboot true
     fstofs.quotainterval 10
     fstofs.metalog /var/eos/md/
@@ -59,6 +60,28 @@ data:
       fi
     }
 
+    init_probe() {
+        local cmd=$@
+        local max_wait=60
+        local sleep=5
+        start_time=$(date +%s)
+        rc=-1
+        while [ $rc -ne 0 ];
+        do
+          timeout --preserve-status $sleep $cmd
+          rc=$?
+          sleep $sleep
+
+          # Bail out after max_wait
+          tot_wait=$(($(date +%s)-start_time))
+          echo "        $tot_wait seconds... (timeout at $max_wait)"
+          if [ $tot_wait -ge $max_wait ]; then
+            echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
+            exit 1
+          fi
+        done
+    }
+
 
     # TODO: Improve logging
     # TODO: Improve checks
@@ -71,24 +94,7 @@ data:
 
     # Check the MGM is online before registering the node and the filesystem
     echo "INFO: Checking the MGM is online..."
-    max_wait=60
-    sleep=5
-    start_time=$(date +%s)
-    rc=-1
-    while [ $rc -ne 0 ];
-    do
-      timeout --preserve-status $sleep eos -r 0 0 -b ns >/dev/null 2>&1
-      rc=$?
-      sleep $sleep
-
-      # Bail out after max_wait
-      tot_wait=$(($(date +%s)-start_time))
-      echo "        $tot_wait seconds... (timeout at $max_wait)"
-      if [ $tot_wait -ge $max_wait ]; then
-        echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
-        exit 1
-      fi
-    done
+    init_probe eos -r 0 0 ns >/dev/null 2>&1
     echo "INFO: MGM is online."
 
     # Start the FST process in background so that we can run other commands
@@ -96,18 +102,19 @@ data:
     /usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -m -b -Rdaemon >/dev/null 2>&1
 
     # TODO: Improve here!!!
-    # @note $id is commodity used in the legacy script, 
+    # @note (faluchet) $id is commodity used in the legacy script,
     # but one does not actually need an ordered sequence of ids (let alone it being the same for every fst)
     # UUID=$(uuidgen) would be enough, but maybe unpractical? Take a decision.
     #
     #   Enrico (14/12) on id=$((1 + $RANDOM % 1000))
     #     Random in range 1000 might not be random enough
     #     Make it dependent on the stateful set FQDN for now.
-    THIS_REPLICA=$(hostname -s | rev | cut -d '-' -f 1 | rev)
+    # THIS_REPLICA=$(hostname -s | rev | cut -d '-' -f 1 | rev)
+    THIS_REPLICA=${HOSTNAME##*-}
     id=$((1000+$THIS_REPLICA))
     UUID=fst${id}
     DATADIR=/fst_storage
-    SPACE=default
+    SPACE=spare
     CONFIG=rw
 
     # If there is an eos fsid || fsuuid, bail out
@@ -122,20 +129,20 @@ data:
 
     ### Register space (!! THIS IS A BUG !!)
     # TODO: BUG!
-    eos -r 0 0 -b space define default
+    eos -r 0 0 -b space define $SPACE
     # TODO: BUG!
 
     ### Set this node to on
     eos -r 0 0 -b node set `hostname -f`:1095 on
 
     ### Register filesystem
-    eos -r 0 0 -b fs add -m ${id} $UUID `hostname -f`:1095 $DATADIR default $CONFIG
+    eos -r 0 0 -b fs add -m ${id} $UUID `hostname -f`:1095 $DATADIR $SPACE $CONFIG
     # eos -r 0 0 -b fs boot ${id} # TODO: Check -- Does not seem to be needed
 
-    ### Activate space (!! THIS IS A BUG !!)
-    # The file system will stay `offline` if the space is not set to on after the FS gets registered
-    # TODO: BUG!
-    eos -r 0 0 -b space set default on
-    # TODO: BUG!
+    # @note (faluchet) 29/01/2021
+    # Safer to add new fst to the spare space, and move them to default on reqeust.
+    # Danger is the a new empty fst can suddenly be overloaded with write reqs in order to balance the fill ratio w.r.t. other fsts
+    # Perhaps can be conditional on some startup params --space=<some-space>; leaving the mv for now
+    eos -r 0 0 -b fs mv --force ${id} default
 
     exit 0

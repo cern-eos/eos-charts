@@ -75,9 +75,6 @@ spec:
               containerPort: 1100
               protocol: TCP
           env:
-            # leave it aside until the qdb chart is done
-            # - name: EOS_QUARKDB_HOSTPORT
-            #   value: "eos-qdb.eos-qdb.%%%NAMESPACE%%%.svc.cluster.local:7777"
             # Inspiration from cockroachdb, in case we need it:
             # - name: STATEFULSET_NAME
             #   value: {{ template "mgm.fullname" . }}

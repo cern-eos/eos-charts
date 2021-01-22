@@ -1,4 +1,4 @@
-replicaCount: 4
+replicaCount: 8
 
 image:
   repository: gitlab-registry.cern.ch/dss/eos
