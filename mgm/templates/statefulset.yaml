@@ -17,7 +17,7 @@ spec:
     spec:
       initContainers:
         - name: eos-mgm-init0-logfolder-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: alpine
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["for fld in mgm tx; do mkdir -p /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
@@ -25,7 +25,7 @@ spec:
             - name: mgm-logs
               mountPath: /var/log/eos
         - name: eos-mgm-init1-vareos-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: alpine
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["for fld in ns-queue; do mkdir -p /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]

@@ -61,25 +61,25 @@ data:
     }
 
     init_probe() {
-        local cmd=$@
-        local max_wait=60
-        local sleep=5
-        start_time=$(date +%s)
-        rc=-1
-        while [ $rc -ne 0 ];
-        do
-          timeout --preserve-status $sleep $cmd
-          rc=$?
-          sleep $sleep
+      local cmd=$@
+      local max_wait=60
+      local sleep=5
+      start_time=$(date +%s)
+      rc=-1
+      while [ $rc -ne 0 ];
+      do
+        timeout --preserve-status $sleep $cmd
+        rc=$?
 
-          # Bail out after max_wait
-          tot_wait=$(($(date +%s)-start_time))
-          echo "        $tot_wait seconds... (timeout at $max_wait)"
-          if [ $tot_wait -ge $max_wait ]; then
-            echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
-            exit 1
-          fi
-        done
+        # Bail out after max_wait
+        tot_wait=$(($(date +%s)-start_time))
+        echo "        $tot_wait seconds... (timeout at $max_wait)"
+        if [ $tot_wait -ge $max_wait ]; then
+          echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
+          exit 1
+        fi
+        sleep $sleep
+      done
     }
 
 

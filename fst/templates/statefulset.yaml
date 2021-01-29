@@ -17,7 +17,7 @@ spec:
     spec:
       initContainers:
         - name: eos-fst-init0-chown-storage
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: alpine
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["chown daemon:daemon /fst_storage"]
