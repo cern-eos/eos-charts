@@ -51,10 +51,10 @@ data:
     mgmofs.metalog /var/eos/md
     mgmofs.txdir /var/eos/tx
     mgmofs.authdir /var/eos/auth
-    # mgmofs.qosdir /var/eos/qos # @note (faluchet) see note on Qos Support
+    # mgmofs.qosdir /var/eos/qos # @note (faluchet) see note on Qos Support (grep EOS_ENABLE_QOS)
     
     # QoS configuration file
-    # mgmofs.qoscfg /var/eos/qos/qos.conf # @note (faluchet) see note on Qos Support
+    # mgmofs.qoscfg /var/eos/qos/qos.conf # @note (faluchet) see note on Qos Support (grep EOS_ENABLE_QOS)
 
     # report store path
     mgmofs.reportstorepath /var/eos/report

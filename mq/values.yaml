@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: gitlab-registry.cern.ch/dss/eos
-  tag: 4.8.23
+  tag: 4.8.31
   pullPolicy: Always
 
 service:

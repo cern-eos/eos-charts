@@ -1,6 +1,6 @@
 # Set replicaCount to:
 #   1 for standalone operation
-#   3 (or more) to create a 
+#   3 (or more) to create a distributed cluster with raft consensus replication
 replicaCount: 3
 
 # The clusted ID is just a random string that identifies the cluster uniquely
@@ -9,7 +9,7 @@ clusterID: 0caee96b-1047-4892-b56f-88eed5e3ff92
 
 image:
   repository: gitlab-registry.cern.ch/dss/eos
-  tag: 4.8.23
+  tag: 4.8.31
   pullPolicy: Always
 
 service:
