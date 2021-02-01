@@ -144,9 +144,8 @@ data:
 
 
     # Check if a previous configuration already exists. If so, don't touch.
-    # @note (faluchet) shouldn't it check for `instance_bootstrap` ??
     echo "INFO: Looking for previous EOS configurations..."
-    if [ $(eos -b config ls | grep -w 'default' | wc -l) -eq 1 ]; then
+    if [ $(eos -b config ls | grep -w 'instance_bootstrap' | wc -l) -eq 1 ]; then
       echo "  ✓ EOS configurations found. Exiting."
       exit 0
     fi
