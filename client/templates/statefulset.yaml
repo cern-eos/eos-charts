@@ -15,23 +15,24 @@ spec:
       labels:
         {{- include "client.selectorLabels" . | nindent 8 }}
     spec:
-      initContainers:
-        - name: eos-client-init0-eos-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "client.fullname" . }}-cfgmap-minimal-env
-          securityContext:
-            privileged: true
-            allowPrivilegeEscalation: true
-            capabilities:
-              add: ["SYS_PTRACE"]
-          command: ["/bin/bash", "/root/eos_init.sh"]
-          volumeMounts:
-            - name: client-cfgmap-eos-init
-              mountPath: /root/eos_init.sh
-              subPath: eos_init.sh
+      # NOTE (faluchet) Do not let the client bootstrap the instance
+      # initContainers:
+      #   - name: eos-client-init0-eos-init
+      #     image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      #     imagePullPolicy: {{ .Values.image.pullPolicy }}
+      #     envFrom:
+      #       - configMapRef:
+      #           name: {{ include "client.fullname" . }}-cfgmap-minimal-env
+      #     securityContext:
+      #       privileged: true
+      #       allowPrivilegeEscalation: true
+      #       capabilities:
+      #         add: ["SYS_PTRACE"]
+      #     command: ["/bin/bash", "/root/eos_init.sh"]
+      #     volumeMounts:
+      #       - name: client-cfgmap-eos-init
+      #         mountPath: /root/eos_init.sh
+      #         subPath: eos_init.sh
       containers:
         - name: eos-client
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

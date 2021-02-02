@@ -7,7 +7,6 @@
 variables:
   HELM_VERSION: v3.2.4
   HELM_CHART_REPO: eos-sandbox
-  KUBECONFIG: $K8S_CONFIG
 
 stages:
   - build
@@ -86,10 +85,7 @@ fusex_test:
   stage: test
   image: alpine/k8s:1.18.2
   before_script:
-    - export KUBECONFIG=$K8S_CONFIG # get access configs for the cluster
-    - ./install.sh
-    - count=0; while [[ $count -le 120 ]] && [[ ! $(kubectl get po --no-headers | grep -v "Running") ]]; do echo "Wait for complete deployment... $count"; (( count++ )); sleep 1; done;
-    - test $($count -le 120)
+    - ./gitlab-ci/before_script-test.sh
   script:
     # enable krb5
     - kubectl exec -it eos-mgm-0 -- eos vid enable krb5
@@ -104,8 +100,7 @@ fusex_test:
     - kubectl exec -it eos-client-0 -- 'su eos-user -c "python2 /eosclient-tests/run.py --workdir=\"/eos1/dockertest /eos2/dockertest\" ci"'
     - kubectl exec -it eos-client-0 -- 'cd eosclient-tests; for n in prepare/*.sh; do /bin/bash $n cleanup; done'
   after_script:
-    - .gitlab/collect-logs.sh default eos-logs-${CI_JOB_ID}
-    - ./uninstall.sh
+    - ./gitlab-ci/after_script-test.sh
   artifacts:
     when: on_failure
     expire_in: 3 days
@@ -116,10 +111,7 @@ cbox_test:
   stage: test
   image: alpine/k8s:1.18.2
   before_script:
-    - export KUBECONFIG=$K8S_CONFIG # get access configs for the cluster
-    - ./install.sh
-    - count=0; while [[ $count -le 120 ]] && [[ ! $(kubectl get po --no-headers | grep -v "Running") ]]; do echo "Wait for complete deployment... $count"; (( count++ )); sleep 1; done;
-    - test $($count -le 120)
+    - ./gitlab-ci/before_script-test.sh
   script:
     # enable krb5
     - kubectl exec -it eos-mgm-0 -- eos vid enable krb5
@@ -135,8 +127,7 @@ cbox_test:
     - kubectl exec -it eos-client-0 -- 'su eos-user -c "cd /eos/user/e/eos-user && python2 ./eosclient-tests/run.py --workdir=/eos/user/e/eos-user ci-eosfuse_release"'
     - kubectl exec -it eos-client-0 -- 'su eos-user -c "cd /eos/user/e/eos-user && python2 ./eosclient-tests/run.py --workdir=/eos/user/e/eos-user regression"'
   after_script:
-    - .gitlab/collect_logs.sh default eos-logs-${CI_JOB_ID}
-    - ./uninstall.sh
+    - ./gitlab-ci/after_script-test.sh
   artifacts:
     when: on_failure
     expire_in: 3 days
@@ -148,16 +139,12 @@ system_test:
   stage: test
   image: alpine/k8s:1.18.2
   before_script:
-    - export KUBECONFIG=$K8S_CONFIG # get access configs for the cluster
-    - ./install.sh
-    - count=0; while [[ $count -le 120 ]] && [[ ! $(kubectl get po --no-headers | grep -v "Running") ]]; do echo "Wait for complete deployment... $count"; (( count++ )); sleep 1; done;
-    - test $($count -le 120)
+    - ./gitlab-ci/before_script-test.sh
   script:
     - kubectl exec -it eos-mgm-0 -- 'eos-instance-test-ci'
     - kubectl exec -it eos-mgm-0 -- 'eos-unit-tests-with-instance -n root://localhost//eos/dockertest/'
   after_script:
-    - .gitlab/collect-logs.sh default eos-logs-${CI_JOB_ID}
-    - ./uninstall.sh
+    - ./gitlab-ci/after_script-test.sh
   artifacts:
     when: on_failure
     expire_in: 3 days

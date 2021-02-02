@@ -1,9 +1,9 @@
 #!/bin/bash
 
-helm install eos-qdb qdb/
-helm install eos-mq  mq/
-helm install eos-mgm mgm/
-helm install eos-fst fst/
+helm install --namespace ${1:-"default"} eos-qdb qdb/
+helm install --namespace ${1:-"default"} eos-mq  mq/
+helm install --namespace ${1:-"default"} eos-mgm mgm/
+helm install --namespace ${1:-"default"} eos-fst fst/
 # optional
-helm install eos-client client/
+helm install --namespace ${1:-"default"} eos-client client/
 

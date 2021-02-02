@@ -16,10 +16,6 @@ function usage () {
   exit 1
 }
 
-function get_pods() {
-  kubectl get pods --namespace=${NAMESPACE} --no-headers -o custom-columns=":metadata.name"
-}
-
 # **************************************************************************** #
 #                                  Entrypoint                                  #
 # **************************************************************************** #
@@ -29,8 +25,8 @@ if [[ "$#" -ne 2 ]]; then
   usage
 fi
 
-NAMESPACE="$1"
-if [[ ! ${NAMESPACE} =~ ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$ ]]; then
+K8S_NAMESPACE="$1"
+if [[ ! ${K8S_NAMESPACE} =~ ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$ ]]; then
   echo "Namespace label not DNS-1123 compatible!"
   exit 1
 fi
@@ -43,14 +39,14 @@ if [ ! -d ${logdir} ] ; then
   exit 1
 fi
 
-# Get pod names for MQ/MGM/FST EOS services
-EOSMQ=$(get_pods | grep "^eos" | grep mq)
-EOSMGM=($(get_pods | grep "^eos" | grep mgm | sort))
-EOSFST=($(get_pods | grep "^eos" | grep fst | sort))
+# Get pod names for MQ/MGM/FST/QDB EOS services
+EOSMQ=$(kubectl get pods --namespace $K8S_NAMESPACE | grep "^eos" | grep mq | sort | cut -d" " -f1)
+EOSMGM=($(kubectl get pods --namespace $K8S_NAMESPACE | grep "^eos" | grep mgm | sort | cut -d" " -f1))
+EOSFST=($(kubectl get pods --namespace $K8S_NAMESPACE | grep "^eos" | grep fst | sort | cut -d" " -f1))
+EOSQUARKDB=($(kubectl get pods --namespace $K8S_NAMESPACE | grep "^eos" | grep qdb | sort | cut -d" " -f1))
 
-# Get optional pod names for QDB and client services
-EOSQUARKDB=$(get_pods | grep "^eos" | grep qdb)
-EOSCLIENT=($(get_pods | grep "^eos" | grep cli))
+# Get optional pod names for client services
+EOSCLIENT=($(kubectl get pods --namespace $K8S_NAMESPACE | grep "^eos" | grep client | sort | cut -d" " -f1))
 
 # ******************************************************************************
 # Collect logs
@@ -62,29 +58,33 @@ EOSCLIENT=($(get_pods | grep "^eos" | grep cli))
 ### The ending "grep -v" is esthetic filtering of that warning message
 
 # Collect MQ logs
-kubectl cp ${NAMESPACE}/${EOSMQ}:/var/log/eos/mq/xrdlog.mq ${logdir}/${EOSMQ%%-deployment*}.log 2>&1 | grep -v "tar: Removing leading"
+kubectl cp ${K8S_NAMESPACE}/${EOSMQ}:/var/log/eos/mq/xrdlog.mq ${logdir}/${EOSMQ}.log 2>&1 | grep -v "tar: Removing leading"
 
 # Collect MGM logs
+count=0
 for container in "${EOSMGM[@]}"; do
-  kubectl cp ${NAMESPACE}/${container}:/var/log/eos/mgm/xrdlog.mgm ${logdir}/${container%%-deployment*}.log 2>&1 | grep -v "tar: Removing leading"
+  count=$((count + 1))
+  kubectl cp ${K8S_NAMESPACE}/${container}:/var/log/eos/mgm${count}/xrdlog.mgm ${logdir}/${container}.log 2>&1 | grep -v "tar: Removing leading"
 done
 
 # Collect FST logs
 count=0
 for container in "${EOSFST[@]}"; do
   count=$((count + 1))
-  kubectl cp ${NAMESPACE}/${container}:/var/log/eos/fst${count}/xrdlog.fst ${logdir}/${container%%-deployment*}.log 2>&1 | grep -v "tar: Removing leading"
+  kubectl cp ${K8S_NAMESPACE}/${container}:/var/log/eos/fst${count}/xrdlog.fst ${logdir}/${container}.log 2>&1 | grep -v "tar: Removing leading"
 done
 
 # Collect QDB logs
-if [[ ! -z $EOSQUARKDB ]]; then
-  kubectl cp ${NAMESPACE}/${EOSQUARKDB}:/var/log/eos/qdb/xrdlog.qdb ${logdir}/${EOSQUARKDB%%-deployment*}.log 2>&1 | grep -v "tar: Removing leading"
-fi
+count=0
+for container in "${EOSQUARKDB[@]}"; do
+  count=$((count + 1))
+  kubectl cp ${K8S_NAMESPACE}/${container}:/var/log/eos/qdb${count}/xrdlog.qdb ${logdir}/${container}.log 2>&1 | grep -v "tar: Removing leading"
+done
 
 # Collect client logs
-for client in "${EOSCLIENT[@]}"; do
-  kubectl cp ${NAMESPACE}/${client}:/var/log/eos/fuse/ ${logdir}/${client%%-deployment*}-fuse/ 2>&1 | grep -v "tar: Removing leading"
-  kubectl cp ${NAMESPACE}/${client}:/var/log/eos/fusex/ ${logdir}/${client%%-deployment*}-fusex/ 2>&1 | grep -v "tar: Removing leading"
+for container in "${EOSCLIENT[@]}"; do
+  kubectl cp ${K8S_NAMESPACE}/${container}:/var/log/eos/fuse/ ${logdir}/${container}-fuse/ 2>&1 | grep -v "tar: Removing leading"
+  kubectl cp ${K8S_NAMESPACE}/${container}:/var/log/eos/fusex/ ${logdir}/${container}-fusex/ 2>&1 | grep -v "tar: Removing leading"
 done
 
 # List destination directory
