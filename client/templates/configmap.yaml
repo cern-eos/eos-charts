@@ -1,0 +1,169 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "client.fullname" . }}-cfgmap-eos-init
+  labels:
+    {{- include "client.labels" . | nindent 4 }}
+data:
+  eos_init.sh: |
+    #!/bin/bash
+    set -x
+
+    handle_exit_condition () {
+      local rc=$1
+      local text=$2
+
+      if [ $rc -ne 0 ]; then
+        echo "  ✗ $text. Aborting."
+        exit 1
+      else
+        echo "  ✓ Success"
+      fi
+    }
+
+    init_probe() {
+      local cmd=$@
+      local max_wait=60
+      local sleep=5
+      start_time=$(date +%s)
+      rc=-1
+      while [ $rc -ne 0 ];
+      do
+        timeout --preserve-status $sleep $cmd
+        rc=$?
+
+        # Bail out after max_wait
+        tot_wait=$(($(date +%s)-start_time))
+        echo "        $tot_wait seconds... (timeout at $max_wait)"
+        if [ $tot_wait -ge $max_wait ]; then
+          echo "ERROR: init_probe() $cmd timed out after $tot_wait secs. Giving up."
+          exit 1
+        fi
+        sleep $sleep
+      done
+    }
+
+
+    ################################################################ 
+    # NOTE
+    # A client can be sss mapped and so proceed with the admin-like configuration only if/after:
+    # - sss vid mapping has been enabled (tipically locally on the mgm with `eos vid enable sss` is run locally on the mgm
+    # - ofc, it has the proper sss key (tipically /etc/eos.keytab)
+    ################################################################
+
+
+    ################################################################
+    # bootstrap
+    ################################################################
+
+    # Wait for the MGM to be online
+    echo "INFO: Checking the MGM is online..."
+    init_probe eos -r 0 0 ns >/dev/null 2>&1
+    echo "INFO: MGM is online."
+
+    # Check if a previous configuration mark "instance_bootstrap" already exists. If so, don't touch.
+    echo "INFO: Looking for previous EOS configurations..."
+    if [ $(eos -r 0 0 config ls | grep -w 'instance_bootstrap' | wc -l) -eq 1 ]; then
+      echo "  ✓ EOS configurations found. Exiting."
+      exit 0
+    fi
+    echo "  ✓ None found. Configuring..."
+
+
+    ################################################################
+    # MGM setup
+    ################################################################
+
+    # echo "INFO: Configuring authentication..."
+    # 
+    # @note not necessary ?
+    # Give sudo powers to eos_k8s_admin user (typically krb-authenticated on clients)
+    # adduser eos_k8s_admin
+    # eos -b vid set membership eos_k8s_admin +sudo
+    # Give sudo powers to daemon user
+    # echo "INFO: Adding user 'daemon' to sudoers..."
+    # eos vid set membership daemon +sudo
+    # handle_exit_condition $? "Error adding user daemon to sudoers"
+    #
+    # echo "INFO: ✓ EOS autentication initialized successfully."
+
+    echo "INFO: Configuring space and quota..."
+
+    # Define spare and default spaces
+    echo "INFO: Defining space spare..."
+    eos -r 0 0 -b space define spare
+    handle_exit_condition $? "Error defining space spare"
+    echo "INFO: Defining space default..."
+    eos -r 0 0 -b space define default {{ .Values.spaceDefineDefault.groupSize }} {{ .Values.spaceDefineDefault.groupMod }}
+    handle_exit_condition $? "Error defining space default"
+
+
+    ################################################################
+    # FST setup
+    ################################################################
+    
+    # Assume for each fst node `[ -f $DATADIR/.eosfsid ] || [ -f $DATADIR/.eosfsuuid ]` holds true
+
+    DATADIR=/fst_storage
+    SPACE=spare
+    CONFIG=rw
+
+    NODES_ONLINE=( $(eos node ls | grep "online" | cut -d " " -f 4) )
+  
+    # Register filesystem and set node on
+    for node in ${NODES_ONLINE[@]}; do 
+        echo $node; 
+        id=$((1000+${node%%.*}))
+        UUID=fst${id}
+        eos -r 0 0 -b fs add -m ${id} $UUID $node $DATADIR $SPACE $CONFIG
+        eos -r 0 0 -b node set $node on
+    done
+    # @note (faluchet) 29/01/2021
+    # Safer to add new fst to the spare space, and move them to default space on reqeust.
+    # Danger is the a new empty fst can suddenly be overloaded with write reqs in order to balance the fill ratio w.r.t. other fsts
+    # Perhaps can be conditional on some startup params --space=<some-space>; leaving the mv for now
+
+
+    ################################################################
+    # MGM-FST setup
+    ################################################################
+
+    # Activate default space
+    echo "INFO: Activating space default..."
+    eos -r 0 0 -b space set default on
+    handle_exit_condition $? "Error activating space default"
+
+    # Turn-off quota for space default
+    echo "INFO: Turning off quota for space default..."
+    eos -r 0 0 -b space quota default off
+    handle_exit_condition $? "Error turning off quota for space default"
+
+    # boot all the fs
+    eos -r 0 0 -b fs boot \*
+
+
+    ################################################################
+    # Create and config the recycle bin @todo review
+    ################################################################
+
+    # eos chmod 3711 /eos/${EOS_INSTANCE_NAME:3}/proc/recycle # drwx--s--+   1 root     root
+    # eos chmod 2755 /eos                                                               # drwxr-sr-+   1 root     root
+    # eos attr set default=replica /eos
+    # eos attr set sys.recycle="/eos/${EOS_INSTANCE_NAME:3}/proc/recycle/" /eos/
+    # eos recycle config --size {{ .Values.recycleConfig.size }}
+    # eos recycle config --inodes {{ .Values.recycleConfig.inodes }}
+    # eos recycle config --lifetime {{ .Values.recycleConfig.lifetime }}
+    # eos recycle config --ratio {{ .Values.recycleConfig.ratio }}
+
+    ### Save config and leave
+    echo "INFO: Saving configuration..."
+    eos -r 0 0 -b config save instance_bootstrap -f
+    eos -r 0 0 -b config save default -f
+    handle_exit_condition $? "Error saving configuration"
+
+
+    ################################################################
+    # EXIT
+    ################################################################
+    
+    exit 0

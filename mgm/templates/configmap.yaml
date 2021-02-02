@@ -107,7 +107,7 @@ data:
         echo "  ✗ $text. Aborting."
         exit 1
       else
-        echo "  ✓ Success!"
+        echo "  ✓ Success"
       fi
     }
 
@@ -126,7 +126,7 @@ data:
         tot_wait=$(($(date +%s)-start_time))
         echo "        $tot_wait seconds... (timeout at $max_wait)"
         if [ $tot_wait -ge $max_wait ]; then
-          echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
+          echo "ERROR: init_probe() $cmd timed out after $tot_wait secs. Giving up."
           exit 1
         fi
         sleep $sleep

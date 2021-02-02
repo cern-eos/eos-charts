@@ -1,0 +1,9 @@
+apiVersion: v2
+#
+name: client
+type: application
+version: 0.0.2
+appVersion: 4.8.31
+#
+description: An EOS client chart
+icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg 

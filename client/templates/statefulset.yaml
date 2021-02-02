@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "client.fullname" . }}
+  labels:
+    {{- include "client.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "client.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "client.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "client.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: eos-client-init0-eos-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "client.fullname" . }}-cfgmap-minimal-env
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: ["SYS_PTRACE"]
+          command: ["/bin/bash", "/root/eos_init.sh"]
+          volumeMounts:
+            - name: client-cfgmap-eos-init
+              mountPath: /root/eos_init.sh
+              subPath: eos_init.sh
+      containers:
+        - name: eos-client
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args: ["sleep 3600"]
+          env:
+            # Inspiration from cockroachdb, in case we need it:
+            # - name: STATEFULSET_NAME
+            #   value: {{ template "client.fullname" . }}
+            # - name: STATEFULSET_FQDN
+            #   value: {{ template "client.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "client.fullname" . }}-cfgmap-minimal-env
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: ["SYS_PTRACE"]
+          volumeMounts:
+            - name: client-logs
+              mountPath: /var/log/eos
+            - name: client-cfgmap-eos-init
+              mountPath: /root/eos_init.sh
+              subPath: eos_init.sh
+            - name: client-cfgmap-eos-fusex-mount
+              mountPath: /etc/eos
+      volumes:
+        - name: client-logs
+          emptyDir: {}
+        - name: client-cfgmap-eos-init
+          configMap:
+            name: {{ include "client.fullname" . }}-cfgmap-eos-init
+            defaultMode: 0755
+        - name: client-cfgmap-eos-fusex-mount
+          configMap:
+            name: {{ include "client.fullname" . }}-cfgmap-eos-fusex-mount
+            defaultMode: 0755

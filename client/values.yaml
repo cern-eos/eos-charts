@@ -1,0 +1,23 @@
+# TODO Do not hardcode, get it from somewhere!!!
+eosMgmUrl: eos-mgm-0.eos-mgm.default.svc.cluster.local
+# TODO
+
+mgmofs:
+  instance: eosdockertest
+
+spaceDefineDefault:
+  groupSize: 8
+  groupMod: 1
+
+recycleConfig:
+  size: 10G
+  inodes: 10M
+  lifetime: 604800
+  ratio: 0.2
+
+replicaCount: 1
+
+image:
+  repository: gitlab-registry.cern.ch/dss/eos
+  tag: 4.8.31
+  pullPolicy: Always
