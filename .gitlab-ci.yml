@@ -7,10 +7,12 @@
 variables:
   HELM_VERSION: v3.2.4
   HELM_CHART_REPO: eos-sandbox
+  KUBECONFIG: $K8S_CONFIG
 
 stages:
   - build
   - deploy
+  - test
 
 before_script:
   - mkdir -p .repo
@@ -78,3 +80,86 @@ deploy:
         done
   only:
     - tags
+
+
+fusex_test:
+  stage: test
+  image: alpine/k8s:1.18.2
+  before_script:
+    - export KUBECONFIG=$K8S_CONFIG # get access configs for the cluster
+    - ./install.sh
+    - count=0; while [[ $count -le 120 ]] && [[ ! $(kubectl get po --no-headers | grep -v "Running") ]]; do echo "Wait for complete deployment... $count"; (( count++ )); sleep 1; done;
+    - test $($count -le 120)
+  script:
+    # enable krb5
+    - kubectl exec -it eos-mgm-0 -- eos vid enable krb5
+    # prepare mountpoints
+    - kubectl exec -it eos-client-0 -- 'atd; at now <<< "mkdir -p /eos1/ && mount -t fuse eosxd -ofsname=mount-1 /eos1/; mkdir -p /eos2/ && mount -t fuse eosxd -ofsname=mount-2 /eos2/;"'
+    # fusex benchmark
+    - kubectl exec -it eos-client-0 -- 'su eos-user -c "mkdir -p /eos1/dockertest/fusex_tests/ && cd /eos1/dockertest/fusex_tests/ && fusex-benchmark"'
+    # download tests repo
+    - kubectl exec -it eos-client-0 -- 'git clone https://gitlab.cern.ch/dss/eosclient-tests.git'
+    # run the "ci" tests
+    - kubectl exec -it eos-client-0 -- 'cd eosclient-tests; for n in prepare/*.sh; do /bin/bash $n prepare; done'
+    - kubectl exec -it eos-client-0 -- 'su eos-user -c "python2 /eosclient-tests/run.py --workdir=\"/eos1/dockertest /eos2/dockertest\" ci"'
+    - kubectl exec -it eos-client-0 -- 'cd eosclient-tests; for n in prepare/*.sh; do /bin/bash $n cleanup; done'
+  after_script:
+    - .gitlab/collect-logs.sh default eos-logs-${CI_JOB_ID}
+    - ./uninstall.sh
+  artifacts:
+    when: on_failure
+    expire_in: 3 days
+    paths:
+      - eos-logs-${CI_JOB_ID}/
+
+cbox_test:
+  stage: test
+  image: alpine/k8s:1.18.2
+  before_script:
+    - export KUBECONFIG=$K8S_CONFIG # get access configs for the cluster
+    - ./install.sh
+    - count=0; while [[ $count -le 120 ]] && [[ ! $(kubectl get po --no-headers | grep -v "Running") ]]; do echo "Wait for complete deployment... $count"; (( count++ )); sleep 1; done;
+    - test $($count -le 120)
+  script:
+    # enable krb5
+    - kubectl exec -it eos-mgm-0 -- eos vid enable krb5
+    # enable converter and prepare eoshome folder, cernbox alike
+    - kubectl exec -it eos-mgm-0 -- 'eos space config default space.converter=on'
+    - kubectl exec -it eos-mgm-0 -- './eos_create_userhome.sh eos-user'
+    # prepare mountpoints
+    - kubectl exec -it eos-client-0 -- 'atd; at now <<< "mkdir -p /eos/ && mount -t fuse eosxd -ofsname=eosdockertest /eos/"'
+    # set krb5 ticket and download tests repo
+    - kubectl exec -it eos-client-0 -- 'su eos-user -c "kinit eos-user@TEST.EOS -k -t /home/eos-user/eos-user.keytab"'
+    - kubectl exec -it eos-client-0 -- 'su eos-user -c "git clone https://gitlab.cern.ch/dss/eosclient-tests.git /eos/user/e/eos-user/eosclient-tests"'
+    # launch the tests
+    - kubectl exec -it eos-client-0 -- 'su eos-user -c "cd /eos/user/e/eos-user && python2 ./eosclient-tests/run.py --workdir=/eos/user/e/eos-user ci-eosfuse_release"'
+    - kubectl exec -it eos-client-0 -- 'su eos-user -c "cd /eos/user/e/eos-user && python2 ./eosclient-tests/run.py --workdir=/eos/user/e/eos-user regression"'
+  after_script:
+    - .gitlab/collect_logs.sh default eos-logs-${CI_JOB_ID}
+    - ./uninstall.sh
+  artifacts:
+    when: on_failure
+    expire_in: 3 days
+    paths:
+      - eos-logs-${CI_JOB_ID}/
+
+
+system_test:
+  stage: test
+  image: alpine/k8s:1.18.2
+  before_script:
+    - export KUBECONFIG=$K8S_CONFIG # get access configs for the cluster
+    - ./install.sh
+    - count=0; while [[ $count -le 120 ]] && [[ ! $(kubectl get po --no-headers | grep -v "Running") ]]; do echo "Wait for complete deployment... $count"; (( count++ )); sleep 1; done;
+    - test $($count -le 120)
+  script:
+    - kubectl exec -it eos-mgm-0 -- 'eos-instance-test-ci'
+    - kubectl exec -it eos-mgm-0 -- 'eos-unit-tests-with-instance -n root://localhost//eos/dockertest/'
+  after_script:
+    - .gitlab/collect-logs.sh default eos-logs-${CI_JOB_ID}
+    - ./uninstall.sh
+  artifacts:
+    when: on_failure
+    expire_in: 3 days
+    paths:
+      - eos-logs-${CI_JOB_ID}/

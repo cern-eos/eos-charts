@@ -26,7 +26,8 @@ data:
     sec.protocol sss -c /etc/eos.keytab -s /etc/eos.keytab
     # KRB  authentication
     #TODO: (Enrico, 10/11) Disable krb5
-    ##sec.protocol krb5 /etc/eos.krb5.keytab host/<host>@TEST.EOS
+    #TODO: (Fabio, 02/02) Enable krb5
+    sec.protocol krb5 /etc/eos.krb5.keytab host/<host>@TEST.EOS
     # GSI authentication
     #sec.protocol gsi -crl:0 -cert:/etc/grid-security/daemon/hostcert.pem -key:/etc/grid-security/daemon/hostkey.pem -gridmap:/etc/grid-security/grid-mapfile -d:0 -gmapopt:2
     
@@ -35,7 +36,8 @@ data:
     sec.protbind localhost unix sss
     #sec.protbind * only krb5 sss unix
     #TODO: (Enrico, 10/11) Disable krb5
-    sec.protbind * only sss unix
+    #TODO: (Fabio, 02/02) Enable krb5
+    sec.protbind * only krb5 sss unix
     ###########################################################
     mgmofs.instance {{ .Values.mgmofs.instance }}
     mgmofs.fs /
