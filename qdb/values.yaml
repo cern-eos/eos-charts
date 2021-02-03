@@ -23,3 +23,16 @@ startupProbe:
     port: 1094
   failureThreshold: 40
   periodSeconds: 10
+
+
+
+persistence:
+  enabled: false
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", disable dynamic provisioning
+  ## If undefined or null, no storageClassName is
+  ##   set, choosing the default provisioner.
+  # storageClass: "-"
