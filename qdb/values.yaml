@@ -5,12 +5,16 @@ replicaCount: 3
 
 # The clusted ID is just a random string that identifies the cluster uniquely
 #   See the docs at https://quarkdb.web.cern.ch/quarkdb/docs/master/configuration/
-clusterID: 0caee96b-1047-4892-b56f-88eed5e3ff92
+clusterID: 24964842-7852-48fd-bbb9-43beb5bfeea9
 
 image:
   repository: gitlab-registry.cern.ch/dss/eos
   tag: 4.8.31
   pullPolicy: Always
+
+customLabels:
+  service: eos
+  component: eos-qdb
 
 service:
   xrootd_qdb_http:
