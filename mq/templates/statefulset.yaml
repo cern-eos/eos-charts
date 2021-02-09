@@ -14,7 +14,38 @@ spec:
     metadata:
       labels:
         {{- include "mq.selectorLabels" . | nindent 8 }}
+        {{- toYaml .Values.customLabels | nindent 8 }}
     spec:
+      {{- if .Values.podAssignment.enableNodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.customLabels | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.podAssignment.enableNodeAffinity .Values.podAssignment.enableMgmColocation }}
+      affinity:
+        {{- if .Values.podAssignment.enableNodeAffinity }}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: service
+                operator: In
+                values:
+                - eos
+        {{- end }}
+        {{- if .Values.podAssignment.enableMgmColocation }}
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - eos-mgm
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
+      {{- end }}
       containers:
         - name: eos-mq
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
