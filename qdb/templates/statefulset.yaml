@@ -16,6 +16,24 @@ spec:
         {{- include "qdb.selectorLabels" . | nindent 8 }}
         {{- toYaml .Values.customLabels | nindent 8 }}
     spec:
+      {{- if .Values.podAssignment.enableNodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.customLabels | nindent 8 }}
+      {{- end }}
+      {{- if .Values.podAssignment.enablePodAntiAffinity }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              {{- range $key, $val := .Values.customLabels }}
+              - key: {{ $key }}
+                operator: In
+                values:
+                - {{ $val }}
+              {{- end }}
+            topologyKey: "kubernetes.io/hostname"
+      {{- end }}
       initContainers:
         - name: eos-qdb-init0-quarkdb-create
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

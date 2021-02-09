@@ -16,6 +16,10 @@ customLabels:
   service: eos
   component: eos-qdb
 
+podAssignment:
+  enableNodeSelector: true
+  enablePodAntiAffinity: true
+
 service:
   xrootd_qdb_http:
     port: 7777
