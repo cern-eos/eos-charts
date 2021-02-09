@@ -5,6 +5,15 @@ image:
   tag: 4.8.31
   pullPolicy: Always
 
+customLabels:
+  service: eos
+  component: eos-mq
+
+podAssignment:
+  enableNodeSelector: false # Requires a node labeled as per customLabels. Set enableNodeAffinity, enableMgmColocation to false
+  enableNodeAffinity: true  # Requires a node labeled as 'service: eos'
+  enableMgmColocation: true # Weight 100 to colocation with 'component: eos-mgm'
+
 service:
   xrootd_mq:
     port: 1097
