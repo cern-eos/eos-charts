@@ -14,7 +14,12 @@ spec:
     metadata:
       labels:
         {{- include "mgm.selectorLabels" . | nindent 8 }}
+        {{- toYaml .Values.customLabels | nindent 8 }}
     spec:
+      {{- if .Values.podAssignment.enableNodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.customLabels | nindent 8 }}
+      {{- end }}
       initContainers:
         - name: eos-mgm-init0-logfolder-create
           image: alpine
