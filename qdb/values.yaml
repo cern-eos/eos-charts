@@ -33,12 +33,8 @@ startupProbe:
   periodSeconds: 10
 
 persistence:
-  enabled: false
+  enabled: true
+  storageClass: gp2
+  size: 20Gi
   accessModes:
     - ReadWriteOnce
-  size: 5Gi
-  ## If defined, storageClassName: <storageClass>
-  ## If set to "-", disable dynamic provisioning
-  ## If undefined or null, no storageClassName is
-  ##   set, choosing the default provisioner.
-  # storageClass: "-"
