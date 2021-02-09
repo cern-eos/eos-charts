@@ -43,7 +43,7 @@ spec:
                   operator: In
                   values:
                   - eos-mgm
-              topologyKey: kubernetes.io/hostname
+              topologyKey: "kubernetes.io/hostname"
         {{- end }}
       {{- end }}
       containers:
