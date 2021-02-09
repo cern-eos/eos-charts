@@ -10,8 +10,8 @@ customLabels:
   component: eos-fst
 
 podAssignment:
-  enableNodeSelector: true      # Requires a node labeled as per customLabels.
-  enablePodAntiAffinity: true   # Shard the stateful set on as many nodes as possible
+  enableNodeSelector: false     # Requires a node labeled as per customLabels.
+  enablePodAntiAffinity: false  # Shard the stateful set on as many nodes as possible
 
 service:
   fst:

@@ -17,8 +17,8 @@ customLabels:
   component: eos-qdb
 
 podAssignment:
-  enableNodeSelector: true      # Requires a node labeled as per customLabels
-  enablePodAntiAffinity: true   # Shard the 3 replicas on 3 different nodes
+  enableNodeSelector: false     # Requires a node labeled as per customLabels
+  enablePodAntiAffinity: false  # Shard the 3 replicas on 3 different nodes
 
 service:
   xrootd_qdb_http:

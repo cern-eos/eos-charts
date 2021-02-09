@@ -10,7 +10,7 @@ customLabels:
   component: eos-mgm
 
 podAssignment:
-  enableNodeSelector: true      # Requires a node labeled as per customLabels
+  enableNodeSelector: false     # Requires a node labeled as per customLabels
 
 mgmofs:
   instance: eosdockertest
