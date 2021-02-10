@@ -34,7 +34,7 @@ nslcd:
 
 image:
   repository: gitlab-registry.cern.ch/dss/eos
-  tag: 4.8.31
+  tag: 4.8.39
   pullPolicy: Always
 
 service:

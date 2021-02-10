@@ -9,7 +9,7 @@ clusterID: 0caee96b-1047-4892-b56f-88eed5e3ff92
 
 image:
   repository: gitlab-registry.cern.ch/dss/eos
-  tag: 4.8.31
+  tag: 4.8.39
   pullPolicy: Always
 
 service:
