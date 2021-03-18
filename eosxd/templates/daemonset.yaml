@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "eosxd.fullname" . }}
+  labels:
+    {{- include "eosxd.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "eosxd.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "eosxd.selectorLabels" . | nindent 8 }}
+    spec:
+      #hostPID: true
+      terminationGracePeriodSeconds: 60
+      #initContainers:
+      #  - name: eos-eosxd-init0-cleanup
+      #    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      #    imagePullPolicy: {{ .Values.image.pullPolicy }}
+      #    command: ["/bin/sleep", "infinity"]
+      containers:
+        - name: eos-eosxd
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/usr/bin/eosxd"]
+          args: ["-f", "-ofsname=sciencebox"]
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+          # 
+          # TODO: StartUp probe to be implemented
+          # {{- include "eosxd.startupProbe" . | nindent 10 }}
+          #
+          volumeMounts:
+            - name: eosxd-cfgmap-fuse-conf
+              mountPath: /etc/eos/fuse.sciencebox.conf
+              subPath: fuse.sciencebox.conf
+            - name: eosxd-eos-keytab
+              mountPath: /etc/eos/fuse.sss.keytab
+              subPath: fuse.sss.keytab
+            - name: eosxd-eos-export
+              mountPath: {{ .Values.eosxd.config.localmountdir }}
+      volumes:
+        - name: eosxd-cfgmap-fuse-conf
+          configMap:
+            name: {{ include "eosxd.fullname" . }}-cfgmap-fuse-conf
+            defaultMode: 0644
+        - name: eosxd-eos-keytab
+          secret:
+            secretName: {{ include "eosxd.fullname" . }}-cfgmap-fuse-keytab
+            defaultMode: 0400
+        - name: eosxd-eos-export
+          emptyDir:
+            medium: Memory

@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "eosxd.fullname" . }}-cfgmap-fuse-conf
+  labels:
+    {{- include "eosxd.labels" . | nindent 4 }}
+data:
+  fuse.sciencebox.conf: |
+    {{- with .Values.eosxd.config }}
+    {
+      "name": "eos-sciencebox",
+      "hostport": "{{ .eos_mgm_alias }}",
+      "remotemountdir": "{{ .remotemountdir }}",
+      "localmountdir": "{{ .localmountdir }}",
+      "auth": {
+        "shared-mount": {{ .auth.shared_mount | default 1 }},
+        "krb5": {{ .auth.krb5 | default 0 }},
+        "gsi-first": {{ .auth.gsi_first | default 1 }},
+        "sss": {{ .auth.sss | default 1 }}
+      },
+      "options": {
+        "hide-versions": {{ .options.hide_versions | default 0 }}
+      }
+    }
+    {{- end }}
+

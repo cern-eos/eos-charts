@@ -1,0 +1,18 @@
+image:
+  repository: gitlab-registry.cern.ch/dss/eos
+  tag: 4.8.23
+  pullPolicy: Always
+
+startupProbe:
+  enabled: false
+
+eosxd:
+  config:
+    eos_mgm_alias: eos-mgm.default.svc.cluster.local
+    remotemountdir: /eos
+    localmountdir: /eos
+    auth:
+      shared_mount: 1
+      sss: 1
+    options:
+      hide_versions: 0
