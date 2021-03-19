@@ -15,16 +15,6 @@ podAssignment:
 mgmofs:
   instance: eosdockertest
 
-spaceDefineDefault:
-  groupSize: 8
-  groupMod: 1
-
-recycleConfig:
-  size: 10G
-  inodes: 10M
-  lifetime: 604800
-  ratio: 0.2
-
 service:
   xrootd_mgm:
     port: 1094
