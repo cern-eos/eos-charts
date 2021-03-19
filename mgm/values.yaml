@@ -1,3 +1,10 @@
+replicaCount: 1
+
+image:
+  repository: gitlab-registry.cern.ch/dss/eos
+  tag: 4.8.39
+  pullPolicy: Always
+
 mgmofs:
   instance: eosdockertest
 
@@ -10,32 +17,6 @@ recycleConfig:
   inodes: 10M
   lifetime: 604800
   ratio: 0.2
-
-replicaCount: 1
-
-nscd:
-  image:
-    repository: gitlab-registry.cern.ch/sciencebox/docker-images/nscd
-    tag: stable
-
-nslcd:
-  image:
-    repository: gitlab-registry.cern.ch/sciencebox/docker-images/nslcd
-    tag: stable
-  config:
-    ldap_uri: ldap://diogo-test.cern.ch:9125
-    ldap_base: dc=example,dc=org
-    ldap_binddn: cn=admin,dc=example,dc=org
-    ldap_bindpw: admin
-    ldap_user_search_base: dc=example,dc=org
-    ldap_group_search_base: ou=groups,dc=example,dc=org
-    ldap_filter_passwd: (objectClass=posixAccount)
-    ldap_filter_group: (objectClass=group)
-
-image:
-  repository: gitlab-registry.cern.ch/dss/eos
-  tag: 4.8.39
-  pullPolicy: Always
 
 service:
   xrootd_mgm:
@@ -65,3 +46,22 @@ persistence:
   ## If undefined or null, no storageClassName is
   ##   set, choosing the default provisioner.
   # storageClass: "-"
+
+nscd:
+  image:
+    repository: gitlab-registry.cern.ch/sciencebox/docker-images/nscd
+    tag: stable
+
+nslcd:
+  image:
+    repository: gitlab-registry.cern.ch/sciencebox/docker-images/nslcd
+    tag: stable
+  config:
+    ldap_uri: ldap://diogo-test.cern.ch:9125
+    ldap_base: dc=example,dc=org
+    ldap_binddn: cn=admin,dc=example,dc=org
+    ldap_bindpw: admin
+    ldap_user_search_base: dc=example,dc=org
+    ldap_group_search_base: ou=groups,dc=example,dc=org
+    ldap_filter_passwd: (objectClass=posixAccount)
+    ldap_filter_group: (objectClass=group)
