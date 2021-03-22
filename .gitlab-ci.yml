@@ -5,8 +5,8 @@
 #     file: '.gitlab-ci.yml'
 
 variables:
-  HELM_VERSION: v3.2.4
-  HELM_CHART_REPO: eos-sandbox
+  HELM_VERSION: v3.5.2
+  HELM_CHART_REPO: eos
 
 stages:
   - build
