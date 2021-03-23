@@ -98,8 +98,8 @@ spec:
               add: ["SYS_PTRACE"]
           {{- include "mgm.startupProbe" . | nindent 10 }}
           volumeMounts:
-            - name: nscd-socket
-              mountPath: /run/nscd
+            ## - name: nscd-socket
+            ##   mountPath: /run/nscd
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
@@ -107,41 +107,41 @@ spec:
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
-        - name: nslcd
-          image: "{{ .Values.nslcd.image.repository }}:{{ .Values.nslcd.image.tag }}"
-          imagePullPolicy: {{ .Values.nslcd.image.pullPolicy | default .Values.image.pullPolicy }}
-          volumeMounts:
-            - name: nslcd-cfgmap-nslcd-conf
-              mountPath: /etc/nslcd.conf
-              subPath: nslcd.conf
-            - name: nslcd-socket
-              mountPath: /run/nslcd
-        - name: nscd
-          image: "{{ .Values.nscd.image.repository }}:{{ .Values.nscd.image.tag }}"
-          imagePullPolicy: {{ .Values.nscd.image.pullPolicy | default .Values.image.pullPolicy }}
-          volumeMounts:
-            - name: cfgmap-nsswitch-conf
-              mountPath: /etc/nsswitch.conf
-              subPath: nsswitch.conf
-            - name: nslcd-socket
-              mountPath: /run/nslcd
-            - name: nscd-socket
-              mountPath: /run/nscd
+        ##- name: nslcd
+        ##  image: "{{ .Values.nslcd.image.repository }}:{{ .Values.nslcd.image.tag }}"
+        ##  imagePullPolicy: {{ .Values.nslcd.image.pullPolicy | default .Values.image.pullPolicy }}
+        ##  volumeMounts:
+        ##    - name: nslcd-cfgmap-nslcd-conf
+        ##      mountPath: /etc/nslcd.conf
+        ##      subPath: nslcd.conf
+        ##    - name: nslcd-socket
+        ##      mountPath: /run/nslcd
+        ##- name: nscd
+        ##  image: "{{ .Values.nscd.image.repository }}:{{ .Values.nscd.image.tag }}"
+        ##  imagePullPolicy: {{ .Values.nscd.image.pullPolicy | default .Values.image.pullPolicy }}
+        ##  volumeMounts:
+        ##    - name: cfgmap-nsswitch-conf
+        ##      mountPath: /etc/nsswitch.conf
+        ##      subPath: nsswitch.conf
+        ##    - name: nslcd-socket
+        ##      mountPath: /run/nslcd
+        ##    - name: nscd-socket
+        ##      mountPath: /run/nscd
       volumes:
-        - name: nslcd-cfgmap-nslcd-conf
-          configMap:
-            name: {{ include "mgm.fullname" . }}-cfgmap-nslcd-conf
-            defaultMode: 0600
-        - name: cfgmap-nsswitch-conf
-          configMap:
-            name: {{ include "mgm.fullname" . }}-cfgmap-nsswitch-conf
-            defaultMode: 0600
-        - name: nslcd-socket
-          emptyDir:
-            medium: Memory
-        - name: nscd-socket
-          emptyDir:
-            medium: Memory
+        ## - name: nslcd-cfgmap-nslcd-conf
+        ##   configMap:
+        ##     name: {{ include "mgm.fullname" . }}-cfgmap-nslcd-conf
+        ##     defaultMode: 0600
+        ## - name: cfgmap-nsswitch-conf
+        ##   configMap:
+        ##     name: {{ include "mgm.fullname" . }}-cfgmap-nsswitch-conf
+        ##     defaultMode: 0600
+        ## - name: nslcd-socket
+        ##   emptyDir:
+        ##     medium: Memory
+        ## - name: nscd-socket
+        ##   emptyDir:
+        ##     medium: Memory
         - name: mgm-cfgmap-xrd-cf-mgm
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
