@@ -103,6 +103,9 @@ spec:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
+            - name: mgm-etc-passwd
+              mountPath: /etc/passwd
+              subPath: passwd
             - name: mgm-data
               mountPath: /var/eos
             - name: mgm-logs
@@ -146,6 +149,10 @@ spec:
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
             defaultMode: 0755
+        - name: mgm-etc-passwd
+          configMap:
+            name: {{ include "mgm.fullname" . }}-cfgmap-etc-passwd
+            defaultMode: 0644
         - name: mgm-cfgmap-mgm-init
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-mgm-init

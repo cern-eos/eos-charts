@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mgm.fullname" . }}-cfgmap-etc-passwd
+  labels:
+    {{- include "mgm.labels" . | nindent 4 }}
+data:
+  passwd: |
+    root:x:0:0:root:/root:/bin/bash
+    bin:x:1:1:bin:/bin:/sbin/nologin
+    daemon:x:2:2:daemon:/sbin:/sbin/nologin
+    adm:x:3:4:adm:/var/adm:/sbin/nologin
+    lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+    sync:x:5:0:sync:/sbin:/bin/sync
+    shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+    halt:x:7:0:halt:/sbin:/sbin/halt
+    mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+    operator:x:11:0:operator:/root:/sbin/nologin
+    games:x:12:100:games:/usr/games:/sbin/nologin
+    ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+    nobody:x:99:99:Nobody:/:/sbin/nologin
+    systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+    dbus:x:81:81:System message bus:/:/sbin/nologin
+    eos-user:x:1000:1000::/home/eos-user:/bin/bash
+    polkitd:x:999:997:User for polkitd:/:/sbin/nologin
+    tss:x:59:59:Account used by the trousers package to sandbox the tcsd daemon:/dev/null:/sbin/nologin
+    xrootd:x:998:996:XRootD runtime user:/var/spool/xrootd:/sbin/nologin
+    eosarchi:x:72811:995::/home/eosarchi:/bin/bash
+    dalvesde:x:103421:99::/home/dalvesde:/bin/bash
+    ebocchi:x:99090:99::/home/ebocchi:/bin/bash
+    mliu:x:34408:99::/home/mliu:/bin/bash
+    vlimant:x:2547:99::/home/vlimant:/bin/bash
+    mrieger:x:42240:99::/home/mrieger:/bin/bash
+    ozapatam:x:85369:99::/home/ozapatam:/bin/bash
