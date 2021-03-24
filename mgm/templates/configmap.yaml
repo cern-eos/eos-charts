@@ -140,6 +140,10 @@ data:
     echo "INFO: Enabling mapping via SSS..."
     eos -b vid enable sss
 
+    # Add daemon to sudoers list
+    echo "INFO: Adding daemon to sudoers list..."
+    eos -b vid set membership daemon +sudo
+
     ### Save config and leave
     echo "INFO: Saving configuration..."
     eos -b config save enable_sss -f
