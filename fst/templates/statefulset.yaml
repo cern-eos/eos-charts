@@ -45,6 +45,8 @@ spec:
           volumeMounts:
             - name: fst-storage
               mountPath: /fst_storage
+        {{- if .Values.selfRegister }}
+        {{- if .Values.selfRegister.enable }}
         - name: eos-fst-init1-fst-init
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -69,6 +71,8 @@ spec:
             - name: fst-cfgmap-fst-init
               mountPath: /root/fst_init.sh
               subPath: fst_init.sh
+        {{- end }}
+        {{- end }}
       containers:
         - name: eos-fst
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

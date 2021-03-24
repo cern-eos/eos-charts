@@ -13,6 +13,11 @@ podAssignment:
   enableNodeSelector: false     # Requires a node labeled as per customLabels.
   enablePodAntiAffinity: false  # Shard the stateful set on as many nodes as possible
 
+selfRegister:
+  enable: true
+  space: default
+  config: rw
+
 service:
   fst:
     port: 1095
