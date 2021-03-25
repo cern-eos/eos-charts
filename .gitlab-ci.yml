@@ -74,6 +74,7 @@ deploy:
     - |
         set -x
         for chart in $(ls -d */Chart.yaml | xargs dirname); do
+            helm dependency update ${chart}
             helm push ${chart}/ ${HELM_CHART_REPO}
         done
   only:
