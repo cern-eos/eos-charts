@@ -1,3 +1,5 @@
+{{- $pullPolicy := .Values.image.pullPolicy -}}
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -23,7 +25,7 @@ spec:
       initContainers:
         - name: eos-mgm-init0-logfolder-create
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ $pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["for fld in mgm tx; do mkdir -p /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
           volumeMounts:
@@ -31,7 +33,7 @@ spec:
               mountPath: /var/log/eos
         - name: eos-mgm-init1-vareos-create
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ $pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["for fld in ns-queue; do mkdir -p /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]
           volumeMounts:
@@ -39,7 +41,7 @@ spec:
               mountPath: /var/eos
         - name: eos-mgm-init2-mgm-init
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ $pullPolicy }}
           envFrom:
             - configMapRef:
                 name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos
@@ -63,7 +65,7 @@ spec:
       containers:
         - name: eos-mgm
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ $pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]   # TODO: Check which xrootd binary should be used
           ports:
@@ -98,8 +100,10 @@ spec:
               add: ["SYS_PTRACE"]
           {{- include "mgm.startupProbe" . | nindent 10 }}
           volumeMounts:
+            {{- if .Values.ldapBindUsers.enable }}
             - name: nscd-socket
               mountPath: /run/nscd
+            {{- end }}
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
@@ -107,9 +111,12 @@ spec:
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
+        {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd
-          image: "{{ .Values.nslcd.image.repository }}:{{ .Values.nslcd.image.tag }}"
-          imagePullPolicy: {{ .Values.nslcd.image.pullPolicy | default .Values.image.pullPolicy }}
+          {{- with .Values.ldapBindUsers.nslcd.image }}
+          image: "{{ .repository }}:{{ .tag }}"
+          imagePullPolicy: {{ .pullPolicy | default $pullPolicy }}
+          {{- end }}
           volumeMounts:
             - name: nslcd-cfgmap-nslcd-conf
               mountPath: /etc/nslcd.conf
@@ -117,8 +124,10 @@ spec:
             - name: nslcd-socket
               mountPath: /run/nslcd
         - name: nscd
-          image: "{{ .Values.nscd.image.repository }}:{{ .Values.nscd.image.tag }}"
-          imagePullPolicy: {{ .Values.nscd.image.pullPolicy | default .Values.image.pullPolicy }}
+          {{- with .Values.ldapBindUsers.nscd.image }}
+          image: "{{ .repository }}:{{ .tag }}"
+          imagePullPolicy: {{ .pullPolicy | default $pullPolicy }}
+          {{- end }}
           volumeMounts:
             - name: cfgmap-nsswitch-conf
               mountPath: /etc/nsswitch.conf
@@ -127,7 +136,9 @@ spec:
               mountPath: /run/nslcd
             - name: nscd-socket
               mountPath: /run/nscd
+        {{- end }}
       volumes:
+        {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd-cfgmap-nslcd-conf
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-nslcd-conf
@@ -142,6 +153,7 @@ spec:
         - name: nscd-socket
           emptyDir:
             medium: Memory
+        {{- end }}
         - name: mgm-cfgmap-xrd-cf-mgm
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm

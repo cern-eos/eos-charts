@@ -1,3 +1,4 @@
+{{- if .Values.ldapBindUsers.enable }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,7 +7,7 @@ metadata:
     {{- include "mgm.labels" . | nindent 4 }}
 data:
   nslcd.conf: |
-    {{- with .Values.nslcd.config }}
+    {{- with .Values.ldapBindUsers.nslcd.config }}
     # This is the configuration file for the LDAP nameservice
     # switch library's nslcd daemon. It configures the mapping
     # between NSS names (see /etc/nsswitch.conf) and LDAP
@@ -159,3 +160,4 @@ data:
     uid nslcd
     gid ldap
     {{- end }}
+{{- end }}

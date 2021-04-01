@@ -1,3 +1,4 @@
+{{- if .Values.ldapBindUsers.enable }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -62,3 +63,4 @@ data:
     publickey:  nisplus
     automount:  files
     aliases:    files nisplus
+{{- end }}
