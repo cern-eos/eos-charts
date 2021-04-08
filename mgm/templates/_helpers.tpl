@@ -63,6 +63,36 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+MGM FQDN definition
+  To set environment variables, e.g., EOS_MGM_MASTER1/2, EOS_MGM_ALIAS, ...
+*/}}
+{{- define "mgm.fqdn" -}}
+{{- printf "%s-0.%s.%s.svc.cluster.local" .Release.Name .Release.Name .Release.Namespace }}
+{{- end }}
+
+{{/*
+QDB cluster hostname definition
+*/}}
+{{- define "qdbcluster.hostname" -}}
+{{- if .Values.global }}
+  {{- .Values.global.hostnames.qdbcluster }}
+{{- else }}
+  {{- .Values.hostnames.qdbcluster }}
+{{- end }}
+{{- end }}
+
+{{/*
+MQ (broker) hostname definition
+*/}}
+{{- define "mq.hostname" -}}
+{{- if .Values.global }}
+  {{- .Values.global.hostnames.mq }}
+{{- else }}
+  {{- .Values.hostnames.mq }}
+{{- end }}
+{{- end }}
+
+{{/*
 StartupProbe definition
 */}}
 {{- define "mgm.startupProbe" -}}

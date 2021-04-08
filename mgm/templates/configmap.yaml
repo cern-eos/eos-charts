@@ -42,7 +42,7 @@ data:
     #mgmofs.authorize 1
     ###########################################################
     #mgmofs.trace all debug
-    mgmofs.broker root://eos-mq.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
+    mgmofs.broker root://{{ include "mq.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     
     # configuration and namespace location
     mgmofs.configdir /var/eos/config
@@ -81,7 +81,7 @@ data:
     ##### Namespace plugin implementation #####################
     #mgmofs.nslib /usr/lib64/libEosNsInMemory.so
     mgmofs.nslib /usr/lib64/libEosNsQuarkdb.so
-    mgmofs.qdbcluster eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777
+    mgmofs.qdbcluster {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
     mgmofs.qdbpassword_file /etc/eos.keytab
     mgmofs.cfgtype quarkdb
 
@@ -121,7 +121,7 @@ data:
 
     # Check QDB backend is running
     echo "INFO: Checking QDB is running..."
-    init_probe redis-cli -h eos-qdb.{{ .Release.Namespace }}.svc.cluster.local -p 7777 ping
+    init_probe redis-cli -h {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local -p 7777 ping
     echo "INFO: QDB is online."
 
     # Start the MGM process in background so that we can run other commands

@@ -15,6 +15,21 @@ podAssignment:
 mgmofs:
   instance: eosdockertest
 
+#
+# Short hostnames of the components to be reached from the mgm.
+# The corresponding FQDNs are generated appending the namespace and '.svc.cluster.local'.
+#
+# These values depend on the Helm release name given to each component.
+# The provided defaults are for a qdb release named 'eos-qdb', etc.
+#
+# They are overridden by .Values.global.hostnames, if defined.
+#
+hostnames:
+  # Hostname of the mq (aka, broker).
+  mq: "eos-mq"
+  # Hostname of the quarkdb cluster.
+  qdbcluster: "eos-qdb"
+
 service:
   xrootd_mgm:
     port: 1094
