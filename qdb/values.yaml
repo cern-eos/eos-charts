@@ -1,10 +1,14 @@
+#
 # Set replicaCount to:
 #   1 for standalone operation
 #   3 (or more) to create a distributed cluster with raft consensus replication
+#
 replicaCount: 3
 
+#
 # The clusted ID is just a random string that identifies the cluster uniquely
 #   See the docs at https://quarkdb.web.cern.ch/quarkdb/docs/master/configuration/
+#
 clusterID: 24964842-7852-48fd-bbb9-43beb5bfeea9
 
 image:
@@ -12,13 +16,25 @@ image:
   tag: 4.8.39
   pullPolicy: Always
 
+#
+# Assign qdb pod to a node with a specific label
+#   and distribute them on different nodes to avoid single points of failure.
+#
+podAssignment:
+  # If true, requires a node labeled as per customLabels (see below)
+  enableNodeSelector: false
+  # Shard the cluster members on different nodes
+  enablePodAntiAffinity: false
+
+#
+# Custom labels to identify eos qdb pod(s).
+#
+# They are used by node selection, if enabled (see above).
+# Label nodes accordingly to avoid scheduling problems.
+#
 customLabels:
   service: eos
   component: eos-qdb
-
-podAssignment:
-  enableNodeSelector: false     # Requires a node labeled as per customLabels
-  enablePodAntiAffinity: false  # Shard the 3 replicas on 3 different nodes
 
 service:
   xrootd_qdb_http:
