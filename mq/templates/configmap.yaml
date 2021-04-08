@@ -39,7 +39,7 @@ data:
     mq.queue /eos/
 
     ##### QuarkDB #############################################
-    mq.qdbcluster eos-qdb.{{ .Release.Namespace }}.svc.cluster.local:7777
+    mq.qdbcluster {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
     mq.qdbpassword_file /etc/eos.keytab
     ###########################################################
 

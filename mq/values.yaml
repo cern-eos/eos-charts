@@ -14,6 +14,21 @@ podAssignment:
   enableNodeAffinity: false     # Requires a node labeled as 'service: eos'
   enableMgmColocation: false    # Weight 100 to colocation with 'component: eos-mgm'
 
+#
+# Short hostnames of the components to be reached from the mq.
+# The corresponding FQDNs are generated appending the namespace and '.svc.cluster.local'.
+#
+# These values depend on the Helm release name given to each component.
+# The provided defaults are for a mgm release named 'eos-mgm', etc.
+#
+# They are overridden by .Values.global.hostnames, if defined.
+#
+hostnames:
+  # Hostname of the mgm.
+  mgm: "eos-mgm"
+  # Hostname of the quarkdb cluster.
+  qdbcluster: "eos-qdb"
+
 service:
   xrootd_mq:
     port: 1097
