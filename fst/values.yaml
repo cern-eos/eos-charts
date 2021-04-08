@@ -14,7 +14,7 @@ podAssignment:
   enableNodeSelector: false
   # If true, shard the stateful set on as many nodes as possible.
   # Highly recommended for production scenarios.
-  enablePodAntiAffinity: false
+  enablePodAntiAffinity: true
 
 #
 # Custom labels to identify eos fst pods.
