@@ -5,14 +5,28 @@ image:
   tag: 4.8.39
   pullPolicy: Always
 
+#
+# Assign mq pod to a node with a specific label or express an affinity with the mgm.
+# Node selection and affinity are mutually exclusive.
+#
+podAssignment:
+  # If true, requires a node labeled as per customLabels (see below).
+  #   Set enableNodeAffinity, enableMgmColocation to false.
+  enableNodeSelector: false
+  # If true, requires a node labeled as 'service: eos'
+  enableNodeAffinity: false
+  # If true, assign weight 100 to colocation with 'component: eos-mgm'
+  enableMgmColocation: false
+
+#
+# Custom labels to identify eos mq pod.
+#
+# They are used by node selection, if enabled (see above).
+# Label nodes accordingly to avoid scheduling problems.
+#
 customLabels:
   service: eos
   component: eos-mq
-
-podAssignment:
-  enableNodeSelector: false     # Requires a node labeled as per customLabels. Set enableNodeAffinity, enableMgmColocation to false
-  enableNodeAffinity: false     # Requires a node labeled as 'service: eos'
-  enableMgmColocation: false    # Weight 100 to colocation with 'component: eos-mgm'
 
 #
 # Short hostnames of the components to be reached from the mq.
