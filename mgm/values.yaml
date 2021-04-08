@@ -1,18 +1,31 @@
-replicaCount: 1
-
 image:
   repository: gitlab-registry.cern.ch/dss/eos
   tag: 4.8.39
   pullPolicy: Always
 
+#
+# Assign mgm pod to a node with a specific label.
+# If true, requires a node labeled as per customLabels (see below).
+#
+podAssignment:
+  enableNodeSelector: false
+
+#
+# Custom labels to identify eos mgm pod.
+#
+# They are used by node selection, if enabled (see above).
+# Label nodes accordingly to avoid scheduling problems.
+#
 customLabels:
   service: eos
   component: eos-mgm
 
-podAssignment:
-  enableNodeSelector: false     # Requires a node labeled as per customLabels
-
+#
+# mgm configuration
+#
 mgmofs:
+  # Name of the eos instance.
+  # Will create the directory tree `/eos/<instance>`
   instance: eosdockertest
 
 #
