@@ -6,7 +6,7 @@ metadata:
     {{- include "mq.labels" . | nindent 4 }}
 spec:
   serviceName: {{ include "mq.fullname" . }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ default 1 .Values.replicas }}
   selector:
     matchLabels:
       {{- include "mq.selectorLabels" . | nindent 6 }}
