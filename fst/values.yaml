@@ -5,13 +5,26 @@ image:
   tag: 4.8.39
   pullPolicy: Always
 
+#
+# Assign fst pods to a node with a specific label
+#   and distribute them on different nodes to avoid single points of failure.
+#
+podAssignment:
+  # If true, requires a node labeled as per customLabels.
+  enableNodeSelector: false
+  # If true, shard the stateful set on as many nodes as possible.
+  # Highly recommended for production scenarios.
+  enablePodAntiAffinity: false
+
+#
+# Custom labels to identify eos fst pods.
+#
+# They are used by node selection, if enabled (see above).
+# Label nodes accordingly to avoid scheduling problems.
+#
 customLabels:
   service: eos
   component: eos-fst
-
-podAssignment:
-  enableNodeSelector: false     # Requires a node labeled as per customLabels.
-  enablePodAntiAffinity: false  # Shard the stateful set on as many nodes as possible
 
 #
 # Short hostnames of the components to be reached from the fst.
