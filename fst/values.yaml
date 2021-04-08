@@ -1,4 +1,4 @@
-replicaCount: 8
+replicaCount: 4
 
 image:
   repository: gitlab-registry.cern.ch/dss/eos
@@ -12,6 +12,23 @@ customLabels:
 podAssignment:
   enableNodeSelector: false     # Requires a node labeled as per customLabels.
   enablePodAntiAffinity: false  # Shard the stateful set on as many nodes as possible
+
+#
+# Short hostnames of the components to be reached from the fst.
+# The corresponding FQDNs are generated appending the namespace and '.svc.cluster.local'.
+#
+# These values depend on the Helm release name given to each component.
+# The provided defaults are for a mgm release named 'eos-mgm', etc.
+#
+# They are overridden by .Values.global.hostnames, if defined.
+#
+hostnames:
+  # Hostname of the mgm.
+  mgm: "eos-mgm"
+  # Hostname of the quarkdb cluster.
+  qdbcluster: "eos-qdb"
+  # Hostname of the mq (aka, broker)
+  mq: "eos-mq"
 
 selfRegister:
   enable: true
