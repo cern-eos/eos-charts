@@ -100,6 +100,10 @@ spec:
               add: ["SYS_PTRACE"]
           {{- include "mgm.startupProbe" . | nindent 10 }}
           volumeMounts:
+            - name: sec-eoskeytab
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
+              # readOnly: true
             {{- if .Values.ldapBindUsers.enable }}
             - name: nscd-socket
               mountPath: /run/nscd
@@ -138,6 +142,10 @@ spec:
               mountPath: /run/nscd
         {{- end }}
       volumes:
+        - name: sec-eoskeytab
+          secret:
+            secretName: eos-keytab
+            defaultMode: 0400
         {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd-cfgmap-nslcd-conf
           configMap:
