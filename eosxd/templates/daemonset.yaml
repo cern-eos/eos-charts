@@ -47,7 +47,7 @@ spec:
               mountPath: /etc/eos/fuse.sss.keytab
               subPath: fuse.sss.keytab
             - name: eosxd-eos-export
-              mountPath: {{ .Values.eosxd.config.localmountdir }}
+              mountPath: {{ .Values.eosxd.config.localmountdir }}:rshared
       volumes:
         - name: eosxd-cfgmap-fuse-conf
           configMap:
@@ -58,5 +58,6 @@ spec:
             secretName: {{ include "eosxd.fullname" . }}-cfgmap-fuse-keytab
             defaultMode: 0400
         - name: eosxd-eos-export
-          emptyDir:
-            medium: Memory
+          hostPath:
+            path: /eos
+            type: DirectoryOrCreate
