@@ -47,7 +47,7 @@ spec:
               mountPath: /etc/eos/fuse.sss.keytab
               subPath: fuse.sss.keytab
             - name: eosxd-eos-export
-              mountPath: {{ .Values.eosxd.config.localmountdir }}:rshared
+              mountPath: /eos:rshared
       volumes:
         - name: eosxd-cfgmap-fuse-conf
           configMap:

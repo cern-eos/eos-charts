@@ -31,7 +31,6 @@ eosxd:
   config:
     eos_mgm_alias: eos-mgm.default.svc.cluster.local
     remotemountdir: /eos
-    localmountdir: /eos
     auth:
       shared_mount: 1
       sss: 1

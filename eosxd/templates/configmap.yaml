@@ -11,7 +11,7 @@ data:
       "name": "eos-sciencebox",
       "hostport": "{{ .eos_mgm_alias }}",
       "remotemountdir": "{{ .remotemountdir }}",
-      "localmountdir": "{{ .localmountdir }}",
+      "localmountdir": "/eos",
       "auth": {
         "shared-mount": {{ .auth.shared_mount | default 1 }},
         "krb5": {{ .auth.krb5 | default 0 }},
