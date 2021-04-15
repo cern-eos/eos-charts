@@ -28,6 +28,7 @@ customLabels:
 # Configuration for eosxd.
 #
 eosxd:
+  keytab: ""    # Must be base64 encoded
   hostMountpoint: /eos
   hostPID: true
   hostNetwork: false

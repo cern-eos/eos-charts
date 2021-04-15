@@ -11,4 +11,4 @@ metadata:
   labels:
     {{- include "eosxd.labels" . | nindent 4 }}
 data:
-  fuse.sss.keytab: "MCB1OmRhZW1vbiBnOmRhZW1vbiBuOmVvcy10ZXN0KyBOOjY5Mjc1ODI2MjY5NTgwMTY1MTMgYzoxNjEyOTUzNTIyIGU6MCBmOjAgazo0ZDZmYWE1ODI5ZDQ0YjMyYTE5Yzc0ZTI5MTVkOTRkZDg2MTI1YmZlN2RmZmZiN2MyYmFkY2IwMDBmOWE4MzI3"
+  fuse.sss.keytab: {{ default "MCB1OmRhZW1vbiBnOmRhZW1vbiBuOmVvcy10ZXN0KyBOOjY5Mjc1ODI2MjY5NTgwMTY1MTMgYzoxNjEyOTUzNTIyIGU6MCBmOjAgazo0ZDZmYWE1ODI5ZDQ0YjMyYTE5Yzc0ZTI5MTVkOTRkZDg2MTI1YmZlN2RmZmZiN2MyYmFkY2IwMDBmOWE4MzI3" .Values.eosxd.keytab }}
