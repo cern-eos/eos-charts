@@ -14,9 +14,11 @@ data:
       "localmountdir": "/eos",
       "auth": {
         "shared-mount": {{ .auth.shared_mount | default 1 }},
+        "sss": {{ .auth.sss | default 1 }},
+        "ssskeytab": "/etc/eos/fuse.sss.keytab",
+        "gsi-first": {{ .auth.gsi_first | default 0 }},
         "krb5": {{ .auth.krb5 | default 0 }},
-        "gsi-first": {{ .auth.gsi_first | default 1 }},
-        "sss": {{ .auth.sss | default 1 }}
+        "oauth2": {{ .auth.oauth2 | default 1 }}
       },
       "options": {
         "hide-versions": {{ .options.hide_versions | default 0 }}
