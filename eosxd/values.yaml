@@ -39,5 +39,8 @@ eosxd:
     auth:
       shared_mount: 1
       sss: 1
+      gsi-first: 0
+      krb5: 0
+      oauth2: 1
     options:
       hide_versions: 0
