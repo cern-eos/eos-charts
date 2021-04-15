@@ -14,7 +14,7 @@ spec:
         {{- include "eosxd.selectorLabels" . | nindent 8 }}
         {{- toYaml .Values.customLabels | nindent 8 }}
     spec:
-      #hostPID: true
+      hostPID: {{ default false .Values.eosxd.hostPID }}
       {{- if .Values.podAssignment.enableNodeSelector }}
       nodeSelector:
         {{- toYaml .Values.customLabels | nindent 8 }}
