@@ -1,8 +1,8 @@
 # eosxd chart
-=====
 
 Helm Chart for the deployment of the EOS Fusex mount.
 
+-----
 
 ### What for
 This chart provides the ability to run an EOS Fusex mount in a pod.
