@@ -59,6 +59,14 @@ hostnames:
   # Hostname of the mq (aka, broker)
   mq: "eos-mq"
 
+#
+# Self-registration of the FST filesystem in EOS
+#
+# When enable, the FST will register the available filesystem upon booting.
+#   It is possible to configure:
+#   - the eos space where the file system should be added, and
+#   - the configuration of the filesystem (rw|wo|ro|drain|draindead|off|empty)
+#
 selfRegister:
   enable: true
   space: default
