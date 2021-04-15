@@ -1,6 +1,6 @@
 image:
   repository: gitlab-registry.cern.ch/dss/eos
-  tag: 4.8.23
+  tag: 4.8.39
   pullPolicy: Always
 
 startupProbe:
