@@ -32,7 +32,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/usr/bin/eosxd"]
-          args: ["-f", "-ofsname=sciencebox"]
+          args: ["-f", "-ofsname=eos"]
           securityContext:
             privileged: true
             capabilities:
@@ -43,8 +43,8 @@ spec:
           #
           volumeMounts:
             - name: eosxd-cfgmap-fuse-conf
-              mountPath: /etc/eos/fuse.sciencebox.conf
-              subPath: fuse.sciencebox.conf
+              mountPath: /etc/eos/fuse.eos.conf
+              subPath: fuse.eos.conf
             - name: eosxd-eos-keytab
               mountPath: /etc/eos/fuse.sss.keytab
               subPath: fuse.sss.keytab

@@ -5,10 +5,10 @@ metadata:
   labels:
     {{- include "eosxd.labels" . | nindent 4 }}
 data:
-  fuse.sciencebox.conf: |
+  fuse.eos.conf: |
     {{- with .Values.eosxd.config }}
     {
-      "name": "eos-sciencebox",
+      "name": "eos",
       "hostport": "{{ .eos_mgm_alias }}",
       "remotemountdir": "{{ .remotemountdir }}",
       "localmountdir": "/eos",
