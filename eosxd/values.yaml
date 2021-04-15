@@ -32,7 +32,7 @@ eosxd:
   hostMountpoint: /eos
   hostPID: true
   hostNetwork: false
-  dnsPolicy: Default
+  dnsPolicy: ClusterFirst
   config:
     eos_mgm_alias: eos-mgm.default.svc.cluster.local
     remotemountdir: /eos

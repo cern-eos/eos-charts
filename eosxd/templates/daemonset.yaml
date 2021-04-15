@@ -16,7 +16,7 @@ spec:
     spec:
       hostPID: {{ default false .Values.eosxd.hostPID }}
       hostNetwork: {{ default false .Values.eosxd.hostNetwork }}
-      dnsPolicy: {{ default "Default" .Values.eosxd.dnsPolicy }}
+      dnsPolicy: {{ default "ClusterFirst" .Values.eosxd.dnsPolicy }}
       {{- if .Values.podAssignment.enableNodeSelector }}
       nodeSelector:
         {{- toYaml .Values.customLabels | nindent 8 }}
