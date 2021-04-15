@@ -30,6 +30,8 @@ customLabels:
 eosxd:
   hostMountpoint: /eos
   hostPID: true
+  hostNetwork: false
+  dnsPolicy: Default
   config:
     eos_mgm_alias: eos-mgm.default.svc.cluster.local
     remotemountdir: /eos
