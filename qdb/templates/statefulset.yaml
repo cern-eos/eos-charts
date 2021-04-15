@@ -16,6 +16,8 @@ spec:
         {{- include "qdb.selectorLabels" . | nindent 8 }}
         {{- toYaml .Values.customLabels | nindent 8 }}
     spec:
+      hostNetwork: {{ default false .Values.hostNetwork }}
+      dnsPolicy: {{ default "ClusterFirst" .Values.dnsPolicy }}
       {{- if .Values.podAssignment.enableNodeSelector }}
       nodeSelector:
         {{- toYaml .Values.customLabels | nindent 8 }}

@@ -21,12 +21,20 @@ customLabels:
   component: eos-mgm
 
 #
-# mgm configuration
+# Network configuration.
 #
-mgmofs:
-  # Name of the eos instance.
-  # Will create the directory tree `/eos/<instance>`
-  instance: eosdockertest
+# hostNetwork allows the pod to use the host network namespace.
+#   Available options: true, false
+#   Default: false
+#
+# dnsPolicy regulates how the pod resolves hostnames with DNS servers.
+#   In case hostNetwork is set to true, dnsPolicy must be ClusterFirstWithHostNet
+#   Documentation: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+#   Available options: Default, ClusterFirst, ClusterFirstWithHostNet, None
+#   Default: ClusterFirst
+#
+hostNetwork: false
+dnsPolicy: ClusterFirst
 
 #
 # Short hostnames of the components to be reached from the mgm.
@@ -42,6 +50,14 @@ hostnames:
   mq: "eos-mq"
   # Hostname of the quarkdb cluster.
   qdbcluster: "eos-qdb"
+
+#
+# mgm configuration
+#
+mgmofs:
+  # Name of the eos instance.
+  # Will create the directory tree `/eos/<instance>`
+  instance: eosdockertest
 
 service:
   xrootd_mgm:

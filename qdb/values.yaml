@@ -36,6 +36,22 @@ customLabels:
   service: eos
   component: eos-qdb
 
+#
+# Network configuration.
+#
+# hostNetwork allows the pod to use the host network namespace.
+#   Available options: true, false
+#   Default: false
+#
+# dnsPolicy regulates how the pod resolves hostnames with DNS servers.
+#   In case hostNetwork is set to true, dnsPolicy must be ClusterFirstWithHostNet
+#   Documentation: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+#   Available options: Default, ClusterFirst, ClusterFirstWithHostNet, None
+#   Default: ClusterFirst
+#
+hostNetwork: false
+dnsPolicy: ClusterFirst
+
 service:
   xrootd_qdb_http:
     port: 7777
