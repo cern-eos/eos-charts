@@ -12,8 +12,13 @@ spec:
     metadata:
       labels:
         {{- include "eosxd.selectorLabels" . | nindent 8 }}
+        {{- toYaml .Values.customLabels | nindent 8 }}
     spec:
       #hostPID: true
+      {{- if .Values.podAssignment.enableNodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.customLabels | nindent 8 }}
+      {{- end }}
       terminationGracePeriodSeconds: 60
       #initContainers:
       #  - name: eos-eosxd-init0-cleanup
