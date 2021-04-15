@@ -2,8 +2,8 @@ apiVersion: v2
 #
 name: eosxd
 type: application
-version: 0.0.1
-appVersion: 4.8.23
+version: 0.0.2
+appVersion: 4.8.39
 #
 description: An EOS FuseX chart
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg 
