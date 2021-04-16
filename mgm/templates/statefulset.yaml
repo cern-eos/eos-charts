@@ -8,7 +8,7 @@ metadata:
     {{- include "mgm.labels" . | nindent 4 }}
 spec:
   serviceName: {{ include "mgm.fullname" . }}
-  replicas: {{ default 1 .Values.replicas }}
+  replicas: {{ default 1 .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "mgm.selectorLabels" . | nindent 6 }}
