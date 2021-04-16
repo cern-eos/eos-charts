@@ -7,7 +7,7 @@
 
 ### What for
 This chart provides the ability to run an EOS Fusex mount in a pod.
-The EOS mount is exposed on the host via a bind mount so that other conatiners (or processes running on the host) can access it. The default path on the host is `/eos`.
+The EOS mount is exposed on the host via a bind mount so that other containers (or processes running on the host) can access it. The default path on the host is `/eos`.
 The chart deploys EOS Fusex clients as a daemonSet that will run on each host of the cluster or on a subset of nodes identified by custom labels.
 
 
@@ -18,23 +18,16 @@ helm repo add eos https://registry.cern.ch/chartrepo/eos
 helm repo update 
 ```
 
-
-### Pull the eosxd chart
-```bash
-helm pull eos/eosxd --untar
-```
-This will create a folder named `eosxd` in the current directory with the uncompressed chart
-
-
 ### Install the chart
-After having configured the relevant bits (see below), install the chart and the deploy eosxd in your cluster with
+After having configured the relevant bits (see below), install the chart to deploy eosxd in your cluster with
 ```bash
-helm install eosxd eosxd/
+helm upgrade -i eosxd eos/eosxd -n myproject -f my-eos-configuration.yaml
 ```
 
 
 ### Basic configuration options
-Configuration options are accessible via the `values.yaml` file in the chart root directory.
+It's necessary to configure the deployment to connect to the correct EOS MGM. You can create a yaml file and pass it to the `helm upgrade` command.
+For an example of the configurations available, please have a look at the `values.yaml` file in the chart root directory.
 Basic requirements to connect to an existing eos instance are:
   - eosxd.config.eos\_mgm\_alias: The fully qualified domain name of the MGM of the instance to connect to;
   - eosxd.config.auth: The authetication method of the client with the MGM. The default is SSS (simple shared secret), which requires providing the instance keytab to the fusex client.
