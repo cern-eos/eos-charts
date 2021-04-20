@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "qdb.fullname" . }}
+  namespace: {{ include "qdb.namespace" . }}
   labels:
     {{- include "qdb.labels" . | nindent 4 }}
 spec:
@@ -102,6 +103,7 @@ spec:
     - metadata:
         name: quarkdb-data
         {{- if .Values.persistence.annotations }}
+        namespace: {{ include "qdb.namespace" . }}
         annotations:
           {{- toYaml .Values.persistence.annotations | nindent 10 }}
         {{- end }}
