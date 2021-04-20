@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "mq.fullname" . }}
+  namespace: {{ include "mq.namespace" . }}
   labels:
     {{- include "mq.labels" . | nindent 4 }}
 spec:
@@ -68,12 +69,6 @@ spec:
             - configMapRef:
                 name: {{ include "mq.fullname" . }}-cfgmap-sysconfig-eos
           securityContext:
-            # TODO: We should direclty run it as daemon:daemon (2:2) instead of root, but
-            #  - The environment is wrong
-            #  - There is no way to become root and, e.g., install other pkgs for debugging
-            #  The command will rather become `/usr/bin/xrootd -n mq -c /etc/xrd.cf.mq -l /var/log/eos/xrdlog.mq -Rdaemon`
-            #runAsUser: 2
-            #runAsGroup: 2
             privileged: true
             allowPrivilegeEscalation: true
             capabilities:
