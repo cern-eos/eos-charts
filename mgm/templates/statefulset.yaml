@@ -4,6 +4,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "mgm.fullname" . }}
+  namespace: {{ include "mgm.namespace" . }}
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
 spec:
@@ -176,6 +177,7 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: mgm-data
+        namespace: {{ include "mgm.namespace" . }}
         {{- if .Values.persistence.annotations }}
         annotations:
           {{- toYaml .Values.persistence.annotations | nindent 10 }}

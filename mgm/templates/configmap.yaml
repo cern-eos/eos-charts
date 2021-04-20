@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
+  namespace: {{ include "mgm.namespace" . }}
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
 data:
@@ -90,6 +91,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "mgm.fullname" . }}-cfgmap-mgm-init
+  namespace: {{ include "mgm.namespace" . }}
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
 data:

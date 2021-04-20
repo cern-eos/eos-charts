@@ -63,6 +63,18 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+Namespace definition
+*/}}
+{{- define "mgm.namespace" -}}
+{{- $namespace := default "default" .Values.namespace -}}
+{{- if .Values.global -}}
+    {{ dig "namespace" $namespace .Values.global }}
+{{- else -}}
+    {{ $namespace }}
+{{- end }}
+{{- end }}
+
+{{/*
 MGM FQDN definition
   To set environment variables, e.g., EOS_MGM_MASTER1/2, EOS_MGM_ALIAS, ...
 */}}
