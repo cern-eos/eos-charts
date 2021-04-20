@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
+  namespace: {{ include "fst.namespace" . }}
   labels:
     {{- include "fst.labels" . | nindent 4 }}
 data:

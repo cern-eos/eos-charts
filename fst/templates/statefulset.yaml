@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "fst.fullname" . }}
+  namespace: {{ include "fst.namespace" . }}
   labels:
     {{- include "fst.labels" . | nindent 4 }}
 spec:
@@ -148,6 +149,7 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: fst-storage
+        namespace: {{ include "fst.namespace" . }}
         {{- if .Values.persistence.annotations }}
         annotations:
           {{- toYaml .Values.persistence.annotations | nindent 10 }}

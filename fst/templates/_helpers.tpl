@@ -63,6 +63,18 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+Namespace definition
+*/}}
+{{- define "fst.namespace" -}}
+{{- $namespace := default "default" .Values.namespace -}}
+{{- if .Values.global -}}
+    {{ dig "namespace" $namespace .Values.global }}
+{{- else -}}
+    {{ $namespace }}
+{{- end }}
+{{- end }}
+
+{{/*
 MGM hostname definition
 */}}
 {{- define "mgm.hostname" -}}
