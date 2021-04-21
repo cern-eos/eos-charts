@@ -145,6 +145,22 @@ MGM FQDN definition
 {{- end }}
 
 {{/*
+EOS GeoTag definition
+  Used to set the geographical tags of storage nodes:
+  - Global value '.Values.global.eos.geotag' has highest priority
+  - Local value '.Values.geotag ' has lower priority
+  - Default value is 'docker::k8s'
+*/}}
+{{- define "eos.geotag" -}}
+{{- $geotag := default "docker::k8s" .Values.geotag -}}
+{{- if .Values.global -}}
+  {{ dig "eos" "geotag" $geotag .Values.global }}
+{{- else -}}
+  {{ $geotag }}
+{{- end }}
+{{- end }}
+
+{{/*
 StartupProbe definition
 */}}
 {{- define "fst.startupProbe" -}}

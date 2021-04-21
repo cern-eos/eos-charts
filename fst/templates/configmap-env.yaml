@@ -27,7 +27,7 @@ data:
   # User std::shared_timed_mutex instead of the pthread_rwlock_*
   EOS_USE_SHARED_MUTEX: !!integer 1
   # The EOS host geo location tag used to sort hosts into geographical (rack) locations 
-  EOS_GEOTAG: "docker::k8s"
+  EOS_GEOTAG: {{ include "eos.geotag" . }}
   # The fully qualified hostname of MGM master1
   EOS_MGM_MASTER1: {{ include "mgm.fqdn" . }}
   # The fully qualified hostname of MGM master2

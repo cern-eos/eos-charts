@@ -75,6 +75,20 @@ selfRegister:
   space: default
   config: rw
 
+#
+# EOS GeoTag
+#
+# Tag storage node with their geographical location
+# Docs: https://eos-docs.web.cern.ch/configuration/geotags.html
+#
+# Defaults to "docker::k8s"
+# GeoTag can be overriden with:
+# - .Values.geotag
+# - Global .Values.global.hostname.eos.geotag in a parent chart.
+#     Global takes precedence over local values.
+#
+geotag: ""
+
 service:
   fst:
     port: 1095
