@@ -41,15 +41,18 @@ dnsPolicy: ClusterFirst
 # The corresponding FQDNs are generated appending the namespace and '.svc.cluster.local'.
 #
 # These values depend on the Helm release name given to each component.
-# The provided defaults are for a qdb release named 'eos-qdb', etc.
+# Leave them blank to let Helm infer the names automatically according to .Release.Name
 #
-# They are overridden by .Values.global.hostnames, if defined.
+# Values can be overriden with:
+# - .Values.hostnames.{mq, qdbcluster}
+# - Global .Values.global.hostnames.{mq, qdbcluster} in a parent chart.
+#     Global takes precedence over local values.
 #
 hostnames:
   # Hostname of the mq (aka, broker).
-  mq: "eos-mq"
+  mq: ""
   # Hostname of the quarkdb cluster.
-  qdbcluster: "eos-qdb"
+  qdbcluster: ""
 
 #
 # mgm configuration
