@@ -77,7 +77,7 @@ Namespace definition
 {{/*
 MGM hostname definition
   Used to set the hostname of the MGM (short format) where:
-  - Global value '.Values.global.hostnames.mgm' has highst priority
+  - Global value '.Values.global.hostnames.mgm' has highest priority
   - Local value '.Values.hostnames.mgm' has lower priority
   - Default values uses .Release.Name
 

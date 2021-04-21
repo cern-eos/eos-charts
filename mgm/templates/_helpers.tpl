@@ -77,7 +77,7 @@ Namespace definition
 {{/*
 EOS instance name definition
   Used to set the name of the EOS instance:
-  - Global value '.Values.global.eos.instancename' has highst priority
+  - Global value '.Values.global.eos.instancename' has highest priority
   - Local value '.Values.mgmofs.instance' has lower priority
   - Default value is 'eosdockertest'
 */}}
@@ -97,7 +97,7 @@ EOS instance name definition
 {{/*
 MGM hostname definition
   Used to set the hostname of the MGM (short format) where:
-  - Global value '.Values.global.hostnames.mgm' has highst priority
+  - Global value '.Values.global.hostnames.mgm' has highest priority
   - Local value '.Values.hostnames.mgm' has lower priority
   - Default values uses .Release.Name
 
