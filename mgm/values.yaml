@@ -59,8 +59,11 @@ hostnames:
 #
 mgmofs:
   # Name of the eos instance.
-  # Will create the directory tree `/eos/<instance>`
-  instance: eosdockertest
+  # Will create the directory tree `/eos/<instance>`.
+  #
+  # Defaults to 'eosdockertest' if not set.
+  # Can be overriden by .Values.global.eos.instancename
+  instance: ""
 
 service:
   xrootd_mgm:

@@ -75,6 +75,26 @@ Namespace definition
 {{- end }}
 
 {{/*
+EOS instance name definition
+  Used to set the name of the EOS instance:
+  - Global value '.Values.global.eos.instancename' has highst priority
+  - Local value '.Values.mgmofs.instance' has lower priority
+  - Default value is 'eosdockertest'
+*/}}
+{{- define "mgm.instancename" -}}
+{{- $nameDefault := "eosdockertest" -}}
+{{- $nameLocal := "" -}}
+{{- $nameGlobal := "" -}}
+{{- if .Values.mgmofs -}}
+  {{ $nameLocal = dig "instance" "" .Values.mgmofs }}
+{{- end }}
+{{- if .Values.global -}}
+  {{ $nameGlobal = dig "eos" "instancename" "" .Values.global }}
+{{- end }}
+{{- coalesce $nameGlobal $nameLocal $nameDefault }}
+{{- end }}
+
+{{/*
 MGM hostname definition
   Used to set the hostname of the MGM (short format) where:
   - Global value '.Values.global.hostnames.mgm' has highst priority

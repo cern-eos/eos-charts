@@ -36,7 +36,7 @@ data:
     #sec.protbind * only krb5 sss unix
     sec.protbind * only sss unix
     ###########################################################
-    mgmofs.instance {{ .Values.mgmofs.instance }}
+    mgmofs.instance {{ include "mgm.instancename" . }}
     mgmofs.fs /
     mgmofs.targetport 1095
     #mgmofs.authlib libXrdAliceTokenAcc.so
