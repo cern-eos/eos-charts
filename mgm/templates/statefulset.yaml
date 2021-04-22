@@ -167,32 +167,35 @@ spec:
             defaultMode: 0755
         - name: mgm-logs
           emptyDir: {}
-  {{- if not .Values.persistence.enabled }}
+{{- if eq ( include "persistence" . ) "disabled" }}
         - name: mgm-data
           emptyDir: {}
-          # hostPath:
-            # path: /var/k8s/volumes/{{ include "mgm.name" . }}/mgm-data
-            # type: DirectoryOrCreate
-  {{- else }}
+{{- end }}
+{{- if eq ( include "persistence" . ) "hostpath" }}
+        - name: mgm-data
+          hostPath:
+            path: {{ dig "hostPath" "path" (printf "/var/eos/%s" (include "mgm.fullname" . )) .Values.persistence }}
+            type: {{ dig "hostPath" "type" "DirectoryOrCreate" .Values.persistence }}
+{{- end }}
+{{- if eq ( include "persistence" . ) "pvc" }}
   volumeClaimTemplates:
     - metadata:
         name: mgm-data
-        namespace: {{ include "mgm.namespace" . }}
-        {{- if .Values.persistence.annotations }}
+        {{- if .Values.persistence.pvc.annotations }}
         annotations:
-          {{- toYaml .Values.persistence.annotations | nindent 10 }}
+          {{- toYaml .Values.persistence.pvc.annotations | nindent 10 }}
         {{- end }}
       spec:
+        {{- if .Values.persistence.pvc.storageClass }}
+        {{- if (eq "-" .Values.persistence.pvc.storageClass) }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: "{{ .Values.persistence.pvc.storageClass }}"
+        {{- end }}
+        {{- end }}
         accessModes:
-          {{- toYaml .Values.persistence.accessModes | nindent 10 }}
+          {{- toYaml .Values.persistence.pvc.accessModes | nindent 10 }}
         resources:
           requests:
-            storage: "{{ .Values.persistence.size }}"
-      {{- if .Values.persistence.storageClass }}
-      {{- if (eq "-" .Values.persistence.storageClass) }}
-        storageClassName: ""
-      {{- else }}
-        storageClassName: "{{ .Values.persistence.storageClass }}"
-      {{- end }}
-    {{- end }}
-  {{- end }}
+            storage: "{{ .Values.persistence.pvc.size }}"
+{{- end }}

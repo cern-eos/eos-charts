@@ -65,6 +65,52 @@ mgmofs:
   # Can be overriden by .Values.global.eos.instancename
   instance: ""
 
+#
+# Manage persistence of data stored in MGM.
+#
+# If persistence is not enabled, data stored in MGM will not survive the restart of pods.
+# It is recommended to configure persistence according to the hosting infrastrcuture.
+#
+# The following type of persistence are supported:
+# - disabled:
+#     No persistence provided. Data is stored in 'emptyDir'
+#
+# - hostpath:
+#     Persistence provided by mounting a directory from the host filesystem.
+#     Docs: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+#     Additional parameters:
+#     - path: Directory location on host (defaults to /var/eos/<mgm.fullname>)
+#     - type: Type of mount (defaults to DirectoryOrCreate)
+#
+# - pvc:
+#     Persistence provided by mounting a persistent volume.
+#     Requires the availability of such feature on the hosting infrastructure.
+#     Docs: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+#     Additional parameters:
+#     - storageClass: If set to "-", disable dynamic provisioning.
+#                     If undefined or null, the default provisioner is chosen.
+#     - accessModes: How to access the pvc (ReadWriteOnce, ReadOnlyMany, ReadWriteMany)
+#     - size: Size of the pvs (example, 10Gi)
+#     - annotations: Custom annotations on the pvc, in key:value format
+#
+# The persistence type can be overriden via .Values.global.eos.persistence.type.
+#
+persistence:
+  type: disabled
+  #
+  #type: hostpath
+  #hostPath:
+  #  path: ""
+  #  type: ""
+  #
+  #type: pvc
+  #pvc:
+  #  storageClass: ""
+  #  accessModes:
+  #    - ReadWriteOnce
+  #  size: 10Gi
+  #  annotations: {}
+
 service:
   xrootd_mgm:
     port: 1094
@@ -82,17 +128,6 @@ startupProbe:
     port: 1097
   failureThreshold: 40
   periodSeconds: 10
-
-persistence:
-  enabled: false
-  accessModes:
-    - ReadWriteOnce
-  size: 5Gi
-  ## If defined, storageClassName: <storageClass>
-  ## If set to "-", disable dynamic provisioning
-  ## If undefined or null, no storageClassName is
-  ##   set, choosing the default provisioner.
-  # storageClass: "-"
 
 ldapBindUsers:
   enable: false

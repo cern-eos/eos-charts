@@ -145,6 +145,22 @@ MGM FQDN definition
 {{- end }}
 
 {{/*
+Persistence definition
+*/}}
+{{- define "persistence" -}}
+{{- $persistenceDefault := "disabled" -}}
+{{- $persistenceLocal := "" -}}
+{{- $persistenceGlobal := "" -}}
+{{- if .Values.persistence -}}
+  {{- $persistenceLocal = dig "type" "" .Values.persistence -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{- $persistenceGlobal = dig "eos" "persistence" "type" "" .Values.global }}
+{{- end }}
+{{- lower (coalesce $persistenceGlobal $persistenceLocal $persistenceDefault) }}
+{{- end }}
+
+{{/*
 EOS GeoTag definition
   Used to set the geographical tags of storage nodes:
   - Global value '.Values.global.eos.geotag' has highest priority
