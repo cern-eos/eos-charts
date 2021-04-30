@@ -118,7 +118,7 @@ service:
     port: ""
   xrootd_http:
     port: ""
- fusex:
+  fusex:
     port: ""
 
 startupProbe:
