@@ -111,15 +111,15 @@ persistence:
   #  size: 10Gi
   #  annotations: {}
 
-service:
-  xrootd_mgm:
-    port: 1094
-  xrootd_sync:
-    port: 1096
-  xrootd_http:
-    port: 8000
-  fusex:
-    port: 1100
+#service:
+#  xrootd_mgm:
+#    port: 1094
+#  xrootd_sync:
+#    port: 1096
+#  xrootd_http:
+#    port: 8000
+#  fusex:
+#    port: 1100
 
 startupProbe:
   enabled: false
