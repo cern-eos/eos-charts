@@ -184,7 +184,7 @@ Persistence definition
 Services' definition
 */}}
 {{- define "mgm.service.xrootd_mgm.port" -}}
-{{- $xrootd_mgmDefault := "1094" -}}
+{{- $xrootd_mgmDefault := int "1094" -}}
 {{- $xrootd_mgmLocal := "" -}}
 {{- $xrootd_mgmGlobal := "" -}}
 {{- if .Values.service -}}
@@ -197,7 +197,7 @@ Services' definition
 {{- end }}
 
 {{- define "mgm.service.xrootd_sync.port" -}}
-{{- $xrootd_syncDefault := "1096" -}}
+{{- $xrootd_syncDefault := int "1096" -}}
 {{- $xrootd_syncLocal := "" -}}
 {{- $xrootd_syncGlobal := "" -}}
 {{- if .Values.service -}}
@@ -210,7 +210,7 @@ Services' definition
 {{- end }}
 
 {{- define "mgm.service.xrootd_http.port" -}}
-{{- $xrootd_httpDefault := "8000" -}}
+{{- $xrootd_httpDefault := int "8000" -}}
 {{- $xrootd_httpLocal := "" -}}
 {{- $xrootd_httpGlobal := "" -}}
 {{- if .Values.service -}}
@@ -223,7 +223,7 @@ Services' definition
 {{- end }}
 
 {{- define "mgm.service.fusex.port" -}}
-{{- $fusexDefault := "1100" -}}
+{{- $fusexDefault := int "1100" -}}
 {{- $fusexLocal := "" -}}
 {{- $fusexGlobal := "" -}}
 {{- if .Values.service -}}

@@ -113,13 +113,13 @@ persistence:
 
 service:
   xrootd_mgm:
-    port: ""
+    port:
   xrootd_sync:
-    port: ""
+    port:
   xrootd_http:
-    port: ""
+    port:
   fusex:
-    port: ""
+    port:
 
 startupProbe:
   enabled: false
