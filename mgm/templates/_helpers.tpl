@@ -184,7 +184,7 @@ Persistence definition
 Services' definition
 */}}
 {{- define "mgm.service.xrootd_mgm.port" -}}
-{{- $xrootd_mgmDefault := 1094 -}}
+{{- $xrootd_mgmDefault := "1094" -}}
 {{- $xrootd_mgmLocal := "" -}}
 {{- $xrootd_mgmGlobal := "" -}}
 {{- if .Values.service -}}
@@ -193,11 +193,11 @@ Services' definition
 {{- if .Values.global -}}
   {{ $xrootd_mgmGlobal := dig "service" "xrootd_mgm" "port" "" .Values.global -}}
 {{- end}}
-{{- lower (coalesce $xrootd_mgmGlobal $xrootd_mgmLocal $xrootd_mgmDefault) }}
+{{- coalesce $xrootd_mgmGlobal $xrootd_mgmLocal $xrootd_mgmDefault }}
 {{- end }}
 
 {{- define "mgm.service.xrootd_sync.port" -}}
-{{- $xrootd_syncDefault := 1096 -}}
+{{- $xrootd_syncDefault := "1096" -}}
 {{- $xrootd_syncLocal := "" -}}
 {{- $xrootd_syncGlobal := "" -}}
 {{- if .Values.service -}}
@@ -206,11 +206,11 @@ Services' definition
 {{- if .Values.global -}}
   {{ $xrootd_syncGlobal := dig "service" "xrootd_sync" "port" "" .Values.global -}}
 {{- end}}
-{{- lower (coalesce $xrootd_syncGlobal $xrootd_syncLocal $xrootd_syncDefault) }}
+{{- coalesce $xrootd_syncGlobal $xrootd_syncLocal $xrootd_syncDefault }}
 {{- end }}
 
 {{- define "mgm.service.xrootd_http.port" -}}
-{{- $xrootd_httpDefault := 8000 -}}
+{{- $xrootd_httpDefault := "8000" -}}
 {{- $xrootd_httpLocal := "" -}}
 {{- $xrootd_httpGlobal := "" -}}
 {{- if .Values.service -}}
@@ -219,11 +219,11 @@ Services' definition
 {{- if .Values.global -}}
   {{ $xrootd_httpGlobal := dig "service" "xrootd_http" "port" "" .Values.global -}}
 {{- end}}
-{{- lower (coalesce $xrootd_httpGlobal $xrootd_httpLocal $xrootd_httpDefault) }}
+{{- coalesce $xrootd_httpGlobal $xrootd_httpLocal $xrootd_httpDefault }}
 {{- end }}
 
 {{- define "mgm.service.fusex.port" -}}
-{{- $fusexDefault := 1100 -}}
+{{- $fusexDefault := "1100" -}}
 {{- $fusexLocal := "" -}}
 {{- $fusexGlobal := "" -}}
 {{- if .Values.service -}}
@@ -232,7 +232,7 @@ Services' definition
 {{- if .Values.global -}}
   {{ $fusexGlobal := dig "service" "fusex" "port" "" .Values.global -}}
 {{- end}}
-{{- lower (coalesce $fusexGlobal $fusexLocal $fusexDefault) }}
+{{- coalesce $fusexGlobal $fusexLocal $fusexDefault }}
 {{- end }}
 
 {{/*
