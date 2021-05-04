@@ -11,13 +11,13 @@ icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
 dependencies:
 - name: qdb
   version: 0.0.3
-  repository: "https://registry.cern.ch/chartrepo/eos"
+  repository: "file://../qdb"
 - name: mgm
   version: 0.0.5
-  repository: "https://registry.cern.ch/chartrepo/eos"
+  repository: "file://../mgm"
 - name: mq
   version: 0.0.5
-  repository: "https://registry.cern.ch/chartrepo/eos"
+  repository: "file://../mq"
 - name: fst
   version: 0.0.5
-  repository: "https://registry.cern.ch/chartrepo/eos"
+  repository: "file://../fst"
