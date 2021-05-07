@@ -111,15 +111,11 @@ persistence:
   #  size: 10Gi
   #  annotations: {}
 
-service:
+ports:
   xrootd_mgm:
-    port:
   xrootd_sync:
-    port:
   xrootd_http:
-    port:
   fusex:
-    port:
 
 startupProbe:
   enabled: false

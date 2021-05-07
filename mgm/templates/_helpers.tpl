@@ -187,60 +187,59 @@ MGM network ports definition
   - xrootd http port (defaults to 8000)
   - xrootd fusex port (defaults to 1100)
 
-All the ports can be set according to:
-  - Global value '.Values.global.service.xrootd_mgm.port' (has the highest priority)
-  - Local value '.Values.service.xrootd_mgm.port' (has lower priority)
-  - Default value
+All the ports can be set according to (example for xrootd_mgm):
+  - Global value '.Values.global.ports.xrootd_mgm' (has the highest priority)
+  - Local value '.Values.ports.xrootd_mgm' (has lower priority)
+  - Default value (shown above for each port)
 */}}
-*/}}
-{{- define "mgm.service.xrootd_mgm.port" -}}
+{{- define "mgm.service.port.xrootd_mgm" -}}
 {{- $xrootd_mgmDefault := "1094" -}}
 {{- $xrootd_mgmLocal := "" -}}
 {{- $xrootd_mgmGlobal := "" -}}
-{{- if .Values.service -}}
-  {{ $xrootd_mgmLocal := dig "xrootd_mgm" "port" "" .Values.service -}}
-{{- end}}
+{{- if .Values.ports -}}
+  {{ $xrootd_mgmLocal := dig "xrootd_mgm" "" .Values.ports -}}
+{{- end }}
 {{- if .Values.global -}}
-  {{ $xrootd_mgmGlobal := dig "service" "xrootd_mgm" "port" "" .Values.global -}}
-{{- end}}
+  {{ $xrootd_mgmGlobal := dig "ports" "xrootd_mgm" "" .Values.global -}}
+{{- end }}
 {{- coalesce $xrootd_mgmGlobal $xrootd_mgmLocal $xrootd_mgmDefault }}
 {{- end }}
 
-{{- define "mgm.service.xrootd_sync.port" -}}
+{{- define "mgm.service.port.xrootd_sync" -}}
 {{- $xrootd_syncDefault := "1096" -}}
 {{- $xrootd_syncLocal := "" -}}
 {{- $xrootd_syncGlobal := "" -}}
-{{- if .Values.service -}}
-  {{ $xrootd_syncLocal := dig "xrootd_sync" "port" "" .Values.service -}}
+{{- if .Values.ports -}}
+  {{ $xrootd_syncLocal := dig "xrootd_sync" "" .Values.ports -}}
 {{- end}}
 {{- if .Values.global -}}
-  {{ $xrootd_syncGlobal := dig "service" "xrootd_sync" "port" "" .Values.global -}}
+  {{ $xrootd_syncGlobal := dig "ports" "xrootd_sync" "" .Values.global -}}
 {{- end}}
 {{- coalesce $xrootd_syncGlobal $xrootd_syncLocal $xrootd_syncDefault }}
 {{- end }}
 
-{{- define "mgm.service.xrootd_http.port" -}}
+{{- define "mgm.service.port.xrootd_http" -}}
 {{- $xrootd_httpDefault := "8000" -}}
 {{- $xrootd_httpLocal := "" -}}
 {{- $xrootd_httpGlobal := "" -}}
-{{- if .Values.service -}}
-  {{ $xrootd_httpLocal := dig "xrootd_http" "port" "" .Values.service -}}
+{{- if .Values.ports -}}
+  {{ $xrootd_httpLocal := dig "xrootd_http" "" .Values.ports -}}
 {{- end}}
 {{- if .Values.global -}}
-  {{ $xrootd_httpGlobal := dig "service" "xrootd_http" "port" "" .Values.global -}}
+  {{ $xrootd_httpGlobal := dig "ports" "xrootd_http" "" .Values.global -}}
 {{- end}}
 {{- coalesce $xrootd_httpGlobal $xrootd_httpLocal $xrootd_httpDefault }}
 {{- end }}
 
-{{- define "mgm.service.fusex.port" -}}
+{{- define "mgm.service.port.fusex" -}}
 {{- $fusexDefault := "1100" -}}
 {{- $fusexLocal := "" -}}
 {{- $fusexGlobal := "" -}}
-{{- if .Values.service -}}
-  {{ $fusexLocal := dig "fusex" "port" "" .Values.service -}}
+{{- if .Values.ports -}}
+  {{ $fusexLocal := dig "fusex" "" .Values.ports -}}
 {{- end}}
 {{- if .Values.global -}}
-  {{ $fusexGlobal := dig "service" "fusex" "port" "" .Values.global -}}
+  {{ $fusexGlobal := dig "ports" "fusex" "" .Values.global -}}
 {{- end}}
 {{- coalesce $fusexGlobal $fusexLocal $fusexDefault }}
 {{- end }}

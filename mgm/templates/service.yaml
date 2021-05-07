@@ -7,19 +7,19 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - port: {{ include "mgm.service.xrootd_mgm.port" . }}
+    - port: {{ include "mgm.service.port.xrootd_mgm" . }}
       targetPort: 1094
       protocol: TCP
       name: xrootd-mgm
-    - port: {{ include "mgm.service.xrootd_sync.port" . }}
+    - port: {{ include "mgm.service.port.xrootd_sync" . }}
       targetPort: 1096
       protocol: TCP
       name: xrootd-sync
-    - port: {{ include "mgm.service.xrootd_http.port" . }}
+    - port: {{ include "mgm.service.port.xrootd_http" . }}
       targetPort: 8000
       protocol: TCP
       name: xrootd-http
-    - port: {{ include "mgm.service.fusex.port" . }}
+    - port: {{ include "mgm.service.port.fusex" . }}
       targetPort: 1100
       protocol: TCP
       name: fusex
