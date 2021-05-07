@@ -181,7 +181,17 @@ Persistence definition
 {{- end }}
 
 {{/*
-Services' definition
+MGM network ports definition
+  - xrootd mgm port (defaults to 1094)
+  - xrootd sync port (defaults to 1096)
+  - xrootd http port (defaults to 8000)
+  - xrootd fusex port (defaults to 1100)
+
+All the ports can be set according to:
+  - Global value '.Values.global.service.xrootd_mgm.port' (has the highest priority)
+  - Local value '.Values.service.xrootd_mgm.port' (has lower priority)
+  - Default value
+*/}}
 */}}
 {{- define "mgm.service.xrootd_mgm.port" -}}
 {{- $xrootd_mgmDefault := "1094" -}}
