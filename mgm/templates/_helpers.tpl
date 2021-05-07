@@ -197,10 +197,10 @@ All the ports can be set according to (example for xrootd_mgm):
 {{- $xrootd_mgmLocal := "" -}}
 {{- $xrootd_mgmGlobal := "" -}}
 {{- if .Values.ports -}}
-  {{ $xrootd_mgmLocal := dig "xrootd_mgm" "" .Values.ports -}}
+  {{ $xrootd_mgmLocal = dig "xrootd_mgm" "" .Values.ports -}}
 {{- end }}
 {{- if .Values.global -}}
-  {{ $xrootd_mgmGlobal := dig "ports" "xrootd_mgm" "" .Values.global -}}
+  {{ $xrootd_mgmGlobal = dig "ports" "xrootd_mgm" "" .Values.global -}}
 {{- end }}
 {{- coalesce $xrootd_mgmGlobal $xrootd_mgmLocal $xrootd_mgmDefault }}
 {{- end }}
@@ -210,10 +210,10 @@ All the ports can be set according to (example for xrootd_mgm):
 {{- $xrootd_syncLocal := "" -}}
 {{- $xrootd_syncGlobal := "" -}}
 {{- if .Values.ports -}}
-  {{ $xrootd_syncLocal := dig "xrootd_sync" "" .Values.ports -}}
+  {{ $xrootd_syncLocal = dig "xrootd_sync" "" .Values.ports -}}
 {{- end}}
 {{- if .Values.global -}}
-  {{ $xrootd_syncGlobal := dig "ports" "xrootd_sync" "" .Values.global -}}
+  {{ $xrootd_syncGlobal = dig "ports" "xrootd_sync" "" .Values.global -}}
 {{- end}}
 {{- coalesce $xrootd_syncGlobal $xrootd_syncLocal $xrootd_syncDefault }}
 {{- end }}
@@ -223,10 +223,10 @@ All the ports can be set according to (example for xrootd_mgm):
 {{- $xrootd_httpLocal := "" -}}
 {{- $xrootd_httpGlobal := "" -}}
 {{- if .Values.ports -}}
-  {{ $xrootd_httpLocal := dig "xrootd_http" "" .Values.ports -}}
+  {{ $xrootd_httpLocal = dig "xrootd_http" "" .Values.ports -}}
 {{- end}}
 {{- if .Values.global -}}
-  {{ $xrootd_httpGlobal := dig "ports" "xrootd_http" "" .Values.global -}}
+  {{ $xrootd_httpGlobal = dig "ports" "xrootd_http" "" .Values.global -}}
 {{- end}}
 {{- coalesce $xrootd_httpGlobal $xrootd_httpLocal $xrootd_httpDefault }}
 {{- end }}
@@ -236,10 +236,10 @@ All the ports can be set according to (example for xrootd_mgm):
 {{- $fusexLocal := "" -}}
 {{- $fusexGlobal := "" -}}
 {{- if .Values.ports -}}
-  {{ $fusexLocal := dig "fusex" "" .Values.ports -}}
+  {{ $fusexLocal = dig "fusex" "" .Values.ports -}}
 {{- end}}
 {{- if .Values.global -}}
-  {{ $fusexGlobal := dig "ports" "fusex" "" .Values.global -}}
+  {{ $fusexGlobal = dig "ports" "fusex" "" .Values.global -}}
 {{- end}}
 {{- coalesce $fusexGlobal $fusexLocal $fusexDefault }}
 {{- end }}
