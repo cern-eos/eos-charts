@@ -70,19 +70,6 @@ spec:
           imagePullPolicy: {{ $pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]   # TODO: Check which xrootd binary should be used
-          ports:
-            - name: xrootd-mgm
-              containerPort: 1094
-              protocol: TCP
-            - name: xrootd-sync
-              containerPort: 1096
-              protocol: TCP
-            - name: xrootd-http
-              containerPort: 8000
-              protocol: TCP
-            - name: fusex
-              containerPort: 1100
-              protocol: TCP
           env:
             # Inspiration from cockroachdb, in case we need it:
             # - name: STATEFULSET_NAME
