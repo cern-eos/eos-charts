@@ -8,19 +8,19 @@ spec:
   clusterIP: None
   ports:
     - port: {{ include "mgm.service.xrootd_mgm.port" . }}
-      targetPort: xrootd-mgm
+      targetPort: 1094
       protocol: TCP
       name: xrootd-mgm
     - port: {{ include "mgm.service.xrootd_sync.port" . }}
-      targetPort: xrootd-sync
+      targetPort: 1096
       protocol: TCP
       name: xrootd-sync
     - port: {{ include "mgm.service.xrootd_http.port" . }}
-      targetPort: xrootd-http
+      targetPort: 8000
       protocol: TCP
       name: xrootd-http
     - port: {{ include "mgm.service.fusex.port" . }}
-      targetPort: fusex
+      targetPort: 1100
       protocol: TCP
       name: fusex
   selector:
