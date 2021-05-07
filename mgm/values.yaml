@@ -26,6 +26,7 @@ customLabels:
 # hostNetwork allows the pod to use the host network namespace.
 #   Available options: true, false
 #   Default: false
+hostNetwork: false
 #
 # dnsPolicy regulates how the pod resolves hostnames with DNS servers.
 #   In case hostNetwork is set to true, dnsPolicy must be ClusterFirstWithHostNet
@@ -33,8 +34,27 @@ customLabels:
 #   Available options: Default, ClusterFirst, ClusterFirstWithHostNet, None
 #   Default: ClusterFirst
 #
-hostNetwork: false
 dnsPolicy: ClusterFirst
+#
+# Service ports declaration for mgm.
+# These are the ports exposed by the Kubernetes service.
+#
+# Defaults:
+#   - xrootd_mgm:  1094
+#   - xrootd_sync: 1096
+#   - xrootd_http: 8000
+#   - fusex:       1100
+#
+# Values can be overridden with:
+# - .Values.ports.{xrootd_mgm, xrootd_sync, xrootd_http, fusex} below
+# - Global .Values.global.ports.<service_name> in a parent chart.
+#     Global takes precedence over local values.
+#
+ports:
+  xrootd_mgm:
+  xrootd_sync:
+  xrootd_http:
+  fusex:
 
 #
 # Short hostnames of the components to be reached from the mgm.
@@ -43,8 +63,8 @@ dnsPolicy: ClusterFirst
 # These values depend on the Helm release name given to each component.
 # Leave them blank to let Helm infer the names automatically according to .Release.Name
 #
-# Values can be overriden with:
-# - .Values.hostnames.{mq, qdbcluster}
+# Values can be overridden with:
+# - .Values.hostnames.{mq, qdbcluster} below
 # - Global .Values.global.hostnames.{mq, qdbcluster} in a parent chart.
 #     Global takes precedence over local values.
 #
@@ -110,12 +130,6 @@ persistence:
   #    - ReadWriteOnce
   #  size: 10Gi
   #  annotations: {}
-
-ports:
-  xrootd_mgm:
-  xrootd_sync:
-  xrootd_http:
-  fusex:
 
 startupProbe:
   enabled: false
