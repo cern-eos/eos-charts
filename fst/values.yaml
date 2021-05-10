@@ -41,6 +41,22 @@ customLabels:
 #
 hostNetwork: false
 dnsPolicy: ClusterFirst
+#
+# Service ports declaration for fst.
+# These are the ports exposed by the Kubernetes service.
+#
+# Defaults:
+#   - fst:  1095
+#   - microhttp: 8001
+#
+# Values can be overridden with:
+# - .Values.ports.{fst, microhttp} below
+# - Global .Values.global.ports.<service_name> in a parent chart.
+#     Global takes precedence over local values.
+#
+ports:
+  fst:
+  microhttp:
 
 #
 # Short hostnames of the components to be reached from the fst.
@@ -135,13 +151,6 @@ persistence:
   #    - ReadWriteOnce
   #  size: 1Ti
   #  annotations: {}
-
-service:
-  fst:
-    port: 1095
-  # Will be deprecated at some point by xrdHttp:
-  microhttp:
-    port: 8001
 
 startupProbe:
   enabled: false

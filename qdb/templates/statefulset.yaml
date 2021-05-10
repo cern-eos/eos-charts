@@ -58,10 +58,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n qdb -c /etc/xrd.cf.quarkdb -l /var/log/eos/xrdlog.qdb -Rdaemon"]
-          ports:
-            - name: xrootd-qdb-http
-              containerPort: 7777
-              protocol: TCP
           env:
             # work around current Kubernetes setup issues. This should *NOT* be enabled in production
               - name: EOS_SKIP_SSS_HOSTNAME_MATCH

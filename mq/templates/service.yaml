@@ -7,12 +7,8 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    {{- if .Values.global }}
-    - port: {{ .Values.global.service.xrootd_mq.port }}
-    {{- else }}
-    - port: {{ .Values.service.xrootd_mq.port }}
-    {{- end }}
-      targetPort: xrootd-mq
+    - port: {{ include "mq.service.port.xrootd_mq" }}
+      targetPort: 1097
       protocol: TCP
       name: xrootd-mq
   selector:

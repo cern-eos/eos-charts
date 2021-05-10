@@ -51,6 +51,20 @@ customLabels:
 #
 hostNetwork: false
 dnsPolicy: ClusterFirst
+#
+# Service ports declaration for mgm.
+# These are the ports exposed by the Kubernetes service.
+#
+# Defaults:
+#   - xrootd_qdb_http:  7777
+#
+# Values can be overridden with:
+# - .Values.ports.{xrootd_qdb_http} below
+# - Global .Values.global.ports.<service_name> in a parent chart.
+#     Global takes precedence over local values.
+#
+ports:
+  xrootd_qdb_http:
 
 #
 # Manage persistence of data stored in QDB,
@@ -98,10 +112,6 @@ persistence:
   #    - ReadWriteOnce
   #  size: 10Gi
   #  annotations: {}
-
-service:
-  xrootd_qdb_http:
-    port: 7777
 
 startupProbe:
   enabled: false

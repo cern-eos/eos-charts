@@ -7,20 +7,12 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    {{- if .Values.global }}
-    - port: {{ .Values.global.service.fst.port }}
-    {{- else }}
-    - port: {{ .Values.service.fst.port }}
-    {{- end }}
-      targetPort: fst
+    - port: {{ include "fst.service.fst.port" }}
+      targetPort: 1095
       protocol: TCP
       name: fst
-    {{- if .Values.global }}
-    - port: {{ .Values.global.service.microhttp.port }}
-    {{- else }}
-    - port: {{ .Values.service.microhttp.port }}
-    {{- end }}
-      targetPort: microhttp
+    - port: {{ include "fst.service.microhttp.port" }}
+      targetPort: 8001
       protocol: TCP
       name: microhttp
   selector:

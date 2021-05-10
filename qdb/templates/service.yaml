@@ -7,12 +7,8 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    {{- if .Values.global }}
-    - port: {{ .Values.global.service.xrootd_qdb_http.port }}
-    {{- else }}
-    - port: {{ .Values.service.xrootd_qdb_http.port }}
-    {{- end }}
-      targetPort: xrootd-qdb-http
+    - port: {{ include "qdb.service.port.xrootd_qdb_http" }}
+      targetPort: 7777
       protocol: TCP
       name: xrootd-http
   selector:

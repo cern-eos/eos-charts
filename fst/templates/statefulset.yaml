@@ -81,13 +81,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
-          ports:
-            - name: fst
-              containerPort: 1095
-              protocol: TCP
-            - name: microhttp
-              containerPort: 8001
-              protocol: TCP
           env:
             # Inspiration from cockroachdb, in case we need it:
             # - name: STATEFULSET_NAME

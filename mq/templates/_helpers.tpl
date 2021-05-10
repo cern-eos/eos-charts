@@ -125,3 +125,25 @@ MGM FQDN definition
 {{- $mgmHostname := (include "mgm.hostname" . ) -}}
 {{ printf "%s-0.%s.%s.svc.cluster.local" $mgmHostname $mgmHostname .Release.Namespace }}
 {{- end }}
+
+{{/*
+MQ network ports definition
+  - xrootd mq port (defaults to 1097)
+
+All the ports can be set according to (example for xrootd_mq):
+  - Global value '.Values.global.ports.xrootd_mq' (has the highest priority)
+  - Local value '.Values.ports.xrootd_mq' (has lower priority)
+  - Default value (shown above for each port)
+*/}}
+{{- define "mq.service.port.xrootd_mq" -}}
+{{- $xrootd_mqDefault := "1097" -}}
+{{- $xrootd_mqLocal := "" -}}
+{{- $xrootd_mqGlobal := "" -}}
+{{- if .Values.ports -}}
+  {{ $xrootd_mqLocal = dig "xrootd_mq" "" .Values.ports -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{ $xrootd_mqGlobal = dig "ports" "xrootd_mq" "" .Values.global -}}
+{{- end }}
+{{- coalesce $xrootd_mqGlobal $xrootd_mqLocal $xrootd_mqDefault }}
+{{- end }}

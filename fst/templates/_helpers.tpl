@@ -161,6 +161,42 @@ Persistence definition
 {{- end }}
 
 {{/*
+FST network ports definition
+  - xrootd fst port (defaults to 1095)
+  - microhttp port (defaults to 8001)
+
+All the ports can be set according to (example for fst):
+  - Global value '.Values.global.ports.fst' (has the highest priority)
+  - Local value '.Values.ports.fst' (has lower priority)
+  - Default value (shown above for each port)
+*/}}
+{{- define "fst.service.port.fst" -}}
+{{- $fstDefault := "1095" -}}
+{{- $fstLocal := "" -}}
+{{- $fstGlobal := "" -}}
+{{- if .Values.ports -}}
+  {{ $fstLocal = dig "fst" "" .Values.ports -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{ $fstGlobal = dig "ports" "fst" "" .Values.global -}}
+{{- end }}
+{{- coalesce $fstGlobal $fstLocal $fstDefault }}
+{{- end }}
+
+{{- define "fst.service.port.microhttp" -}}
+{{- $microhttpDefault := "8001" -}}
+{{- $microhttpLocal := "" -}}
+{{- $microhttpGlobal := "" -}}
+{{- if .Values.ports -}}
+  {{ $microhttpLocal = dig "microhttp" "" .Values.ports -}}
+{{- end}}
+{{- if .Values.global -}}
+  {{ $microhttpGlobal = dig "ports" "microhttp" "" .Values.global -}}
+{{- end}}
+{{- coalesce $microhttpGlobal $microhttpLocal $microhttpDefault }}
+{{- end }}
+
+{{/*
 EOS GeoTag definition
   Used to set the geographical tags of storage nodes:
   - Global value '.Values.global.eos.geotag' has highest priority
