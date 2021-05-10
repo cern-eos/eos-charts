@@ -92,14 +92,14 @@ Persistence definition
 
 {{/*
 QDB network ports definition
-  - xroot_qdb_httpd mgm port (defaults to 7777)
+  - xroot_qdb_httpd qdb port (defaults to 7777)
 
 All the ports can be set according to (example for xrootd_qdb_http):
   - Global value '.Values.global.ports.xrootd_qdb_http' (has the highest priority)
   - Local value '.Values.ports.xrootd_qdb_http' (has lower priority)
   - Default value (shown above for each port)
 */}}
-{{- define "mgm.service.port.xrootd_qdb_http" -}}
+{{- define "qdb.service.port.xrootd_qdb_http" -}}
 {{- $xrootd_qdb_httpDefault := "7777" -}}
 {{- $xrootd_qdb_httpLocal := "" -}}
 {{- $xrootd_qdb_httpGlobal := "" -}}

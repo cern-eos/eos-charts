@@ -7,11 +7,11 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - port: {{ include "fst.service.fst.port" }}
+    - port: {{ include "fst.service.port.fst" . }}
       targetPort: 1095
       protocol: TCP
       name: fst
-    - port: {{ include "fst.service.microhttp.port" }}
+    - port: {{ include "fst.service.port.microhttp" . }}
       targetPort: 8001
       protocol: TCP
       name: microhttp
