@@ -3,7 +3,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "mgm.fullname" . }}-cfgmap-nslcd-conf
-  namespace: {{ include "mgm.namespace" . }}
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
 data:
@@ -14,7 +13,7 @@ data:
     # between NSS names (see /etc/nsswitch.conf) and LDAP
     # information in the directory.
     # See the manual page nslcd.conf(5) for more information.
-    
+
     # The uri pointing to the LDAP server to use for name lookups.
     # Multiple entries may be specified. The address that is used
     # here should be resolvable without using LDAP (obviously).
@@ -22,74 +21,74 @@ data:
     #uri ldaps://127.0.0.1/
     #uri ldapi://%2fvar%2frun%2fldapi_sock/
     # Note: %2f encodes the '/' used as directory separator
-    
+
     # This comment prevents repeated auto-migration of settings.
     #uri ldap://ldap
     uri {{ .ldap_uri }}
-    
+
     # The LDAP version to use (defaults to 3
     # if supported by client library)
     #ldap_version 3
-    
+
     # The distinguished name of the search base.
     #base dc=example,dc=com
     base {{ .ldap_base }}
-    
+
     # The distinguished name to bind to the server with.
     # Optional: default is to bind anonymously.
     binddn {{ .ldap_binddn }}
-    
+
     # The credentials to bind with.
     # Optional: default is no credentials.
     # Note that if you set a bindpw you should check the permissions of this file.
     bindpw {{ .ldap_bindpw }}
-    
+
     # The distinguished name to perform password modifications by root by.
     #rootpwmoddn cn=admin,dc=example,dc=com
-    
+
     # The default search scope.
     #scope sub
     #scope one
     #scope base
-    
+
     # Customize certain database lookups.
     base group {{ .ldap_group_search_base }}
     base passwd {{ .ldap_user_search_base }}
     #base   shadow ou=People,dc=example,dc=com
     #scope  group  onelevel
     #scope  hosts  sub
-    
+
     # Bind/connect timelimit.
     #bind_timelimit 30
-    
+
     # Search timelimit.
     timelimit 30
-    
+
     # Idle timelimit. nslcd will close connections if the
     # server has not been contacted for the number of seconds.
     #idle_timelimit 3600
-    
+
     # Use StartTLS without verifying the server certificate.
     #ssl start_tls
     #tls_reqcert never
-    
+
     # CA certificates for server certificate verification
     #tls_cacertdir /etc/ssl/certs
     #tls_cacertfile /etc/ssl/ca.cert
     tls_cacertdir /etc/pki/tls/certs/
-    
+
     # Seed the PRNG if /dev/urandom is not provided
     #tls_randfile /var/run/egd-pool
-    
+
     # SSL cipher suite
     # See man ciphers for syntax
     #tls_ciphers TLSv1
-    
+
     # Client certificate and key
     # Use these, if your server requires client authentication.
     #tls_cert
     #tls_key
-    
+
     # Mappings for Active Directory
     pagesize 1000
     referrals off
@@ -98,18 +97,18 @@ data:
     map    passwd uid              uid
     map    passwd homeDirectory    homeDirectory
     map    passwd gecos            gecos
-    
+
     filter shadow (&(objectClass=account)(uidNumber=*)(homeDirectory=*))
     map    shadow uid              uid
     map    shadow shadowLastChange shadowLastChange
-    
+
     #filter group  (objectClass=group)
     filter group {{ .ldap_filter_group }}
     #map    group  uniqueMember     member
-    
+
     # NDS mappings
     #map group uniqueMember member
-    
+
     # Mappings for Services for UNIX 3.5
     #filter passwd (objectClass=User)
     #map    passwd uid              msSFU30Name
@@ -121,7 +120,7 @@ data:
     #map    shadow userPassword     msSFU30Password
     #filter group  (objectClass=Group)
     #map    group  uniqueMember     msSFU30PosixMember
-    
+
     # Mappings for Services for UNIX 2.0
     #filter passwd (objectClass=User)
     #map    passwd uid              msSFUName
@@ -134,7 +133,7 @@ data:
     #map    shadow shadowLastChange pwdLastSet
     #filter group  (objectClass=Group)
     #map    group  uniqueMember     posixMember
-    
+
     # Mappings for Active Directory
     #pagesize 1000
     #referrals off
@@ -147,7 +146,7 @@ data:
     #map    shadow shadowLastChange pwdLastSet
     #filter group  (objectClass=group)
     #map    group  uniqueMember     member
-    
+
     # Mappings for AIX SecureWay
     #filter passwd (objectClass=aixAccount)
     #map    passwd uid              userName

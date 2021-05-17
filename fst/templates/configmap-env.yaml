@@ -2,7 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
-  namespace: {{ include "fst.namespace" . }}
   labels:
     {{- include "fst.labels" . | nindent 4 }}
 data:
@@ -20,13 +19,13 @@ data:
   EOS_SKIP_SSS_HOSTNAME_MATCH: !!integer 1
   # What roles should the xroot daemon run for.
   XRD_ROLES: "fst"
-  
+
   # ------------------------------------------------------------------
   # EOS Configuration
   # ------------------------------------------------------------------
   # User std::shared_timed_mutex instead of the pthread_rwlock_*
   EOS_USE_SHARED_MUTEX: !!integer 1
-  # The EOS host geo location tag used to sort hosts into geographical (rack) locations 
+  # The EOS host geo location tag used to sort hosts into geographical (rack) locations
   EOS_GEOTAG: {{ include "eos.geotag" . }}
   # The fully qualified hostname of MGM master1
   EOS_MGM_MASTER1: {{ include "mgm.fqdn" . }}
@@ -43,11 +42,11 @@ data:
   EOS_ENABLE_QOS: ""
   # Enable Converter Engine
   EOS_CONVERTER_DRIVER: !!integer 1
-  # Enable core dumps initiated internally 
+  # Enable core dumps initiated internally
   #EOS_CORE_DUMP
   # Disable shutdown/signal handlers for debugging
   #EOS_NO_SHUTDOWN
-  
+
   #-------------------------------------------------------------------------------
   # FST Configuration
   #-------------------------------------------------------------------------------
@@ -59,7 +58,7 @@ data:
   EOS_FST_DELETE_QUERY_INTERVAL: !!integer 5
   # Number of threads for transfer operations (Balance, Drain or Transfer actions)
   EOS_FST_TRANSFER_THREAD_POOL: !!integer 20
-  
+
   #-------------------------------------------------------------------------------
   # FST External Storage Configuration
   #-------------------------------------------------------------------------------
@@ -72,11 +71,11 @@ data:
   EOS_FST_S3_STORAGE_SIZE: !!integer 20000000000
   # Set HTTPS X509 certificate path
   #EOS_FST_HTTPS_X509_CERTIFICATE_PATH: ""
-  
+
   # ------------------------------------------------------------------
   # FUSE Configuration
   # ------------------------------------------------------------------
-  # The mount directory for 'eosd' 
+  # The mount directory for 'eosd'
   EOS_FUSE_MOUNTDIR: /eos/
   # The MGM host from where to do the initial mount
   EOS_FUSE_MGM_ALIAS: {{ include "mgm.fqdn" . }}
@@ -86,20 +85,20 @@ data:
   #EOS_FUSE_NOPIO: 1
   # Disable multi-threading in FUSE (default on)
   #EOS_FUSE_NO_MT: 1
-  
+
   # ------------------------------------------------------------------
   # HTTPD Configuration
   # ------------------------------------------------------------------
   # Enable multi-threaded httpd
   EOS_HTTP_THREADPOOL: "epoll"
   EOS_HTTP_THREADPOOL_SIZE: !!integer 16
-  
+
   #-------------------------------------------------------------------------------
   # GRPC Configuration
   #-------------------------------------------------------------------------------
   # GRPC port - set to 0 to disable GRPC
   EOS_MGM_GRPC_PORT: !!integer 50051
-  
+
   # ------------------------------------------------------------------
   # Federation Configuration
   # ------------------------------------------------------------------
@@ -111,7 +110,7 @@ data:
   #EOS_PSS_MGM: $EOS_MGM_ALIAS:1094
   # The path which should be proxied (/ for all)
   #EOS_PSS_PATH: /
-  
+
   # ------------------------------------------------------------------
   # Test Configuration
   # ------------------------------------------------------------------
@@ -129,4 +128,3 @@ data:
   #EOS_TEST_GSMLOCKTIME: 3600
   # max. time given to the test to finish
   #EOS_TEST_TESTTIMESLICE: 300
-

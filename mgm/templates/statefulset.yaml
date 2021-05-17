@@ -4,7 +4,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "mgm.fullname" . }}
-  namespace: {{ include "mgm.namespace" . }}
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
 spec:
