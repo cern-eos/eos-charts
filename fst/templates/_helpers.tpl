@@ -75,6 +75,28 @@ Namespace definition
 {{- end }}
 
 {{/*
+Return the proper EOS image name:tag
+*/}}
+{{- define "eos.image" -}}
+{{- $repositoryName := .Values.image.repository -}}
+{{- $tag := .Values.image.tag | toString -}}
+
+{{- if .Values.global }}
+    {{- if and .Values.global.repository .Values.global.tag }}
+        {{- printf "%s:%s" .Values.global.repository .Values.global.tag -}}
+    {{- else if .Values.global.repository -}}
+        {{- printf "%s:%s" .Values.global.repository $tag -}}
+    {{- else if .Values.global.tag -}}
+        {{- printf "%s:%s" $repositoryName .Values.global.tag -}}
+    {{- else -}}
+        {{- printf "%s:%s" $repositoryName $tag -}}
+    {{- end -}}
+{{- else -}}
+    {{- printf "%s:%s" $repositoryName $tag -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 MGM hostname definition
   Used to set the hostname of the MGM (short format) where:
   - Global value '.Values.global.hostnames.mgm' has highest priority
@@ -174,33 +196,4 @@ EOS GeoTag definition
 {{- else -}}
   {{ $geotag }}
 {{- end }}
-{{- end }}
-
-{{/*
-StartupProbe definition
-*/}}
-{{- define "fst.startupProbe" -}}
-  {{- if .Values.startupProbe.enabled }}
-startupProbe:
-    {{- if .Values.startupProbe.tcpSocket }}
-  tcpSocket:
-    host: {{ .Values.startupProbe.tcpSocket.host }}
-    port: {{ .Values.startupProbe.tcpSocket.port }}
-    {{- end }}
-  failureThreshold: {{ .Values.startupProbe.failureThreshold }}
-  periodSeconds: {{ .Values.startupProbe.periodSeconds }}
-{{- else }}
-  {{- if .Values.global }}
-    {{- with .Values.global }}
-      {{- if .fst.startupProbe.enabled }}
-startupProbe:
-  tcpSocket:
-    host: {{ $.Release.Name }}-mgm
-    port: {{ .service.xrootd_mgm.port }}
-  failureThreshold: {{ .fst.startupProbe.failureThreshold }}
-  periodSeconds: {{ .fst.startupProbe.periodSeconds }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
 {{- end }}

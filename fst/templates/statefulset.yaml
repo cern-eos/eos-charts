@@ -78,7 +78,7 @@ spec:
         {{- end }}
       containers:
         - name: eos-fst
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: {{ include "eos.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
@@ -118,7 +118,6 @@ spec:
           #   httpGet:
           #     path: /
           #     port: http
-          {{- include "fst.startupProbe" . | nindent 10 }}
           volumeMounts:
             - name: fst-cfgmap-xrd-cf-fst
               mountPath: /etc/xrd.cf.fst
