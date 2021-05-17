@@ -166,19 +166,19 @@ FST network ports definition
   - microhttp port (defaults to 8001)
 
 All the ports can be set according to (example for fst):
-  - Global value '.Values.global.ports.fst' (has the highest priority)
-  - Local value '.Values.ports.fst' (has lower priority)
+  - Global value '.Values.global.ports.xrootd_fst' (has the highest priority)
+  - Local value '.Values.ports.xrootd_fst' (has lower priority)
   - Default value (shown above for each port)
 */}}
-{{- define "fst.service.port.fst" -}}
+{{- define "fst.service.port.xrootd_fst" -}}
 {{- $fstDefault := "1095" -}}
 {{- $fstLocal := "" -}}
 {{- $fstGlobal := "" -}}
 {{- if .Values.ports -}}
-  {{ $fstLocal = dig "fst" "" .Values.ports -}}
+  {{ $fstLocal = dig "xrootd_fst" "" .Values.ports -}}
 {{- end }}
 {{- if .Values.global -}}
-  {{ $fstGlobal = dig "ports" "fst" "" .Values.global -}}
+  {{ $fstGlobal = dig "ports" "xrootd_fst" "" .Values.global -}}
 {{- end }}
 {{- coalesce $fstGlobal $fstLocal $fstDefault }}
 {{- end }}
