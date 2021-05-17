@@ -92,24 +92,24 @@ Persistence definition
 
 {{/*
 QDB network ports definition
-  - xroot_qdb_httpd qdb port (defaults to 7777)
+  - xroot qdb port (defaults to 7777)
 
-All the ports can be set according to (example for xrootd_qdb_http):
-  - Global value '.Values.global.ports.xrootd_qdb_http' (has the highest priority)
-  - Local value '.Values.ports.xrootd_qdb_http' (has lower priority)
+All the ports can be set according to (example for xrootd_qdb):
+  - Global value '.Values.global.ports.xrootd_qdb' (has the highest priority)
+  - Local value '.Values.ports.xrootd_qdb' (has lower priority)
   - Default value (shown above for each port)
 */}}
-{{- define "qdb.service.port.xrootd_qdb_http" -}}
-{{- $xrootd_qdb_httpDefault := "7777" -}}
-{{- $xrootd_qdb_httpLocal := "" -}}
-{{- $xrootd_qdb_httpGlobal := "" -}}
+{{- define "qdb.service.port.xrootd_qdb" -}}
+{{- $xrootd_qdbDefault := "7777" -}}
+{{- $xrootd_qdbLocal := "" -}}
+{{- $xrootd_qdbGlobal := "" -}}
 {{- if .Values.ports -}}
-  {{ $xrootd_qdb_httpLocal = dig "xrootd_qdb_http" "" .Values.ports -}}
+  {{ $xrootd_qdbLocal = dig "xrootd_qdb" "" .Values.ports -}}
 {{- end }}
 {{- if .Values.global -}}
-  {{ $xrootd_qdb_httpGlobal = dig "ports" "xrootd_qdb_http" "" .Values.global -}}
+  {{ $xrootd_qdbGlobal = dig "ports" "xrootd_qdb" "" .Values.global -}}
 {{- end }}
-{{- coalesce $xrootd_qdb_httpGlobal $xrootd_qdb_httpLocal $xrootd_qdb_httpDefault }}
+{{- coalesce $xrootd_qdbGlobal $xrootd_qdbLocal $xrootd_qdbDefault }}
 {{- end }}
 
 {{/*

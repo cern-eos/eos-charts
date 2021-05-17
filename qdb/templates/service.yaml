@@ -7,9 +7,9 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - port: {{ include "qdb.service.port.xrootd_qdb_http" . }}
+    - port: {{ include "qdb.service.port.xrootd_qdb" . }}
       targetPort: 7777
       protocol: TCP
-      name: xrootd-http
+      name: xrootd-qdb
   selector:
     {{- include "qdb.selectorLabels" . | nindent 4 }}

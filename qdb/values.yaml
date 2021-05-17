@@ -57,15 +57,15 @@ dnsPolicy: ClusterFirst
 # These are the ports exposed by the Kubernetes service.
 #
 # Defaults:
-#   - xrootd_qdb_http: 7777
+#   - xrootd_qdb: 7777
 #
 # Values can be overridden with:
-# - .Values.ports.xrootd_qdb_http below
-# - Global .Values.global.ports.xrtood_qdb_httpd in a parent chart.
+# - .Values.ports.xrootd_qdb below
+# - Global .Values.global.ports.xrtood_qdb in a parent chart.
 #     Global takes precedence over local values.
 #
 ports:
-  xrootd_qdb_http:
+  xrootd_qdb:
 
 #
 # Manage persistence of data stored in QDB,
