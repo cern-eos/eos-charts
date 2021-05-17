@@ -43,24 +43,25 @@ customLabels:
 #   Available options: true, false
 #   Default: false
 #
+hostNetwork: false
+#
 # dnsPolicy regulates how the pod resolves hostnames with DNS servers.
 #   In case hostNetwork is set to true, dnsPolicy must be ClusterFirstWithHostNet
 #   Documentation: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
 #   Available options: Default, ClusterFirst, ClusterFirstWithHostNet, None
 #   Default: ClusterFirst
 #
-hostNetwork: false
 dnsPolicy: ClusterFirst
 #
-# Service ports declaration for mgm.
+# Service ports declaration for qdb.
 # These are the ports exposed by the Kubernetes service.
 #
 # Defaults:
-#   - xrootd_qdb_http:  7777
+#   - xrootd_qdb_http: 7777
 #
 # Values can be overridden with:
-# - .Values.ports.{xrootd_qdb_http} below
-# - Global .Values.global.ports.<service_name> in a parent chart.
+# - .Values.ports.xrootd_qdb_http below
+# - Global .Values.global.ports.xrtood_qdb_httpd in a parent chart.
 #     Global takes precedence over local values.
 #
 ports:
