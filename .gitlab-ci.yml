@@ -72,7 +72,7 @@ eos_systest:
     - export KUBECONFIG=$K8S_CONFIG
     - export K8S_NAMESPACE=$(echo ${CI_JOB_NAME}-${CI_JOB_ID}-${CI_PIPELINE_ID} | tr '_' '-' | tr '[:upper:]' '[:lower:]')
   script:
-    - pwd ; ls -l ; echo ~
+    - for chart in $(ls -d */Chart.yaml | xargs -I{} dirname {}); do helm dep update ${chart}; done
     - helm install eos ./server/ --create-namespace --namespace $K8S_NAMESPACE --set fst.replicaCount=8 --wait --timeout 300s
     - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -- eos space define default 8 1
     - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -- bash -c 'for i in $(seq 1 8); do eos fs mv --force ${i} default.0; done'
