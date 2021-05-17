@@ -77,11 +77,14 @@ eos_systest:
     - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -- eos space define default 8 1
     - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -- bash -c 'for i in $(seq 1 8); do eos fs mv --force ${i} default.0; done'
     - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -- eos space quota default on
-    - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -- eos-instance-test
+    - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -- sed -i 's/eos-mq.eoscluster.cern.ch/eos-mq/g' /usr/sbin/eos-instance-test-ci
+    - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -- sed -i 's/eos-fst4.eoscluster.cern.ch/eos-fst-4.eos-fst.tmp00.svc.cluster.local/g' /usr/sbin/eos-drain-test
+    - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -it -- eos-instance-test-ci
+    - kubectl exec --namespace $K8S_NAMESPACE eos-mgm-0 -it -- eos-unit-tests-with-instance -n root://localhost//eos/dockertest/'
   after_script:
     - export KUBECONFIG=$K8S_CONFIG
     - export K8S_NAMESPACE=$(echo ${CI_JOB_NAME}-${CI_JOB_ID}-${CI_PIPELINE_ID} | tr '_' '-' | tr '[:upper:]' '[:lower:]')
-    - helm uninstall eos
+    - helm uninstall eos --namespace $K8S_NAMESPACE
   artifacts:
     when: on_failure
     expire_in: 3 days
