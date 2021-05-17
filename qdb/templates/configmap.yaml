@@ -2,7 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "qdb.fullname" . }}-xrd-cf-quarkdb-partial
-  namespace: {{ include "qdb.namespace" . }}
   labels:
     {{- include "qdb.labels" . | nindent 4 }}
 data:
@@ -21,7 +20,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "qdb.fullname" . }}-cfgmap-qdb-create
-  namespace: {{ include "qdb.namespace" . }}
   labels:
     {{- include "qdb.labels" . | nindent 4 }}
 data:
@@ -76,14 +74,14 @@ data:
       #   1. Define storage path
       PATH_PREFIX="/var/quarkdb/node-"
       STORAGE_PATH="$PATH_PREFIX$THIS_REPLICA"
-      echo "INFO: My storage path is $STORAGE_PATH" 
+      echo "INFO: My storage path is $STORAGE_PATH"
 
       # 2. Prepare configuration file
       #   This is not used by quarkdb-create, but will be needed at runtime
       cat /root/qdb-config/input/xrd.cf.quarkdb.partial | \
         sed "s@#redis.mode#to_be_configured@redis.mode raft\n  redis.myself `hostname -f`:7777@g" | \
         sed "s@#redis.database#to_be_configured@redis.database $STORAGE_PATH@" > /root/qdb-config/output/xrd.cf.quarkdb
-      
+
       # 3. Define cluster peers
       NODES=""
       for i in $(seq 0 $((REPLICA_COUNT-1)))
@@ -94,7 +92,7 @@ data:
       NODES=$(echo $NODES | cut -c 2-)  # Trim the leading comma
 
       # 4. Create the cluster
-      quarkdb-create --path $STORAGE_PATH --clusterID $CLUSTER_ID --nodes $NODES 
+      quarkdb-create --path $STORAGE_PATH --clusterID $CLUSTER_ID --nodes $NODES
       chown -R daemon:daemon $STORAGE_PATH
     fi
 

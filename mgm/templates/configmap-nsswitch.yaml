@@ -3,7 +3,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "mgm.fullname" . }}-cfgmap-nsswitch-conf
-  namespace: {{ include "mgm.namespace" . }}
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
 data:
@@ -31,7 +30,7 @@ data:
     #      hesiod                  Use Hesiod for user lookups
     #      [NOTFOUND=return]       Stop searching if not found so far
     #
-    
+
     # To use db, put the "db" in front of "files" for entries you want to be
     # looked up first in the databases
     #
@@ -39,20 +38,20 @@ data:
     #passwd:    db files nisplus nis
     #shadow:    db files nisplus nis
     #group:     db files nisplus nis
-    
+
     passwd:     files ldap
     shadow:     files
     group:      files ldap
     hosts:      files dns
-    
+
     # Example - obey only what nisplus tells us...
     #services:   nisplus [NOTFOUND=return] files
     #networks:   nisplus [NOTFOUND=return] files
     #protocols:  nisplus [NOTFOUND=return] files
     #rpc:        nisplus [NOTFOUND=return] files
     #ethers:     nisplus [NOTFOUND=return] files
-    #netmasks:   nisplus [NOTFOUND=return] files     
-    
+    #netmasks:   nisplus [NOTFOUND=return] files
+
     bootparams: nisplus [NOTFOUND=return] files
     ethers:     files
     netmasks:   files

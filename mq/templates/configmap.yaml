@@ -2,7 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "mq.fullname" . }}-cfgmap-xrd-cf-mq
-  namespace: {{ include "mq.namespace" . }}
   labels:
     {{- include "mq.labels" . | nindent 4 }}
 data:
@@ -43,4 +42,3 @@ data:
     mq.qdbcluster {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
     mq.qdbpassword_file /etc/eos.keytab
     ###########################################################
-

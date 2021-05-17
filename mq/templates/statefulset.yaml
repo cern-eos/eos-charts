@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "mq.fullname" . }}
-  namespace: {{ include "mq.namespace" . }}
   labels:
     {{- include "mq.labels" . | nindent 4 }}
 spec:
