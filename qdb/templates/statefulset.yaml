@@ -69,7 +69,8 @@ spec:
             allowPrivilegeEscalation: true
             capabilities:
               add: ["SYS_PTRACE"]
-          {{- include "qdb.startupProbe" . | nindent 10 }}
+          {{- include "qdb.livenessProbe" . | nindent 10 }}
+          {{- include "qdb.readinessProbe" . | nindent 10 }}
           volumeMounts:
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
               mountPath: /etc/xrd.cf.quarkdb

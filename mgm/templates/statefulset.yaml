@@ -88,6 +88,8 @@ spec:
             capabilities:
               add: ["SYS_PTRACE"]
           {{- include "mgm.startupProbe" . | nindent 10 }}
+          {{- include "mgm.livenessProbe" . | nindent 10 }}
+          {{- include "mgm.readinessProbe" . | nindent 10 }}
           volumeMounts:
             {{- if .Values.ldapBindUsers.enable }}
             - name: nscd-socket

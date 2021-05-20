@@ -99,7 +99,7 @@ data:
 
     init_probe() {
       local cmd=$@
-      local max_wait=60
+      local max_wait=180
       local sleep=5
       start_time=$(date +%s)
       rc=-1

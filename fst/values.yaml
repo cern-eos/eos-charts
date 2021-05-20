@@ -153,10 +153,19 @@ persistence:
   #  size: 1Ti
   #  annotations: {}
 
-startupProbe:
-  enabled: false
-  tcpSocket:
-    host: mgm.outside.the.cluster
-    port: 1094
-  failureThreshold: 40
-  periodSeconds: 10
+#
+# Enable or disable health probes for fst.
+#   Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+#
+# Liveness Probe:
+#   Checks every 10 seconds whether it is possible to open a TCP socket againsts port 1095.
+#   The fst container will be restarted after 3 failures.
+#
+# Default: All probes enabled.
+#   This can be overridden with:
+#   - .Values.probes.liveness below
+#   - Global .Values.global.probes.fst_liveness in a parent chart.
+#       Global takes precedence over local values.
+#
+probes:
+  liveness: true

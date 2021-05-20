@@ -68,18 +68,7 @@ spec:
             allowPrivilegeEscalation: true
             capabilities:
               add: ["SYS_PTRACE"]
-          # startupProbe when deployed on kubectl >= 1.16
-          # exec:
-          #   command:
-          #   - /volumes/configmap/configure.sh
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
+          {{- include "mq.livenessProbe" . | nindent 10 }}
           volumeMounts:
             - name: mq-cfgmap-xrd-cf-mq
               mountPath: /etc/xrd.cf.mq

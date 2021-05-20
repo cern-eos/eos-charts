@@ -113,30 +113,49 @@ All the ports can be set according to (example for xrootd_qdb):
 {{- end }}
 
 {{/*
-StartupProbe definition
+Liveness Probe definition
 */}}
-{{- define "qdb.startupProbe" -}}
-  {{- if .Values.startupProbe.enabled }}
-startupProbe:
-    {{- if .Values.startupProbe.tcpSocket }}
+{{- define "qdb.livenessProbe" -}}
+{{- $livenessEnabled := "true" -}}
+{{- if .Values.probes -}}
+  {{- $livenessEnabled = dig "liveness" $livenessEnabled .Values.probes -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{- $livenessEnabled = dig "probes" "qdb_liveness" $livenessEnabled .Values.global }}
+{{- end }}
+{{- if $livenessEnabled -}}
+livenessProbe:
   tcpSocket:
-    host: {{ .Values.startupProbe.tcpSocket.host }}
-    port: {{ .Values.startupProbe.tcpSocket.port }}
-    {{- end }}
-  failureThreshold: {{ .Values.startupProbe.failureThreshold }}
-  periodSeconds: {{ .Values.startupProbe.periodSeconds }}
-{{- else }}
-  {{- if .Values.global }}
-    {{- with .Values.global }}
-      {{- if .qdb.startupProbe.enabled }}
-startupProbe:
-  tcpSocket:
-    host: {{ $.Release.Name }}-mgm
-    port: {{ .service.xrootd_mgm.port }}
-  failureThreshold: {{ .qdb.startupProbe.failureThreshold }}
-  periodSeconds: {{ .qdb.startupProbe.periodSeconds }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
+    port: 7777
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+{{- end }}
+{{- end }}
+
+{{/*
+Readiness Probe definition
+*/}}
+{{- define "qdb.readinessProbe" -}}
+{{- $readinessEnabled := "true" -}}
+{{- if .Values.probes -}}
+  {{- $readinessEnabled = dig "readiness" $readinessEnabled .Values.probes -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{- $readinessEnabled = dig "probes" "qdb_readiness" $readinessEnabled .Values.global }}
+{{- end }}
+{{- if $readinessEnabled -}}
+readinessProbe:
+  exec:
+    command:
+    - /usr/bin/redis-cli
+    - -p
+    - "7777"
+    - ping
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+{{- end }}
 {{- end }}

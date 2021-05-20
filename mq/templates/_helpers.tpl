@@ -147,3 +147,25 @@ All the ports can be set according to (example for xrootd_mq):
 {{- end }}
 {{- coalesce $xrootd_mqGlobal $xrootd_mqLocal $xrootd_mqDefault }}
 {{- end }}
+
+{{/*
+Liveness Probe definition
+*/}}
+{{- define "mq.livenessProbe" -}}
+{{- $livenessEnabled := "true" -}}
+{{- if .Values.probes -}}
+  {{- $livenessEnabled = dig "liveness" $livenessEnabled .Values.probes -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{- $livenessEnabled = dig "probes" "mq_liveness" $livenessEnabled .Values.global }}
+{{- end }}
+{{- if $livenessEnabled -}}
+livenessProbe:
+  tcpSocket:
+    port: 1097
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+{{- end }}
+{{- end }}

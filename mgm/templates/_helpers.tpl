@@ -245,30 +245,69 @@ All the ports can be set according to (example for xrootd_mgm):
 {{- end }}
 
 {{/*
-StartupProbe definition
+Startup Probe definition
 */}}
 {{- define "mgm.startupProbe" -}}
-  {{- if .Values.startupProbe.enabled }}
-startupProbe:
-    {{- if .Values.startupProbe.tcpSocket }}
-  tcpSocket:
-    host: {{ .Values.startupProbe.tcpSocket.host }}
-    port: {{ .Values.startupProbe.tcpSocket.port }}
-    {{- end }}
-  failureThreshold: {{ .Values.startupProbe.failureThreshold }}
-  periodSeconds: {{ .Values.startupProbe.periodSeconds }}
-{{- else }}
-  {{- if .Values.global }}
-    {{- with .Values.global }}
-      {{- if .mgm.startupProbe.enabled }}
+{{- $startupEnabled := "true" -}}
+{{- if .Values.probes -}}
+  {{- $startupEnabled = dig "startup" $startupEnabled .Values.probes -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{- $startupEnabled = dig "probes" "mgm_startup" $startupEnabled .Values.global }}
+{{- end }}
+{{- if $startupEnabled -}}
 startupProbe:
   tcpSocket:
-    host: {{ $.Release.Name }}-mgm
-    port: {{ .service.xrootd_mq.port }}
-  failureThreshold: {{ .mgm.startupProbe.failureThreshold }}
-  periodSeconds: {{ .mgm.startupProbe.periodSeconds }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
+    port: 1094
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 6  # Totals to 60 (6*10s) startup delay
+{{- end }}
+{{- end }}
+
+{{/*
+Liveness Probe definition
+*/}}
+{{- define "mgm.livenessProbe" -}}
+{{- $livenessEnabled := "true" -}}
+{{- if .Values.probes -}}
+  {{- $livenessEnabled = dig "liveness" $livenessEnabled .Values.probes -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{- $livenessEnabled = dig "probes" "mgm_liveness" $livenessEnabled .Values.global }}
+{{- end }}
+{{- if $livenessEnabled -}}
+livenessProbe:
+  tcpSocket:
+    port: 1094
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+{{- end }}
+{{- end }}
+
+{{/*
+Readiness Probe definition
+*/}}
+{{- define "mgm.readinessProbe" -}}
+{{- $readinessEnabled := "true" -}}
+{{- if .Values.probes -}}
+  {{- $readinessEnabled = dig "readiness" $readinessEnabled .Values.probes -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{- $readinessEnabled = dig "probes" "mgm_readiness" $readinessEnabled .Values.global }}
+{{- end }}
+{{- if $readinessEnabled -}}
+readinessProbe:
+  exec:
+    command:
+    - /usr/bin/eos
+    - ns
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+{{- end }}
 {{- end }}

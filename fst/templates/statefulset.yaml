@@ -98,19 +98,7 @@ spec:
             allowPrivilegeEscalation: true
             capabilities:
               add: ["SYS_PTRACE"]
-          # startupProbe when deployed on kubectl >= 1.16
-          # exec:
-          #   command:
-          #   - /volumes/configmap/configure.sh
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          {{- include "fst.startupProbe" . | nindent 10 }}
+          {{- include "fst.livenessProbe" . | nindent 10 }}
           volumeMounts:
             - name: fst-cfgmap-xrd-cf-fst
               mountPath: /etc/xrd.cf.fst

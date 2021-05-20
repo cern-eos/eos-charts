@@ -213,30 +213,23 @@ EOS GeoTag definition
 {{- end }}
 
 {{/*
-StartupProbe definition
+Liveness Probe definition
 */}}
-{{- define "fst.startupProbe" -}}
-  {{- if .Values.startupProbe.enabled }}
-startupProbe:
-    {{- if .Values.startupProbe.tcpSocket }}
+{{- define "fst.livenessProbe" -}}
+{{- $livenessEnabled := "true" -}}
+{{- if .Values.probes -}}
+  {{- $livenessEnabled = dig "liveness" $livenessEnabled .Values.probes -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{- $livenessEnabled = dig "probes" "fst_liveness" $livenessEnabled .Values.global }}
+{{- end }}
+{{- if $livenessEnabled -}}
+livenessProbe:
   tcpSocket:
-    host: {{ .Values.startupProbe.tcpSocket.host }}
-    port: {{ .Values.startupProbe.tcpSocket.port }}
-    {{- end }}
-  failureThreshold: {{ .Values.startupProbe.failureThreshold }}
-  periodSeconds: {{ .Values.startupProbe.periodSeconds }}
-{{- else }}
-  {{- if .Values.global }}
-    {{- with .Values.global }}
-      {{- if .fst.startupProbe.enabled }}
-startupProbe:
-  tcpSocket:
-    host: {{ $.Release.Name }}-mgm
-    port: {{ .service.xrootd_mgm.port }}
-  failureThreshold: {{ .fst.startupProbe.failureThreshold }}
-  periodSeconds: {{ .fst.startupProbe.periodSeconds }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
+    port: 1095
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+{{- end }}
 {{- end }}
