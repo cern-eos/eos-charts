@@ -26,6 +26,7 @@ customLabels:
 # hostNetwork allows the pod to use the host network namespace.
 #   Available options: true, false
 #   Default: false
+#
 hostNetwork: false
 #
 # dnsPolicy regulates how the pod resolves hostnames with DNS servers.
@@ -131,13 +132,33 @@ persistence:
   #  size: 10Gi
   #  annotations: {}
 
-startupProbe:
-  enabled: false
-  tcpSocket:
-    host: mq.outside.the.cluster
-    port: 1097
-  failureThreshold: 40
-  periodSeconds: 10
+#
+# Enable or disable health probes for mgm.
+#   Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+#
+# Startup Probe:
+#   Checks whether it is possible to open a TCP socket againsts port 1094.
+#   Allows for a startup delay of 120 seconds (10s period * 12 failureThreshold)
+#
+# Liveness Probe:
+#   Checks every 10 seconds whether it is possible to open a TCP socket againsts port 1094.
+#   The mgm container will be restarted after 3 failures.
+#
+# Readiness Probe:
+#   Checks every 10 seconds whether `eos ns` returns successfully.
+#   If not, the failing pod will be removed from the alias
+#     (which is not that useful because we have no slave at the moment)
+#
+# # Default: All probes enabled.
+#   This can be overridden with:
+#   - .Values.probes.{startup, liveness, readiness} below
+#   - Global .Values.global.probes.mgm_{startup, liveness} in a parent chart.
+#       Global takes precedence over local values.
+#
+probes:
+  startup: true
+  liveness: true
+  readiness: true
 
 ldapBindUsers:
   enable: false
