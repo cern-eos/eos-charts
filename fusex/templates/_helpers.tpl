@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "eosxd.name" -}}
+{{- define "fusex.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "eosxd.fullname" -}}
+{{- define "fusex.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -27,16 +27,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "eosxd.chart" -}}
+{{- define "fusex.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Common labels
 */}}
-{{- define "eosxd.labels" -}}
-helm.sh/chart: {{ include "eosxd.chart" . }}
-{{ include "eosxd.selectorLabels" . }}
+{{- define "fusex.labels" -}}
+helm.sh/chart: {{ include "fusex.chart" . }}
+{{ include "fusex.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -46,17 +46,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "eosxd.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "eosxd.name" . }}
+{{- define "fusex.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "fusex.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "eosxd.serviceAccountName" -}}
+{{- define "fusex.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create -}}
-    {{ default (include "eosxd.fullname" .) .Values.serviceAccount.name }}
+    {{ default (include "fusex.fullname" .) .Values.serviceAccount.name }}
 {{- else -}}
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
@@ -65,7 +65,7 @@ Create the name of the service account to use
 {{/*
 StartupProbe definition
 */}}
-{{- define "eosxd.startupProbe" -}}
+{{- define "fusex.startupProbe" -}}
   {{- if .Values.startupProbe.enabled }}
 startupProbe:
     {{- if .Values.startupProbe.tcpSocket }}
@@ -78,13 +78,13 @@ startupProbe:
 {{- else }}
   {{- if .Values.global }}
     {{- with .Values.global }}
-      {{- if .eosxd.startupProbe.enabled }}
+      {{- if .fusex.startupProbe.enabled }}
 startupProbe:
   tcpSocket:
     host: {{ $.Release.Name }}-mgm
     port: {{ .service.xrootd_mgm.port }}
-  failureThreshold: {{ .eosxd.startupProbe.failureThreshold }}
-  periodSeconds: {{ .eosxd.startupProbe.periodSeconds }}
+  failureThreshold: {{ .fusex.startupProbe.failureThreshold }}
+  periodSeconds: {{ .fusex.startupProbe.periodSeconds }}
         {{- end }}
       {{- end }}
     {{- end }}

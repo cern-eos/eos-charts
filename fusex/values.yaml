@@ -7,7 +7,7 @@ startupProbe:
   enabled: false
 
 #
-# Assign eosxd pod to a node with a specific label.
+# Assign fusex pod to a node with a specific label.
 #   If true, it will be deployed only on nodes labeled as per customLabels (see below).
 #   If false, it will be deployed on all nodes of the cluster (it is a daemonSet).
 #
@@ -15,7 +15,7 @@ podAssignment:
   enableNodeSelector: false
 
 #
-# Custom labels to identify eosxd pod.
+# Custom labels to identify fusex pod.
 #
 # They are used by node selection, if enabled (see above).
 # Label nodes accordingly to avoid scheduling problems.
@@ -25,9 +25,9 @@ customLabels:
   component: swan-users
 
 #
-# Configuration for eosxd.
+# Configuration for fusex.
 #
-eosxd:
+fusex:
   keytab: ""    # Must be base64 encoded
   hostMountpoint: /eos
   hostPID: true

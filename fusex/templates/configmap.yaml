@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "eosxd.fullname" . }}-cfgmap-fuse-conf
+  name: {{ include "fusex.fullname" . }}-cfgmap-fuse-conf
   labels:
-    {{- include "eosxd.labels" . | nindent 4 }}
+    {{- include "fusex.labels" . | nindent 4 }}
 data:
   fuse.eos.conf: |
-    {{- with .Values.eosxd.config }}
+    {{- with .Values.fusex.config }}
     {
       "name": "eos",
       "hostport": "{{ .eos_mgm_alias }}",

@@ -1,34 +1,34 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ include "eosxd.fullname" . }}
+  name: {{ include "fusex.fullname" . }}
   labels:
-    {{- include "eosxd.labels" . | nindent 4 }}
+    {{- include "fusex.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{- include "eosxd.selectorLabels" . | nindent 6 }}
+      {{- include "fusex.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "eosxd.selectorLabels" . | nindent 8 }}
+        {{- include "fusex.selectorLabels" . | nindent 8 }}
         {{- toYaml .Values.customLabels | nindent 8 }}
     spec:
-      hostPID: {{ default false .Values.eosxd.hostPID }}
-      hostNetwork: {{ default false .Values.eosxd.hostNetwork }}
-      dnsPolicy: {{ default "ClusterFirst" .Values.eosxd.dnsPolicy }}
+      hostPID: {{ default false .Values.fusex.hostPID }}
+      hostNetwork: {{ default false .Values.fusex.hostNetwork }}
+      dnsPolicy: {{ default "ClusterFirst" .Values.fusex.dnsPolicy }}
       {{- if .Values.podAssignment.enableNodeSelector }}
       nodeSelector:
         {{- toYaml .Values.customLabels | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: 60
       #initContainers:
-      #  - name: eos-eosxd-init0-cleanup
+      #  - name: eos-fusex-init0-cleanup
       #    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
       #    imagePullPolicy: {{ .Values.image.pullPolicy }}
       #    command: ["/bin/sleep", "infinity"]
       containers:
-        - name: eos-eosxd
+        - name: eos-fusex
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/usr/bin/eosxd"]
@@ -39,27 +39,27 @@ spec:
               add: ["SYS_ADMIN"]
           # 
           # TODO: StartUp probe to be implemented
-          # {{- include "eosxd.startupProbe" . | nindent 10 }}
+          # {{- include "fusex.startupProbe" . | nindent 10 }}
           #
           volumeMounts:
-            - name: eosxd-cfgmap-fuse-conf
+            - name: fusex-cfgmap-fuse-conf
               mountPath: /etc/eos/fuse.eos.conf
               subPath: fuse.eos.conf
-            - name: eosxd-eos-keytab
+            - name: fusex-eos-keytab
               mountPath: /etc/eos/fuse.sss.keytab
               subPath: fuse.sss.keytab
-            - name: eosxd-eos-export
+            - name: fusex-eos-export
               mountPath: /eos:rshared
       volumes:
-        - name: eosxd-cfgmap-fuse-conf
+        - name: fusex-cfgmap-fuse-conf
           configMap:
-            name: {{ include "eosxd.fullname" . }}-cfgmap-fuse-conf
+            name: {{ include "fusex.fullname" . }}-cfgmap-fuse-conf
             defaultMode: 0644
-        - name: eosxd-eos-keytab
+        - name: fusex-eos-keytab
           secret:
-            secretName: {{ include "eosxd.fullname" . }}-cfgmap-fuse-keytab
+            secretName: {{ include "fusex.fullname" . }}-cfgmap-fuse-keytab
             defaultMode: 0400
-        - name: eosxd-eos-export
+        - name: fusex-eos-export
           hostPath:
-            path: {{ default "/eos" .Values.eosxd.hostMountpoint }}
+            path: {{ default "/eos" .Values.fusex.hostMountpoint }}
             type: DirectoryOrCreate
