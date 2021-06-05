@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "kerberos.fullname" . }}-kdc-config
+  labels:
+    {{- include "kerberos.labels" . | nindent 4 }}
+data:
+  kdc.conf: |-
+    [kdcdefaults]
+     kdc_ports = {{ .Values.kdc.udp.port }}
+     kdc_tcp_ports = {{ .Values.kdc.tcp.port }}
+
+    [realms]
+{{- range $key, $value := .Values.realms }}
+     {{ $key | upper }} = {
+      master_key_type = {{ $value.master_key_type }}
+      max_life = {{ $value.max_life }}
+      max_renewable_life = {{ $value.max_renew_life }}
+      acl_file = /var/kerberos/krb5kdc/kadm5.acl
+      dict_file = /usr/share/dict/cracklib-words
+     }
+{{- end }}
+
+  kadm5.acl: |-
+{{- range $key, $value := .Values.realms }}
+{{- range $acl := $value.acls }}
+    {{ $acl.princ }}@{{ $key | upper }}   {{ $acl.perms }}   {{ if $acl.target }}{{ $acl.target }}{{ end }}   {{ if $acl.restrictions }}{{ $acl.restrictions }}{{ end }}
+{{- end }}
+{{ end }}

@@ -45,9 +45,9 @@ fusex:
     remotemountdir: /eos
     auth:
       shared_mount: 1
-      sss: 1
+      sss: 0
       gsi-first: 0
-      krb5: 0
+      krb5: 1
       oauth2: 1
     options:
       hide_versions: 0

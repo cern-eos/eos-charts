@@ -53,6 +53,12 @@ spec:
             capabilities:
               add: ["SYS_PTRACE"]
           command: ["/bin/bash", "/root/mgm_init.sh"]
+          # {{- if .Values.kerberos.enable }}
+          # command: ["/bin/bash", "-c"]
+          # args: ["echo admin1 | kadmin -r EXAMPLE.COM -p admin1/admin ktadd -k /etc/eos.krb5.keytab host/$(hostname -f); /root/mgm_init.sh"]   # TODO: Check which xrootd binary should be used
+          # {{- else }}
+          # command: ["/bin/bash", "/root/mgm_init.sh"]
+          # {{- end }}
           volumeMounts:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
@@ -67,6 +73,11 @@ spec:
             - name: eoskeytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
+            - name: krb5-conf
+              mountPath: /etc/krb5.conf
+              subPath: krb5.conf
+            - name: eoskrb5keytab
+              mountPath: /etc/eos.krb5.keytab
       containers:
         - name: eos-mgm
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -108,6 +119,11 @@ spec:
             - name: eoskeytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
+            - name: krb5-conf
+              mountPath: /etc/krb5.conf
+              subPath: krb5.conf
+            - name: eoskrb5keytab
+              mountPath: /etc/eos.krb5.keytab
         {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd
           {{- with .Values.ldapBindUsers.nslcd.image }}
@@ -165,6 +181,11 @@ spec:
           secret:
             secretName: common-secret-eoskeytab
             defaultMode: 0400
+        - name: krb5-conf
+          configMap:
+            name: common-krb5-config
+        - name: eoskrb5keytab
+          emptyDir: {}
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: mgm-data
           emptyDir: {}

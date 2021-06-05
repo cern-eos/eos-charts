@@ -47,6 +47,9 @@ spec:
               subPath: fuse.sss.keytab
             - name: fusex-eos-export
               mountPath: /eos:rshared
+            - name: krb5-conf
+              mountPath: /etc/krb5.conf
+              subPath: krb5.conf
       volumes:
         - name: fusex-cfgmap-fuse-conf
           configMap:
@@ -60,3 +63,6 @@ spec:
           hostPath:
             path: {{ default "/eos" .Values.fusex.hostMountpoint }}
             type: DirectoryOrCreate
+        - name: krb5-conf
+          configMap:
+            name: common-krb5-config

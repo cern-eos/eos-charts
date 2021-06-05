@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-krb5-config
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  krb5.conf: |-
+
+    [libdefaults]
+     default_realm = {{ .Values.krb5.default_realm | upper }}
+     ticket_lifetime = {{ .Values.krb5.ticket_lifetime }}
+     default_ccache_name = {{ .Values.krb5.default_ccache }}
+
+    [realms]
+{{- range $key, $value := .Values.realms }}
+     {{ $key | upper }} = {
+      kdc = {{ template "common.kerberos.fullname" $ }}-kdc.{{ $.Release.Namespace }}.svc.cluster.local:{{ $.Values.kdc.udp.port }}
+      master_kdc = {{ template "common.kerberos.fullname" $ }}-kdc.{{ $.Release.Namespace }}.svc.cluster.local:{{ $.Values.kdc.udp.port }}
+      admin_server = {{ template "common.kerberos.fullname" $ }}-kadmin.{{ $.Release.Namespace }}.svc.cluster.local:749
+     }
+{{- end }}

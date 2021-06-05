@@ -180,3 +180,7 @@ ldapBindUsers:
   #    ldap_group_search_base: ou=groups,dc=example,dc=org
   #    ldap_filter_passwd: (objectClass=posixAccount)
   #    ldap_filter_group: (objectClass=group)
+
+################################################################
+kerberos:
+  enable: true

@@ -24,16 +24,21 @@ data:
     sec.protocol unix
     # SSS authentication
     sec.protocol sss -c /etc/eos.keytab -s /etc/eos.keytab
+    {{- if .Values.kerberos.enable }}
     # KRB  authentication
-    #sec.protocol krb5 /etc/eos.krb5.keytab host/<host>@TEST.EOS
+    sec.protocol krb5 /etc/eos.krb5.keytab/eos.krb5.keytab host/<host>@TEST.EOS
+    {{- end }}
     # GSI authentication
     #sec.protocol gsi -crl:0 -cert:/etc/grid-security/daemon/hostcert.pem -key:/etc/grid-security/daemon/hostkey.pem -gridmap:/etc/grid-security/grid-mapfile -d:0 -gmapopt:2
 
     ###########################################################
     sec.protbind localhost.localdomain unix sss
     sec.protbind localhost unix sss
-    #sec.protbind * only krb5 sss unix
+    {{- if .Values.kerberos.enable }}
+    sec.protbind * only krb5 sss unix
+    {{- else }}
     sec.protbind * only sss unix
+    {{- end }}
     ###########################################################
     mgmofs.instance {{ include "mgm.instancename" . }}
     mgmofs.fs /
@@ -127,6 +132,15 @@ data:
     echo "INFO: /etc/eos.keytab is 0400 and owned by daemon:daemon"
     #### @note Until https://github.com/kubernetes/kubernetes/issues/81089 is merged
 
+    #### @note Expect the principals to exist. @note Lots of space for global vars
+    {{- if .Values.kerberos.enable }}
+    echo admin1 | kadmin -r TEST.EOS -p admin1/admin ktadd -k /etc/eos.krb5.keytab/eos.krb5.keytab host/$(hostname -f)
+    chown daemon:daemon /etc/eos.krb5.keytab/eos.krb5.keytab
+    # echo admin1 | kadmin -r TEST.EOS -p admin1/admin ktadd -k /etc/eos.krb5.keytab/eos-user.keytab eos-user
+    # chown eos-user:eos-user /etc/eos.krb5.keytab/eos-user.keytab
+    {{- end }}
+
+
     # Check QDB backend is running
     echo "INFO: Checking QDB is running..."
     init_probe redis-cli -h {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local -p 7777 ping
@@ -149,9 +163,13 @@ data:
     fi
     echo "  ✓ None found."
 
-    # Enable SSS
+    # Enable SSS , Enable KRb5 conditionally
     echo "INFO: Enabling mapping via SSS..."
     eos -b vid enable sss
+    {{- if .Values.kerberos.enable }}
+    eos -b vid enable krb5
+    {{- end }}
+
 
     # Add daemon to sudoers list
     echo "INFO: Adding daemon to sudoers list..."

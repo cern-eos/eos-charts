@@ -1,0 +1,15 @@
+{{- if .Values.kdc.persistence.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.kdc.persistence.name }}
+  labels:
+    {{- include "kerberos.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: {{ .Values.kdc.persistence.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.kdc.persistence.size }}
+{{- end -}}
