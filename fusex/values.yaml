@@ -3,9 +3,6 @@ image:
   tag: 4.8.39
   pullPolicy: Always
 
-startupProbe:
-  enabled: false
-
 #
 # Assign fusex pod to a node with a specific label.
 #   If true, it will be deployed only on nodes labeled as per customLabels (see below).
@@ -23,6 +20,16 @@ podAssignment:
 customLabels:
   service: swan
   component: swan-users
+
+#
+# Enable or disable health probes for fusex.
+#   Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+#
+# Liveness Probe:
+#   Checks every 10 seconds whether it exists an eosxd PID.
+#   The fusex container will be restarted after 3 failures.
+probes:
+  liveness: true
 
 #
 # Configuration for fusex.

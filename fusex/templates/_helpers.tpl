@@ -62,31 +62,25 @@ Create the name of the service account to use
 {{- end -}}
 {{- end -}}
 
-{{/*
-StartupProbe definition
+{{/* Liveness Probe definition
 */}}
-{{- define "fusex.startupProbe" -}}
-  {{- if .Values.startupProbe.enabled }}
-startupProbe:
-    {{- if .Values.startupProbe.tcpSocket }}
-  tcpSocket:
-    host: {{ .Values.startupProbe.tcpSocket.host }}
-    port: {{ .Values.startupProbe.tcpSocket.port }}
-    {{- end }}
-  failureThreshold: {{ .Values.startupProbe.failureThreshold }}
-  periodSeconds: {{ .Values.startupProbe.periodSeconds }}
-{{- else }}
-  {{- if .Values.global }}
-    {{- with .Values.global }}
-      {{- if .fusex.startupProbe.enabled }}
-startupProbe:
-  tcpSocket:
-    host: {{ $.Release.Name }}-mgm
-    port: {{ .service.xrootd_mgm.port }}
-  failureThreshold: {{ .fusex.startupProbe.failureThreshold }}
-  periodSeconds: {{ .fusex.startupProbe.periodSeconds }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
+{{- define "fusex.livenessProbe" -}}
+{{- $livenessEnabled := "true" -}}
+{{- if .Values.probes -}}
+  {{- $livenessEnabled = dig "liveness" $livenessEnabled .Values.probes -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{- $livenessEnabled = dig "probes" "fusex_liveness" $livenessEnabled .Values.global }}
+{{- end }}
+{{- if $livenessEnabled -}}
+livenessProbe:
+  exec:
+    command:
+    - /usr/sbin/pidof
+    - eosxd
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+{{- end }}
 {{- end }}

@@ -37,10 +37,7 @@ spec:
             privileged: true
             capabilities:
               add: ["SYS_ADMIN"]
-          # 
-          # TODO: StartUp probe to be implemented
-          # {{- include "fusex.startupProbe" . | nindent 10 }}
-          #
+          {{- include "fusex.livenessProbe" . | nindent 10 }}
           volumeMounts:
             - name: fusex-cfgmap-fuse-conf
               mountPath: /etc/eos/fuse.eos.conf
