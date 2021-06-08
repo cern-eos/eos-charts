@@ -48,6 +48,18 @@ spec:
               topologyKey: "kubernetes.io/hostname"
         {{- end }}
       {{- end }}
+      initContainers:
+        - name: eos-m1-init-mq-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash", "/root/mq_init.sh"]
+          volumeMounts:
+            - name: mq-cfgmap-mq-init
+              mountPath: /root/mq_init.sh
+              subPath: mq_init.sh
+            - name: eoskeytab
+              mountPath: /etc/eos.keytab.ro
+              subPath: eos.keytab.ro
       containers:
         - name: eos-mq
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -75,6 +87,12 @@ spec:
               subPath: xrd.cf.mq
             - name: mq-logs
               mountPath: /var/log/eos
+            - name: mq-cfgmap-mq-init
+              mountPath: /root/mq_init.sh
+              subPath: mq_init.sh
+            - name: eoskeytab
+              mountPath: /etc/eos.keytab.ro
+              subPath: eos.keytab.ro
       volumes:
         - name: mq-cfgmap-xrd-cf-mq
           configMap:
@@ -82,4 +100,12 @@ spec:
             defaultMode: 0644
         - name: mq-logs
           emptyDir: {}
+        - name: mq-cfgmap-mq-init
+          configMap:
+            name: {{ include "mq.fullname" . }}-cfgmap-mq-init
+            defaultMode: 0755
+        - name: eoskeytab
+          secret:
+            secretName: common-secret-eoskeytab
+            defaultMode: 0400
 

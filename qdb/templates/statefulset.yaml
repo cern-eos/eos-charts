@@ -52,6 +52,9 @@ spec:
               subPath: xrd.cf.quarkdb.partial
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
               mountPath: /root/qdb-config/output
+            - name: eoskeytab
+              mountPath: /etc/eos.keytab.ro
+              subPath: eos.keytab.ro
       containers:
         - name: eos-qdb
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -79,6 +82,9 @@ spec:
               mountPath: /var/quarkdb
             - name: quarkdb-logs
               mountPath: /var/log/eos
+            - name: eoskeytab
+              mountPath: /etc/eos.keytab.ro
+              subPath: eos.keytab.ro
       volumes:
         - name: quarkdb-cfgmap-qdb-create
           configMap:
@@ -91,6 +97,10 @@ spec:
           emptyDir: {}
         - name: quarkdb-logs
           emptyDir: {}
+        - name: eoskeytab
+          secret:
+            secretName: common-secret-eoskeytab
+            defaultMode: 0400
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: quarkdb-data
           emptyDir: {}
