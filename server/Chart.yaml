@@ -21,3 +21,6 @@ dependencies:
 - name: fst
   version: 0.0.5
   repository: "https://registry.cern.ch/chartrepo/eos"
+- name: common
+  version: 0.0.1
+  repository: "https://registry.cern.ch/chartrepo/eos"

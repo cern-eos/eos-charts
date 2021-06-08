@@ -75,6 +75,9 @@ spec:
               subPath: fst_init.sh
         {{- end }}
         {{- end }}
+            - name: eoskeytab
+              mountPath: /etc/eos.keytab.ro
+              subPath: eos.keytab.ro
       containers:
         - name: eos-fst
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -111,6 +114,9 @@ spec:
               mountPath: /fst_storage
             - name: fst-logs
               mountPath: /var/log/eos
+            - name: eoskeytab
+              mountPath: /etc/eos.keytab.ro
+              subPath: eos.keytab.ro
       volumes:
         - name: fst-cfgmap-xrd-cf-fst
           configMap:
@@ -122,6 +128,10 @@ spec:
             defaultMode: 0755
         - name: fst-logs
           emptyDir: {}
+        - name: eoskeytab
+          secret:
+            secretName: common-secret-eoskeytab
+            defaultMode: 0400
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: fst-storage
           emptyDir: {}

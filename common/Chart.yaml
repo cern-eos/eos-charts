@@ -1,0 +1,9 @@
+apiVersion: v2
+#
+name: common
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+#
+description: commons for eos-chart
+icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg 

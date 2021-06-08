@@ -64,6 +64,9 @@ spec:
             - name: mgm-cfgmap-mgm-init
               mountPath: /root/mgm_init.sh
               subPath: mgm_init.sh
+            - name: eoskeytab
+              mountPath: /etc/eos.keytab.ro
+              subPath: eos.keytab.ro
       containers:
         - name: eos-mgm
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -102,6 +105,9 @@ spec:
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
+            - name: eoskeytab
+              mountPath: /etc/eos.keytab.ro
+              subPath: eos.keytab.ro
         {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd
           {{- with .Values.ldapBindUsers.nslcd.image }}
@@ -155,6 +161,10 @@ spec:
             defaultMode: 0755
         - name: mgm-logs
           emptyDir: {}
+        - name: eoskeytab
+          secret:
+            secretName: common-secret-eoskeytab
+            defaultMode: 0400
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: mgm-data
           emptyDir: {}
@@ -165,7 +175,7 @@ spec:
             path: {{ dig "hostPath" "path" (printf "/var/eos/%s" (include "mgm.fullname" . )) .Values.persistence }}
             type: {{ dig "hostPath" "type" "DirectoryOrCreate" .Values.persistence }}
 {{- end }}
-{{- if eq ( include "persistence" . ) "pvc" }}
+{{- if eq ( include "persistence" . ) "pvc" }}  
   volumeClaimTemplates:
     - metadata:
         name: mgm-data
