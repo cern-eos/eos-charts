@@ -1,0 +1,5 @@
+apiVersion: v2
+name: eos-commons
+description: eos-commons library chart
+type: library
+version: 0.1.0

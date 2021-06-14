@@ -50,7 +50,7 @@ spec:
       {{- end }}
       initContainers:
         - name: eos-m1-init-mq-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/bash", "/root/mq_init.sh"]
           volumeMounts:
@@ -62,7 +62,7 @@ spec:
               subPath: eos.keytab.ro
       containers:
         - name: eos-mq
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n mq -c /etc/xrd.cf.mq -l /var/log/eos/xrdlog.mq -Rdaemon"]   # TODO: Check which xrootd binary should be used
@@ -108,4 +108,3 @@ spec:
           secret:
             secretName: common-secret-eoskeytab
             defaultMode: 0400
-

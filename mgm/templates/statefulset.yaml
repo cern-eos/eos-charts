@@ -26,7 +26,7 @@ spec:
       {{- end }}
       initContainers:
         - name: eos-mgm-init0-logfolder-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ $pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["for fld in mgm tx; do mkdir -p /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
@@ -34,7 +34,7 @@ spec:
             - name: mgm-logs
               mountPath: /var/log/eos
         - name: eos-mgm-init1-vareos-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ $pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["for fld in ns-queue; do mkdir -p /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]
@@ -42,7 +42,7 @@ spec:
             - name: mgm-data
               mountPath: /var/eos
         - name: eos-mgm-init2-mgm-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ $pullPolicy }}
           envFrom:
             - configMapRef:
@@ -69,7 +69,7 @@ spec:
               subPath: eos.keytab.ro
       containers:
         - name: eos-mgm
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ $pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]   # TODO: Check which xrootd binary should be used
@@ -175,7 +175,7 @@ spec:
             path: {{ dig "hostPath" "path" (printf "/var/eos/%s" (include "mgm.fullname" . )) .Values.persistence }}
             type: {{ dig "hostPath" "type" "DirectoryOrCreate" .Values.persistence }}
 {{- end }}
-{{- if eq ( include "persistence" . ) "pvc" }}  
+{{- if eq ( include "persistence" . ) "pvc" }}
   volumeClaimTemplates:
     - metadata:
         name: mgm-data
