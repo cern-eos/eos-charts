@@ -38,7 +38,7 @@ spec:
       {{- end }}
       initContainers:
         - name: eos-qdb-init0-quarkdb-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/bash", "/root/qdb_create.sh"]
           volumeMounts:
@@ -57,7 +57,7 @@ spec:
               subPath: eos.keytab.ro
       containers:
         - name: eos-qdb
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n qdb -c /etc/xrd.cf.quarkdb -l /var/log/eos/xrdlog.qdb -Rdaemon"]

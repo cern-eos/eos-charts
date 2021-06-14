@@ -40,7 +40,7 @@ spec:
       {{- end }}
       initContainers:
         - name: eos-fst-init0-chown-storage
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["chown daemon:daemon /fst_storage"]
@@ -50,7 +50,7 @@ spec:
         {{- if .Values.selfRegister }}
         {{- if .Values.selfRegister.enable }}
         - name: eos-fst-init1-fst-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: EOS_MGM_URL
@@ -80,7 +80,7 @@ spec:
               subPath: eos.keytab.ro
       containers:
         - name: eos-fst
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
