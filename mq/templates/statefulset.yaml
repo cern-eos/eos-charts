@@ -106,5 +106,5 @@ spec:
             defaultMode: 0755
         - name: eoskeytab
           secret:
-            secretName: common-secret-eoskeytab
+            secretName: {{ include "utils.keytabname" . }}
             defaultMode: 0400

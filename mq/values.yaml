@@ -91,3 +91,6 @@ hostnames:
 #
 probes:
   liveness: true
+
+# keytab:
+#   name: default-keytab

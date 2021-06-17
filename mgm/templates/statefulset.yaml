@@ -163,7 +163,7 @@ spec:
           emptyDir: {}
         - name: eoskeytab
           secret:
-            secretName: common-secret-eoskeytab
+            secretName: {{ include "utils.keytabname" . }}
             defaultMode: 0400
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: mgm-data

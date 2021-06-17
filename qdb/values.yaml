@@ -142,3 +142,6 @@ persistence:
 probes:
   liveness: true
   readiness: true
+
+# keytab:
+#   name: default-keytab
