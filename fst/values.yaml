@@ -169,3 +169,6 @@ persistence:
 #
 probes:
   liveness: true
+
+# keytab:
+#   name: default-keytab

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: utils
+description: EOS utils library chart
+type: library
+version: 0.1.0

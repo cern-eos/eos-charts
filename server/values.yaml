@@ -1,2 +1,8 @@
 fst:
   replicaCount: 4
+
+global:
+  repository: gitlab-registry.cern.ch/dss/eos
+  tag: 4.8.39
+  keytab:
+    name: eos-keytab

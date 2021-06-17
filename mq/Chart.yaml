@@ -8,6 +8,6 @@ appVersion: 4.8.39
 description: An EOS MQ chart
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
 dependencies:
-- name: eos-commons
+- name: utils
   version: 0.1.0
-  repository: file://../eos-commons
+  repository: file://../utils
