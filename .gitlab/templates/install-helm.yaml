@@ -1,0 +1,7 @@
+default:
+  before_script:
+    - curl -o helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
+    - mkdir -p helm
+    - tar zxvf helm.tar.gz -C helm
+    - cp helm/linux-amd64/helm /usr/local/bin
+    - rm -rf helm*

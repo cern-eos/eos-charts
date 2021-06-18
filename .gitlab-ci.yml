@@ -13,14 +13,13 @@ stages:
   - test
   - deploy
 
-before_script:
-  - mkdir -p .repo
+include:
+  - local: '.gitlab/templates/install-helm.yaml'
 
 build:
   stage: build
   image: gitlab-registry.cern.ch/cloud/ciadm
   script:
-    - curl -o helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz; mkdir -p helm; tar zxvf helm.tar.gz -C helm; cp helm/linux-amd64/helm /usr/local/bin; rm -rf helm*
     - for chart in $(ls -d */Chart.yaml | xargs dirname); do helm dep update ${chart}; helm lint ${chart}; helm package ${chart}; done
   except:
     - tags
@@ -46,6 +45,7 @@ test:
     - kubectl wait node --all --for condition=ready
   script:
     - kubectl get pods --all-namespaces
+    - helm version
   after_script:
     - kind delete cluster
 
@@ -90,8 +90,6 @@ version-check:
 deploy:
   stage: deploy
   image: gitlab-registry.cern.ch/cloud/ciadm
-  before_script:
-    - curl -o helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz; mkdir -p helm; tar zxvf helm.tar.gz -C helm; cp helm/linux-amd64/helm /usr/local/bin; rm -rf helm*
   script:
     - helm repo add ${HELM_CHART_REPO} https://registry.cern.ch/chartrepo/${HELM_CHART_REPO}
     - helm repo update
