@@ -20,6 +20,7 @@ build:
   stage: build
   image: gitlab-registry.cern.ch/cloud/ciadm
   script:
+    - curl -o helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz; mkdir -p helm; tar zxvf helm.tar.gz -C helm; cp helm/linux-amd64/helm /usr/local/bin; rm -rf helm*
     - for chart in $(ls -d */Chart.yaml | xargs dirname); do helm dep update ${chart}; helm lint ${chart}; helm package ${chart}; done
   except:
     - tags
@@ -44,8 +45,10 @@ test:
     - sed -i -E -e 's/localhost|0\.0\.0\.0/docker/g' $HOME/.kube/config
     - kubectl wait node --all --for condition=ready
   script:
-    - kubectl get pods --all-namespaces
-    - helm version
+    - wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz; mkdir -p helm; tar zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz -C helm; cp helm/linux-amd64/helm /usr/local/bin; rm -rf helm*
+    - wget -q https://github.com/helm/chart-testing/releases/download/v3.4.0/chart-testing_3.4.0_linux_amd64.tar.gz; mkdir -p ct; tar zxvf chart-testing_3.4.0_linux_amd64.tar.gz -C ct; cp ct/linux-amd64/ct /usr/local/bin; rm -rf ct*
+    - curl -o lintconf.yaml https://raw.githubusercontent.com/helm/chart-testing/main/etc/lintconf.yaml
+    - ct lint-and-install --config .ct.yaml --validate-chart-schema=false
   after_script:
     - kind delete cluster
 
@@ -90,6 +93,8 @@ version-check:
 deploy:
   stage: deploy
   image: gitlab-registry.cern.ch/cloud/ciadm
+  before_script:
+    - curl -o helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz; mkdir -p helm; tar zxvf helm.tar.gz -C helm; cp helm/linux-amd64/helm /usr/local/bin; rm -rf helm*
   script:
     - helm repo add ${HELM_CHART_REPO} https://registry.cern.ch/chartrepo/${HELM_CHART_REPO}
     - helm repo update
