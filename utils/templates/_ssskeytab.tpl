@@ -21,10 +21,10 @@ Name of the secret storing the SSS keytab
 Path to the file storing the SSS keytab
   - Global value '.Values.global.sssKeytab.file' has highest priority
   - Local value '.Values.sssKeytab.file' has lower priority
-  - Default is 'filed/eos.keytab.ro' (relative to the path of the chart calling)
+  - Default is 'files/eos.keytab' (relative to the path of the calling chart)
 */}}
 {{- define "utils.sssKeytabFile" -}}
-{{- $sssFileDefault := printf "files/eos.keytab.ro" -}}
+{{- $sssFileDefault := printf "files/eos.keytab" -}}
 {{- $sssFileLocal := "" -}}
 {{- $sssFileGlobal := "" -}}
 {{- if .Values.global }}
@@ -39,7 +39,7 @@ Path to the file storing the SSS keytab
 {{/*
 The SSS keytab secret
   Read file at the location given by 'utils.sssKeytabFile' and creates the secret 'eos-sss-keytab' out of it.
-  It also makes sure that the key of the secret in the data fragment is always 'eos.keytab.ro'
+  It also makes sure that the key of the secret in the data fragment is always 'eos.keytab'
     to avoid naming problems when projecting the secret as a file.
 */}}
 {{- define "utils.sssKeytab" -}}
@@ -49,7 +49,7 @@ metadata:
   name: eos-sss-keytab
 type: Opaque
 data:
-  eos.keytab.ro: |-
+  eos.keytab: |-
     {{ .Files.Get (include "utils.sssKeytabFile" .) | b64enc }}
 immutable: false
 {{- end -}}
