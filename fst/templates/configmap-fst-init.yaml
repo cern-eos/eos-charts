@@ -72,9 +72,8 @@ data:
     if [ $(eos space ls $SPACE -m | wc -l) -eq 0 ]; then
       echo "INFO: Space $SPACE does not exist. Creating..."
       eos space define $SPACE
-      #eos space set $SPACE on
     fi
-    eos space set $SPACE on
+    eos space set $SPACE on 
 
     # Set this node on
     echo "INFO: Enabling node..."
@@ -83,5 +82,9 @@ data:
     # Register filesystem
     echo "INFO: Registering filesystem..."
     eos fs add $UUID $HOSTNAME:1095 $DATADIR $SPACE $CONFIG
+    # @note To discuss with the eos devs.
+    # Set the space on or the fst won't switch online, even if the space was already on.
+    # This may not be the desired behavior, consider to make it conditional (as the whole initialization in general)
+    # eos space set $SPACE on 
 
     exit 0
