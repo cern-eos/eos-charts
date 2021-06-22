@@ -29,6 +29,6 @@ metadata:
   name: {{ include "utils.sssKeytabName" . }}
 type: Opaque
 data:
-  {{ (.Files.Glob "files/eos.keytab").AsSecrets }}
+  {{ (.Files.Glob "files/eos.keytab.ro").AsSecrets }}
 immutable: false
 {{- end -}}
