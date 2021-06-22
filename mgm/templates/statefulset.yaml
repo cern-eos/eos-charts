@@ -64,7 +64,7 @@ spec:
             - name: mgm-cfgmap-mgm-init
               mountPath: /root/mgm_init.sh
               subPath: mgm_init.sh
-            - name: eoskeytab
+            - name: eos-sss-keytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
       containers:
@@ -105,7 +105,7 @@ spec:
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
-            - name: eoskeytab
+            - name: eos-sss-keytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
         {{- if .Values.ldapBindUsers.enable }}
@@ -161,9 +161,9 @@ spec:
             defaultMode: 0755
         - name: mgm-logs
           emptyDir: {}
-        - name: eoskeytab
+        - name: eos-sss-keytab
           secret:
-            secretName: {{ include "utils.keytabname" . }}
+            secretName: {{ include "utils.sssKeytabName" . }}
             defaultMode: 0400
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: mgm-data

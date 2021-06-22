@@ -52,7 +52,7 @@ spec:
               subPath: xrd.cf.quarkdb.partial
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
               mountPath: /root/qdb-config/output
-            - name: eoskeytab
+            - name: eos-sss-keytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
       containers:
@@ -82,7 +82,7 @@ spec:
               mountPath: /var/quarkdb
             - name: quarkdb-logs
               mountPath: /var/log/eos
-            - name: eoskeytab
+            - name: eos-sss-keytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
       volumes:
@@ -97,9 +97,9 @@ spec:
           emptyDir: {}
         - name: quarkdb-logs
           emptyDir: {}
-        - name: eoskeytab
+        - name: eos-sss-keytab
           secret:
-            secretName: {{ include "utils.keytabname" . }}
+            secretName: {{ include "utils.sssKeytabName" . }}
             defaultMode: 0400
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: quarkdb-data
