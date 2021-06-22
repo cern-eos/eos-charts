@@ -18,17 +18,38 @@ Name of the secret storing the SSS keytab
 {{- end }}
 
 {{/*
-The SSS keytab itself.
-  Read from file in '<component_name>/files/eos.keytab'.
-  <component_name> is because helm uses the working directory of the chart calling the utils functions.
+Path to the file storing the SSS keytab
+  - Global value '.Values.global.sssKeytab.file' has highest priority
+  - Local value '.Values.sssKeytab.file' has lower priority
+  - Default is 'filed/eos.keytab.ro' (relative to the path of the chart calling)
+*/}}
+{{- define "utils.sssKeytabFile" -}}
+{{- $sssFileDefault := printf "files/eos.keytab.ro" -}}
+{{- $sssFileLocal := "" -}}
+{{- $sssFileGlobal := "" -}}
+{{- if .Values.global }}
+  {{- $sssFileGlobal = dig "sssKeytab" "file" "" .Values.global -}}
+{{- end }}
+{{- if .Values.sssKeytab -}}
+  {{- $sssFileLocal = dig "file" "" .Values.sssKeytab -}}
+{{- end }}
+{{- coalesce $sssFileGlobal $sssFileLocal $sssFileDefault }}
+{{- end }}
+
+{{/*
+The SSS keytab secret
+  Read file at the location given by 'utils.sssKeytabFile' and creates the secret 'eos-sss-keytab' out of it.
+  It also makes sure that the key of the secret in the data fragment is always 'eos.keytab.ro'
+    to avoid naming problems when projecting the secret as a file.
 */}}
 {{- define "utils.sssKeytab" -}}
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ include "utils.sssKeytabName" . }}
+  name: eos-sss-keytab
 type: Opaque
 data:
-  {{ (.Files.Glob "files/eos.keytab.ro").AsSecrets }}
+  eos.keytab.ro: |-
+    {{ .Files.Get (include "utils.sssKeytabFile" .) | b64enc }}
 immutable: false
 {{- end -}}
