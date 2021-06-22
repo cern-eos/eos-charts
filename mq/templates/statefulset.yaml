@@ -57,7 +57,7 @@ spec:
             - name: mq-cfgmap-mq-init
               mountPath: /root/mq_init.sh
               subPath: mq_init.sh
-            - name: eoskeytab
+            - name: eos-sss-keytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
       containers:
@@ -90,7 +90,7 @@ spec:
             - name: mq-cfgmap-mq-init
               mountPath: /root/mq_init.sh
               subPath: mq_init.sh
-            - name: eoskeytab
+            - name: eos-sss-keytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
       volumes:
@@ -104,7 +104,7 @@ spec:
           configMap:
             name: {{ include "mq.fullname" . }}-cfgmap-mq-init
             defaultMode: 0755
-        - name: eoskeytab
+        - name: eos-sss-keytab
           secret:
-            secretName: {{ include "utils.keytabname" . }}
+            secretName: {{ include "utils.sssKeytabName" . }}
             defaultMode: 0400

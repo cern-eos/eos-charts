@@ -75,7 +75,7 @@ spec:
               subPath: fst_init.sh
         {{- end }}
         {{- end }}
-            - name: eoskeytab
+            - name: eos-sss-keytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
       containers:
@@ -114,7 +114,7 @@ spec:
               mountPath: /fst_storage
             - name: fst-logs
               mountPath: /var/log/eos
-            - name: eoskeytab
+            - name: eos-sss-keytab
               mountPath: /etc/eos.keytab.ro
               subPath: eos.keytab.ro
       volumes:
@@ -128,9 +128,9 @@ spec:
             defaultMode: 0755
         - name: fst-logs
           emptyDir: {}
-        - name: eoskeytab
+        - name: eos-sss-keytab
           secret:
-            secretName: {{ include "utils.keytabname" . }}
+            secretName: {{ include "utils.sssKeytabName" . }}
             defaultMode: 0400
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: fst-storage

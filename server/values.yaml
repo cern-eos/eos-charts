@@ -4,5 +4,5 @@ fst:
 global:
   repository: gitlab-registry.cern.ch/dss/eos
   tag: 4.8.39
-  keytab:
+  sssKeytab:
     name: eos-keytab
