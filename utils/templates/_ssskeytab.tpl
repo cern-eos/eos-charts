@@ -39,10 +39,13 @@ Path to the file storing the SSS keytab
 {{/*
 The SSS keytab secret
   Read file at the location given by 'utils.sssKeytabFile' and creates the secret 'eos-sss-keytab' out of it.
-  It also makes sure that the key of the secret in the data fragment is always 'eos.keytab'
-    to avoid naming problems when projecting the secret as a file.
+  The key of the secret in the data fragment is always 'eos.keytab' to avoid naming mismatch
+    when projecting the secret as a file.
+  If the source file doe not exist (or it is empty), no secrets will be created.
 */}}
 {{- define "utils.sssKeytab" -}}
+{{- $keytab := .Files.Get (include "utils.sssKeytabFile" .) }}
+{{- if $keytab -}}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -50,6 +53,7 @@ metadata:
 type: Opaque
 data:
   eos.keytab: |-
-    {{ .Files.Get (include "utils.sssKeytabFile" .) | b64enc }}
+    {{ $keytab | b64enc }}
 immutable: false
+{{- end }}
 {{- end -}}
