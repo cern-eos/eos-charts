@@ -109,12 +109,19 @@ hostnames:
 #
 # When enable, the FST will register the available filesystem upon booting.
 #   It is possible to configure:
-#   - the eos space where the file system should be added, and
-#   - the configuration of the filesystem (rw|wo|ro|drain|draindead|off|empty)
+#   - the eos space where the file system should be added,
+#   - how many filesystems can end up in one scheduling group,
+#   - the maximum number of groups in the space,
+#   - the configuration of the filesystem (rw|wo|ro|drain|draindead|off|empty).
+# Note:
+#   - <groupsize>=0 means that no groups are built within a space. Must be an integer <=1024.
+#   - <groupmod>=24 comes as default per eos internals. Must be an integer <=256.
 #
 selfRegister:
   enable: true
   space: default
+  groupsize: 0
+  groupmod: 24
   config: rw
 
 #
