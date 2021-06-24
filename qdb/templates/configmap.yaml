@@ -27,14 +27,6 @@ data:
     #!/bin/bash
     set -x
 
-    #### @note Until https://github.com/kubernetes/kubernetes/issues/81089 is merged
-    echo "INFO: making /etc/eos.keytab 0400 and owned by daemon:daemon ..."
-    cp /etc/eos.keytab.ro /etc/eos.keytab || exit 1
-    chown daemon:daemon /etc/eos.keytab || exit 1
-    chmod 0400 /etc/eos.keytab || exit 1
-    echo "INFO: /etc/eos.keytab is 0400 and owned by daemon:daemon"
-    #### @note Until https://github.com/kubernetes/kubernetes/issues/81089 is merged
-
     # Number of replicas of QuarkDB
     #   Determines whether it should run in stanalone mode or as part of a raft cluster.
     #   This is set by Helm in values.yaml
