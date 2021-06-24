@@ -1,7 +1,6 @@
 image:
   repository: gitlab-registry.cern.ch/dss/eos
   tag: 4.8.39
-  pullPolicy: Always
 
 #
 # Assign fusex pod to a node with a specific label.
@@ -35,7 +34,21 @@ probes:
 # Configuration for fusex.
 #
 fusex:
-  keytab: ""    # Must be base64 encoded
+  # The keytab to connect to the MGM via SSS
+  #   Options:
+  #     - secret: Use an existing secret (containing the eos keytab) by providing its name
+  #     - value: Provide the full keytab as a string
+  #           Example: "0 u:daemon g:daemon n:eos-test+ N:69275826269580..."
+  #         A secret with name "<release_fullname>-fusex-sss-keytab" will be created from it.
+  #         Takes priority over 'secret'.
+  #     - file: Provide the path to a file containing the eos keytab.
+  #         A secret with name "<release_fullname>-fusex-sss-keytab" will be created from it.
+  #         Takes priority over 'value' and 'secret'.
+  #   Defaults to a secret named "<release_fullname>-fusex-sss-keytab"
+  keytab:
+    secret:
+    value:
+    file:
   hostMountpoint: /eos
   hostPID: true
   hostNetwork: false

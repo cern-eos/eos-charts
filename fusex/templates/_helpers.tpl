@@ -62,7 +62,8 @@ Create the name of the service account to use
 {{- end -}}
 {{- end -}}
 
-{{/* Liveness Probe definition
+{{/*
+Liveness Probe definition
 */}}
 {{- define "fusex.livenessProbe" -}}
 {{- $livenessEnabled := "true" -}}
@@ -82,5 +83,23 @@ livenessProbe:
   periodSeconds: 10
   successThreshold: 1
   failureThreshold: 3
+{{- end }}
+{{- end }}
+
+{{/*
+Name of the secret storing the SSS keytab for fusex
+Returns:
+  - "<release_fullname>-fusex-sss-keytab" when .Values.fusex.keytab.value or .file are passed
+  - the name of the secret passed as .Values.fusex.keytab.secret
+  - "<release_fullname>-fusex-sss-keytab" by default.
+      If the secret does not exist, the pod will hang due to the missing mount.
+*/}}
+{{- define "fusex.sssKeytabSecretName" -}}
+{{- if or .Values.fusex.keytab.value .Values.fusex.keytab.file -}}
+{{- printf "%s%s" (include "fusex.fullname" .) "-fusex-sss-keytab" }}
+{{- else if .Values.fusex.keytab.secret }}
+{{- printf "%s" .Values.fusex.keytab.secret }}
+{{- else }}
+{{- printf "%s%s" (include "fusex.fullname" .) "-fusex-sss-keytab" }}
 {{- end }}
 {{- end }}
