@@ -188,23 +188,23 @@ probes:
 ldapBindUsers:
   enable: false
   #enable: true
-  #nscd:
-  #  image:
-  #    repository: gitlab-registry.cern.ch/sciencebox/docker-images/nscd
-  #    tag: stable
-  #nslcd:
-  #  image:
-  #    repository: gitlab-registry.cern.ch/sciencebox/docker-images/nslcd
-  #    tag: stable
-  #  config:
-  #    ldap_uri: ldap://my-ldap-server:12345
-  #    ldap_base: dc=example,dc=org
-  #    ldap_binddn: cn=admin,dc=example,dc=org
-  #    ldap_bindpw: admin
-  #    ldap_user_search_base: dc=example,dc=org
-  #    ldap_group_search_base: ou=groups,dc=example,dc=org
-  #    ldap_filter_passwd: (objectClass=posixAccount)
-  #    ldap_filter_group: (objectClass=group)
+  nscd:
+    image:
+      repository: gitlab-registry.cern.ch/sciencebox/docker-images/nscd
+      tag: stable
+  nslcd:
+    image:
+      repository: gitlab-registry.cern.ch/sciencebox/docker-images/nslcd
+      tag: stable
+    config:
+      ldap_uri: ldap://my-ldap-server:12345
+      ldap_base: dc=example,dc=org
+      ldap_binddn: cn=admin,dc=example,dc=org
+      ldap_bindpw: admin
+      ldap_user_search_base: dc=example,dc=org
+      ldap_group_search_base: ou=groups,dc=example,dc=org
+      ldap_filter_passwd: (objectClass=posixAccount)
+      ldap_filter_group: (objectClass=group)
 
 # keytab:
 #   name: default-keytab
