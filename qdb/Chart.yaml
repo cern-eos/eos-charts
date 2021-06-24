@@ -10,4 +10,4 @@ icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
 dependencies:
 - name: utils
   version: 0.1.0
-  repository: file://../utils
+  repository: "https://registry.cern.ch/chartrepo/eos"

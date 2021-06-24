@@ -12,4 +12,4 @@ annotations:
 dependencies:
 - name: utils
   version: 0.1.0
-  repository: file://../utils
+  repository: "https://registry.cern.ch/chartrepo/eos"
