@@ -24,7 +24,7 @@ data:
     xrd.port 1095
     ofs.persist off
     ofs.osslib libEosFstOss.so
-    ofs.tpc pgm /usr/bin/xrdcp
+    ofs.tpc pgm /opt/eos/xrootd/bin/xrdcp
     ###########################################################
     fstofs.broker root://{{ include "utils.mq_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     fstofs.autoboot true
@@ -80,7 +80,7 @@ data:
 
     # Start the FST process in background so that we can run other commands
     echo "INFO: Starting FST..."
-    /usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -m -b -Rdaemon >/dev/null 2>&1
+    /opt/eos/xrootd/bin/xrootd -n fst -c /etc/xrd.cf.fst -m -b -Rdaemon >/dev/null 2>&1
 
     # Local variables
     DATADIR=/fst_storage

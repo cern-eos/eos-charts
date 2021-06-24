@@ -66,7 +66,7 @@ spec:
           image: {{ include "utils.image" . }}
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
-          args: ["/usr/bin/xrootd -n mq -c /etc/xrd.cf.mq -l /var/log/eos/xrdlog.mq -Rdaemon"]   # TODO: Check which xrootd binary should be used
+          args: ["/opt/eos/xrootd/bin/xrootd -n mq -c /etc/xrd.cf.mq -l /var/log/eos/xrdlog.mq -Rdaemon"]
           env:
             # Inspiration from cockroachdb, in case we need it:
             # - name: STATEFULSET_NAME
