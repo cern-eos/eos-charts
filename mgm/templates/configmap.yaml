@@ -134,7 +134,7 @@ data:
 
     # Start the MGM process in background so that we can run other commands
     echo "INFO: Starting MGM..."
-    /usr/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -m -b -Rdaemon >/dev/null 2>&1
+    /opt/eos/xrootd/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -m -b -Rdaemon >/dev/null 2>&1
 
     # Wait for the MGM to be online
     echo "INFO: Checking the MGM is online..."

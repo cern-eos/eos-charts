@@ -74,7 +74,7 @@ spec:
           image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ $pullPolicy }}
           command: ["/bin/sh", "-c"]
-          args: ["/usr/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]   # TODO: Check which xrootd binary should be used
+          args: ["/opt/eos/xrootd/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]   # TODO: Check which xrootd binary should be used
           env:
             # Inspiration from cockroachdb, in case we need it:
             # - name: STATEFULSET_NAME

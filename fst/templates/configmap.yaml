@@ -24,7 +24,7 @@ data:
     xrd.port 1095
     ofs.persist off
     ofs.osslib libEosFstOss.so
-    ofs.tpc pgm /usr/bin/xrdcp
+    ofs.tpc pgm /opt/eos/xrootd/bin/xrdcp
     ###########################################################
     fstofs.broker root://{{ include "mq.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     fstofs.autoboot true

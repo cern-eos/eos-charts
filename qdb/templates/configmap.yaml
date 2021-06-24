@@ -6,13 +6,11 @@ metadata:
     {{- include "qdb.labels" . | nindent 4 }}
 data:
   xrd.cf.quarkdb.partial: |
-    if exec xrootd
-      xrd.port 7777
-      xrd.protocol redis:7777 /usr/lib64/libXrdQuarkDB.so
-      redis.password_file /k8svol/etc/eos.keytab
-      #redis.database#to_be_configured
-      #redis.mode#to_be_configured
-    fi
+    xrd.port 7777
+    xrd.protocol redis:7777 /usr/lib64/libXrdQuarkDB.so
+    redis.password_file /k8svol/etc/eos.keytab
+    #redis.database#to_be_configured
+    #redis.mode#to_be_configured
 
 
 ---

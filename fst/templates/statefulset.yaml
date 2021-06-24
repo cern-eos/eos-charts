@@ -85,7 +85,7 @@ spec:
           image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
-          args: ["/usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
+          args: ["/opt/eos/xrootd/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
           env:
             # Inspiration from cockroachdb, in case we need it:
             # - name: STATEFULSET_NAME

@@ -48,7 +48,7 @@ data:
 
     # Start the FST process in background so that we can run other commands
     echo "INFO: Starting FST..."
-    /usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -m -b -Rdaemon >/dev/null 2>&1
+    /opt/eos/xrootd/bin/xrootd -n fst -c /etc/xrd.cf.fst -m -b -Rdaemon >/dev/null 2>&1
 
     # Local variables
     DATADIR=/fst_storage
