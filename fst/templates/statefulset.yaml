@@ -41,8 +41,8 @@ spec:
       initContainers:
         # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
         - name: eos-fst-init0-sss-keytab-ownership
-          image: {{ include "eos.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/bash", "-c"]
           args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
           volumeMounts:
@@ -52,8 +52,8 @@ spec:
             - name: eos-sss-keytab-fixedownership
               mountPath: /root/sss_keytab/output
         - name: eos-fst-init1-chown-storage
-          image: {{ include "eos.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["chown daemon:daemon /fst_storage"]
           volumeMounts:
@@ -62,8 +62,8 @@ spec:
         {{- if .Values.selfRegister }}
         {{- if .Values.selfRegister.enable }}
         - name: eos-fst-init2-fst-init
-          image: {{ include "eos.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           env:
             - name: EOS_MGM_URL
               value: root://{{ include "utils.mgm_fqdn" . }}
@@ -92,8 +92,8 @@ spec:
         {{- end }}
       containers:
         - name: eos-fst
-          image: {{ include "eos.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
           env:

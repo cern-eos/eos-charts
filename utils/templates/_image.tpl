@@ -1,7 +1,7 @@
 {{/*
 Return the proper EOS image name:tag
 */}}
-{{- define "eos.image" -}}
+{{- define "utils.image" -}}
 {{- $repositoryName := .Values.image.repository -}}
 {{- $tag := .Values.image.tag | toString -}}
 
@@ -18,4 +18,20 @@ Return the proper EOS image name:tag
 {{- else -}}
     {{- printf "%s:%s" $repositoryName $tag -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Return the image pull policy
+*/}}
+{{- define "utils.imagePullPolicy" -}}
+{{- $policyDefault := "Always" -}}
+{{- $policyLocal := "" -}}
+{{- $policyGlobal := "" -}}
+{{- if .Values.global -}}
+  {{ $policyGlobal = dig "pullPolicy" "" .Values.global -}}
+{{- end }}
+{{- if .Values.image -}}
+  {{ $policyLocal = dig "pullPolicy" "" .Values.image -}}
+{{- end }}
+{{- coalesce $policyGlobal $policyLocal $policyDefault }}
 {{- end -}}
