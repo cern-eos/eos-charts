@@ -37,8 +37,20 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       {{- end }}
       initContainers:
-        - name: eos-qdb-init0-quarkdb-create
-          image: "{{ include "eos.image" . }}"
+        # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
+        - name: eos-qdb-init0-sss-keytab-ownership
+          image: {{ include "eos.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash", "-c"]
+          args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
+          volumeMounts:
+            - name: eos-sss-keytab
+              mountPath: /root/sss_keytab/input/eos.keytab
+              subPath: eos.keytab
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /root/sss_keytab/output
+        - name: eos-qdb-init1-quarkdb-create
+          image: {{ include "eos.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/bash", "/root/qdb_create.sh"]
           volumeMounts:
@@ -52,12 +64,12 @@ spec:
               subPath: xrd.cf.quarkdb.partial
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
               mountPath: /root/qdb-config/output
-            - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
       containers:
         - name: eos-qdb
-          image: "{{ include "eos.image" . }}"
+          image: {{ include "eos.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n qdb -c /etc/xrd.cf.quarkdb -l /var/log/eos/xrdlog.qdb -Rdaemon"]
@@ -78,13 +90,13 @@ spec:
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
               mountPath: /etc/xrd.cf.quarkdb
               subPath: xrd.cf.quarkdb
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
             - name: quarkdb-data
               mountPath: /var/quarkdb
             - name: quarkdb-logs
               mountPath: /var/log/eos
-            - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
       volumes:
         - name: quarkdb-cfgmap-qdb-create
           configMap:
@@ -95,12 +107,14 @@ spec:
             name: {{ include "qdb.fullname" . }}-xrd-cf-quarkdb-partial
         - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
           emptyDir: {}
-        - name: quarkdb-logs
-          emptyDir: {}
         - name: eos-sss-keytab
           secret:
             secretName: {{ include "utils.sssKeytabName" . }}
             defaultMode: 0400
+        - name: eos-sss-keytab-fixedownership
+          emptyDir: {}
+        - name: quarkdb-logs
+          emptyDir: {}
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: quarkdb-data
           emptyDir: {}

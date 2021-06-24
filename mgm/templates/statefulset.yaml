@@ -41,7 +41,19 @@ spec:
           volumeMounts:
             - name: mgm-data
               mountPath: /var/eos
-        - name: eos-mgm-init2-mgm-init
+        # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
+        - name: eos-mgm-init2-sss-keytab-ownership
+          image: {{ include "eos.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash", "-c"]
+          args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
+          volumeMounts:
+            - name: eos-sss-keytab
+              mountPath: /root/sss_keytab/input/eos.keytab
+              subPath: eos.keytab
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /root/sss_keytab/output
+        - name: eos-mgm-init3-mgm-init
           image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ $pullPolicy }}
           envFrom:
@@ -57,6 +69,9 @@ spec:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
             - name: mgm-data
               mountPath: /var/eos
             - name: mgm-logs
@@ -64,9 +79,6 @@ spec:
             - name: mgm-cfgmap-mgm-init
               mountPath: /root/mgm_init.sh
               subPath: mgm_init.sh
-            - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
       containers:
         - name: eos-mgm
           image: "{{ include "eos.image" . }}"
@@ -101,13 +113,13 @@ spec:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
             - name: mgm-data
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
-            - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
         {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd
           {{- with .Values.ldapBindUsers.nslcd.image }}
@@ -159,12 +171,14 @@ spec:
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-mgm-init
             defaultMode: 0755
-        - name: mgm-logs
-          emptyDir: {}
         - name: eos-sss-keytab
           secret:
             secretName: {{ include "utils.sssKeytabName" . }}
             defaultMode: 0400
+        - name: eos-sss-keytab-fixedownership
+          emptyDir: {}
+        - name: mgm-logs
+          emptyDir: {}
 {{- if eq ( include "persistence" . ) "disabled" }}
         - name: mgm-data
           emptyDir: {}
