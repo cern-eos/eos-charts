@@ -64,9 +64,8 @@ data:
     if [ $(eos space ls $SPACE -m | wc -l) -eq 0 ]; then
       echo "INFO: Space $SPACE does not exist. Creating..."
       eos space define $SPACE
-      #eos space set $SPACE on
+      eos space set $SPACE on
     fi
-    eos space set $SPACE on
 
     # Set this node on
     echo "INFO: Enabling node..."
@@ -75,5 +74,6 @@ data:
     # Register filesystem
     echo "INFO: Registering filesystem..."
     eos fs add $UUID $HOSTNAME:1095 $DATADIR $SPACE $CONFIG
-
+    # @note ref. https://gitlab.cern.ch/eos/eos-charts/-/issues/41
+    eos group set $(eos fs ls -m | grep $UUID | grep -o "schedgroup=[^,' ']*" | cut -d= -f2) on
     exit 0
