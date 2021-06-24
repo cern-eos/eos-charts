@@ -14,7 +14,7 @@ data:
 
     ##### SSS authentication ##################################
     xrootd.seclib libXrdSec.so
-    sec.protocol sss -c /etc/eos.keytab -s /etc/eos.keytab
+    sec.protocol sss -c /k8svol/etc/eos.keytab -s /k8svol/etc/eos.keytab
     sec.protbind * only sss
 
     ##### Allow up to 1024 threads ############################
@@ -40,7 +40,7 @@ data:
 
     ##### QuarkDB #############################################
     mq.qdbcluster {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
-    mq.qdbpassword_file /etc/eos.keytab
+    mq.qdbpassword_file /k8svol/etc/eos.keytab
     ###########################################################
 
 ---
@@ -56,9 +56,9 @@ data:
     set -x
 
     #### @note Until https://github.com/kubernetes/kubernetes/issues/81089 is merged
-    echo "INFO: making /etc/eos.keytab 0400 and owned by daemon:daemon ..."
-    cp /etc/eos.keytab.ro /etc/eos.keytab || exit 1
-    chown daemon:daemon /etc/eos.keytab || exit 1
-    chmod 0400 /etc/eos.keytab || exit 1
-    echo "INFO: /etc/eos.keytab is 0400 and owned by daemon:daemon"
+    echo "INFO: making /k8svol/etc/eos.keytab 0400 and owned by daemon:daemon ..."
+    cp /k8svol/etc/eos.keytab.ro /k8svol/etc/eos.keytab || exit 1
+    chown daemon:daemon /k8svol/etc/eos.keytab || exit 1
+    chmod 0400 /k8svol/etc/eos.keytab || exit 1
+    echo "INFO: /k8svol/etc/eos.keytab is 0400 and owned by daemon:daemon"
     #### @note Until https://github.com/kubernetes/kubernetes/issues/81089 is merged

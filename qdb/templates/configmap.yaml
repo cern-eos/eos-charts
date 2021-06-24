@@ -9,7 +9,7 @@ data:
     if exec xrootd
       xrd.port 7777
       xrd.protocol redis:7777 /usr/lib64/libXrdQuarkDB.so
-      redis.password_file /etc/eos.keytab
+      redis.password_file /k8svol/etc/eos.keytab
       #redis.database#to_be_configured
       #redis.mode#to_be_configured
     fi
@@ -28,11 +28,11 @@ data:
     set -x
 
     #### @note Until https://github.com/kubernetes/kubernetes/issues/81089 is merged
-    echo "INFO: making /etc/eos.keytab 0400 and owned by daemon:daemon ..."
-    cp /etc/eos.keytab.ro /etc/eos.keytab || exit 1
-    chown daemon:daemon /etc/eos.keytab || exit 1
-    chmod 0400 /etc/eos.keytab || exit 1
-    echo "INFO: /etc/eos.keytab is 0400 and owned by daemon:daemon"
+    echo "INFO: making /k8svol/etc/eos.keytab 0400 and owned by daemon:daemon ..."
+    cp /k8svol/etc/eos.keytab.ro /k8svol/etc/eos.keytab || exit 1
+    chown daemon:daemon /k8svol/etc/eos.keytab || exit 1
+    chmod 0400 /k8svol/etc/eos.keytab || exit 1
+    echo "INFO: /k8svol/etc/eos.keytab is 0400 and owned by daemon:daemon"
     #### @note Until https://github.com/kubernetes/kubernetes/issues/81089 is merged
 
     # Number of replicas of QuarkDB

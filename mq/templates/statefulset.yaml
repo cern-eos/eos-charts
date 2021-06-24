@@ -54,11 +54,13 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/bash", "/root/mq_init.sh"]
           volumeMounts:
+            - name: k8svol
+              mountPath: /k8svol
             - name: mq-cfgmap-mq-init
               mountPath: /root/mq_init.sh
               subPath: mq_init.sh
             - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
+              mountPath: /k8svol/etc/eos.keytab.ro
               subPath: eos.keytab.ro
       containers:
         - name: eos-mq
@@ -82,6 +84,8 @@ spec:
               add: ["SYS_PTRACE"]
           {{- include "mq.livenessProbe" . | nindent 10 }}
           volumeMounts:
+            - name: k8svol
+              mountPath: /k8svol
             - name: mq-cfgmap-xrd-cf-mq
               mountPath: /etc/xrd.cf.mq
               subPath: xrd.cf.mq
@@ -91,9 +95,11 @@ spec:
               mountPath: /root/mq_init.sh
               subPath: mq_init.sh
             - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
+              mountPath: /k8svol/etc/eos.keytab.ro
               subPath: eos.keytab.ro
       volumes:
+        - name: k8svol
+          emptyDir: {}
         - name: mq-cfgmap-xrd-cf-mq
           configMap:
             name: {{ include "mq.fullname" . }}-cfgmap-xrd-cf-mq

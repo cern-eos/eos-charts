@@ -9,18 +9,18 @@ description: A fully-fledge EOS server instance with qdb, mgm, mq, and fst
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
 #
 dependencies:
-- name: qdb
-  version: 0.0.3
-  repository: "file://../qdb"
-- name: mgm
-  version: 0.0.5
-  repository: "file://../mgm"
-- name: mq
-  version: 0.0.5
-  repository: "file://../mq"
-- name: fst
-  version: 0.0.5
-  repository: "file://../fst"
-- name: utils
-  version: 0.1.0
-  repository: "file://../utils"
+  - name: qdb
+    version: 0.0.3
+    repository: "file://../qdb"
+  - name: mgm
+    version: 0.0.5
+    repository: "file://../mgm"
+  - name: mq
+    version: 0.0.5
+    repository: "file://../mq"
+  - name: fst
+    version: 0.0.5
+    repository: "file://../fst"
+  - name: utils
+    version: 0.1.0
+    repository: "file://../utils"

@@ -65,6 +65,8 @@ spec:
               add: ["SYS_PTRACE"]
           command: ["/bin/bash", "/root/fst_init.sh"]
           volumeMounts:
+            - name: k8svol
+              mountPath: /k8svol
             - name: fst-cfgmap-xrd-cf-fst
               mountPath: /etc/xrd.cf.fst
               subPath: xrd.cf.fst
@@ -76,7 +78,7 @@ spec:
         {{- end }}
         {{- end }}
             - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
+              mountPath: /k8svol/etc/eos.keytab.ro
               subPath: eos.keytab.ro
       containers:
         - name: eos-fst
@@ -103,6 +105,8 @@ spec:
               add: ["SYS_PTRACE"]
           {{- include "fst.livenessProbe" . | nindent 10 }}
           volumeMounts:
+            - name: k8svol
+              mountPath: /k8svol
             - name: fst-cfgmap-xrd-cf-fst
               mountPath: /etc/xrd.cf.fst
               subPath: xrd.cf.fst
@@ -115,9 +119,11 @@ spec:
             - name: fst-logs
               mountPath: /var/log/eos
             - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
+              mountPath: /k8svol/etc/eos.keytab.ro
               subPath: eos.keytab.ro
       volumes:
+        - name: k8svol
+          emptyDir: {}
         - name: fst-cfgmap-xrd-cf-fst
           configMap:
             name: {{ include "fst.fullname" . }}-cfgmap-xrd-cf-fst

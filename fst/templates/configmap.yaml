@@ -13,7 +13,7 @@ data:
     ###########################################################
     xrootd.seclib libXrdSec.so
     sec.protocol unix
-    sec.protocol sss -c /etc/eos.keytab -s /etc/eos.keytab
+    sec.protocol sss -c /k8svol/etc/eos.keytab -s /k8svol/etc/eos.keytab
     sec.protbind * only unix sss
     ###########################################################
     all.export / nolock
@@ -33,5 +33,5 @@ data:
     fstofs.fmddict /var/eos/md/fstfmd.dict
     ##### QuarkDB #############################################
     fstofs.qdbcluster {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
-    fstofs.qdbpassword_file /etc/eos.keytab
+    fstofs.qdbpassword_file /k8svol/etc/eos.keytab
     ###########################################################

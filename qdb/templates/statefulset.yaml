@@ -42,6 +42,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/bash", "/root/qdb_create.sh"]
           volumeMounts:
+            - name: k8svol
+              mountPath: /k8svol
             - name: quarkdb-data
               mountPath: /var/quarkdb   # `quarkdb-create` fails if the folder already exists, hence we mount the parent.
             - name: quarkdb-cfgmap-qdb-create
@@ -53,7 +55,7 @@ spec:
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
               mountPath: /root/qdb-config/output
             - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
+              mountPath: /k8svol/etc/eos.keytab.ro
               subPath: eos.keytab.ro
       containers:
         - name: eos-qdb
@@ -75,6 +77,8 @@ spec:
           {{- include "qdb.livenessProbe" . | nindent 10 }}
           {{- include "qdb.readinessProbe" . | nindent 10 }}
           volumeMounts:
+            - name: k8svol
+              mountPath: /k8svol
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
               mountPath: /etc/xrd.cf.quarkdb
               subPath: xrd.cf.quarkdb
@@ -83,9 +87,11 @@ spec:
             - name: quarkdb-logs
               mountPath: /var/log/eos
             - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
+              mountPath: /k8svol/etc/eos.keytab.ro
               subPath: eos.keytab.ro
       volumes:
+        - name: k8svol
+          emptyDir: {}
         - name: quarkdb-cfgmap-qdb-create
           configMap:
             name: {{ include "qdb.fullname" . }}-cfgmap-qdb-create

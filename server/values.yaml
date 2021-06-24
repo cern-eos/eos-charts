@@ -5,4 +5,4 @@ global:
   repository: gitlab-registry.cern.ch/dss/eos
   tag: 4.8.39
   sssKeytab:
-    name: eos-keytab
+    name: eos-sss-keytab

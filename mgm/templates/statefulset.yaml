@@ -54,6 +54,8 @@ spec:
               add: ["SYS_PTRACE"]
           command: ["/bin/bash", "/root/mgm_init.sh"]
           volumeMounts:
+            - name: k8svol
+              mountPath: /k8svol
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
@@ -65,7 +67,7 @@ spec:
               mountPath: /root/mgm_init.sh
               subPath: mgm_init.sh
             - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
+              mountPath: /k8svol/etc/eos.keytab.ro
               subPath: eos.keytab.ro
       containers:
         - name: eos-mgm
@@ -98,6 +100,8 @@ spec:
             - name: nscd-socket
               mountPath: /run/nscd
             {{- end }}
+            - name: k8svol
+              mountPath: /k8svol
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
@@ -106,7 +110,7 @@ spec:
             - name: mgm-logs
               mountPath: /var/log/eos
             - name: eos-sss-keytab
-              mountPath: /etc/eos.keytab.ro
+              mountPath: /k8svol/etc/eos.keytab.ro
               subPath: eos.keytab.ro
         {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd
@@ -151,6 +155,8 @@ spec:
           emptyDir:
             medium: Memory
         {{- end }}
+        - name: k8svol
+          emptyDir: {}
         - name: mgm-cfgmap-xrd-cf-mgm
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-xrd-cf-mgm
