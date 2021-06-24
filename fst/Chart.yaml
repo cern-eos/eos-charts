@@ -2,8 +2,8 @@ apiVersion: v2
 #
 name: fst
 type: application
-version: 0.0.6
-appVersion: 4.8.39
+version: 0.0.7
+appVersion: 4.8.55
 #
 description: An EOS FST chart
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
