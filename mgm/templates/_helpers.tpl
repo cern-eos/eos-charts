@@ -95,22 +95,6 @@ EOS instance name definition
 {{- end }}
 
 {{/*
-Persistence definition
-*/}}
-{{- define "persistence" -}}
-{{- $persistenceDefault := "disabled" -}}
-{{- $persistenceLocal := "" -}}
-{{- $persistenceGlobal := "" -}}
-{{- if .Values.persistence -}}
-  {{- $persistenceLocal = dig "type" "" .Values.persistence -}}
-{{- end }}
-{{- if .Values.global -}}
-  {{- $persistenceGlobal = dig "eos" "persistence" "type" "" .Values.global }}
-{{- end }}
-{{- lower (coalesce $persistenceGlobal $persistenceLocal $persistenceDefault) }}
-{{- end }}
-
-{{/*
 MGM network ports definition
   - xrootd mgm port (defaults to 1094)
   - xrootd sync port (defaults to 1096)

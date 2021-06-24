@@ -115,17 +115,17 @@ spec:
           emptyDir: {}
         - name: quarkdb-logs
           emptyDir: {}
-{{- if eq ( include "persistence" . ) "disabled" }}
+{{- if eq ( include "utils.persistence" . ) "disabled" }}
         - name: quarkdb-data
           emptyDir: {}
 {{- end }}
-{{- if eq ( include "persistence" . ) "hostpath" }}
+{{- if eq ( include "utils.persistence" . ) "hostpath" }}
         - name: quarkdb-data
           hostPath:
             path: {{ dig "hostPath" "path" (printf "/var/eos/%s" (include "qdb.fullname" . )) .Values.persistence }}
             type: {{ dig "hostPath" "type" "DirectoryOrCreate" .Values.persistence }}
 {{- end }}
-{{- if eq ( include "persistence" . ) "pvc" }}
+{{- if eq ( include "utils.persistence" . ) "pvc" }}
   volumeClaimTemplates:
     - metadata:
         name: quarkdb-data
