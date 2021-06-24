@@ -2,7 +2,7 @@ apiVersion: v2
 #
 name: mgm
 type: application
-version: 0.0.5
+version: 0.0.6
 appVersion: 4.8.39
 #
 description: An EOS MGM chart
