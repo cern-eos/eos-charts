@@ -24,13 +24,13 @@ spec:
       terminationGracePeriodSeconds: 60
       #initContainers:
       #  - name: eos-fusex-init0-cleanup
-      #    image: "{{ include "eos.image" . }}"
-      #    imagePullPolicy: {{ .Values.image.pullPolicy }}
+      #    image: {{ include "utils.image" . }}
+      #    imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
       #    command: ["/bin/sleep", "infinity"]
       containers:
         - name: eos-fusex
-          image: "{{ include "eos.image" . }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/usr/bin/eosxd"]
           args: ["-f", "-ofsname=eos"]
           securityContext:
@@ -42,7 +42,7 @@ spec:
             - name: fusex-cfgmap-fuse-conf
               mountPath: /etc/eos/fuse.eos.conf
               subPath: fuse.eos.conf
-            - name: fusex-eos-keytab
+            - name: fusex-sss-keytab
               mountPath: /etc/eos/fuse.sss.keytab
               subPath: fuse.sss.keytab
             - name: fusex-eos-export
@@ -52,9 +52,9 @@ spec:
           configMap:
             name: {{ include "fusex.fullname" . }}-cfgmap-fuse-conf
             defaultMode: 0644
-        - name: fusex-eos-keytab
+        - name: fusex-sss-keytab
           secret:
-            secretName: {{ include "fusex.fullname" . }}-cfgmap-fuse-keytab
+            secretName: {{ include "fusex.sssKeytabSecretName" . }}
             defaultMode: 0400
         - name: fusex-eos-export
           hostPath:
