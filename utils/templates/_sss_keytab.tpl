@@ -20,20 +20,10 @@ Name of the secret storing the SSS keytab
 {{/*
 Path to the file storing the SSS keytab
   - Global value '.Values.global.sssKeytab.file' has highest priority
-  - Local value '.Values.sssKeytab.file' has lower priority
   - Default is 'files/eos.keytab' (relative to the path of the calling chart)
 */}}
 {{- define "utils.sssKeytabFile" -}}
-{{- $sssFileDefault := printf "files/eos.keytab" -}}
-{{- $sssFileLocal := "" -}}
-{{- $sssFileGlobal := "" -}}
-{{- if .Values.global }}
-  {{- $sssFileGlobal = dig "sssKeytab" "file" "" .Values.global -}}
-{{- end }}
-{{- if .Values.sssKeytab -}}
-  {{- $sssFileLocal = dig "file" "" .Values.sssKeytab -}}
-{{- end }}
-{{- coalesce $sssFileGlobal $sssFileLocal $sssFileDefault }}
+{{- dig "sssKeytab" "file" "files/eos.keytab" .Values.global -}}
 {{- end }}
 
 {{/*
