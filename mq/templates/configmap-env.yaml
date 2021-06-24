@@ -28,11 +28,11 @@ data:
   # The EOS host geo location tag used to sort hosts into geographical (rack) locations
   EOS_GEOTAG: "docker::k8s"
   # The fully qualified hostname of MGM master1
-  EOS_MGM_MASTER1: {{ include "mgm.fqdn" . }}
+  EOS_MGM_MASTER1: {{ include "utils.mgm_fqdn" . }}
   # The fully qualified hostname of MGM master2
-  EOS_MGM_MASTER2: {{ include "mgm.fqdn" . }}
+  EOS_MGM_MASTER2: {{ include "utils.mgm_fqdn" . }}
   # The alias which selects master 1 or 2
-  EOS_MGM_ALIAS: {{ include "mgm.fqdn" . }}
+  EOS_MGM_ALIAS: {{ include "utils.mgm_fqdn" . }}
   # The mail notification in case of fail-over
   #EOS_MAIL_CC: "apeters@mail.cern.ch"
   #EOS_NOTIFY: "mail -s `date +%s`-`hostname`-eos-notify $EOS_MAIL_CC"
@@ -78,7 +78,7 @@ data:
   # The mount directory for 'eosd'
   EOS_FUSE_MOUNTDIR: /eos/
   # The MGM host from where to do the initial mount
-  EOS_FUSE_MGM_ALIAS: {{ include "mgm.fqdn" . }}
+  EOS_FUSE_MGM_ALIAS: {{ include "utils.mgm_fqdn" . }}
   # Enable FUSE debugging mode (default off)
   #EOS_FUSE_DEBUG: 1
   # Disable parallel IO mode (default on)
@@ -121,7 +121,7 @@ data:
   # Instance name :  name of directory at deepness 2 /eos/<instance>/
   #EOS_TEST_INSTANCE: "dev"
   # MGM host redirector
-  #EOS_TEST_REDIRECTOR: {{ include "mgm.fqdn" . }}
+  #EOS_TEST_REDIRECTOR: {{ include "utils.mgm_fqdn" . }}
   # local test output directory
   #EOS_TEST_TESTSYS: /tmp/eos-instance-test
   # time to lock re-sending of SMS for consecutively failing tests

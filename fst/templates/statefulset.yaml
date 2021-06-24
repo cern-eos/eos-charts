@@ -66,7 +66,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: EOS_MGM_URL
-              value: root://{{ include "mgm.fqdn" . }}
+              value: root://{{ include "utils.mgm_fqdn" . }}
           envFrom:
             - configMapRef:
                 name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
@@ -104,7 +104,7 @@ spec:
             #   value: {{ template "fst.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
             ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
             - name: EOS_MGM_URL
-              value: root://{{ include "mgm.fqdn" . }}
+              value: root://{{ include "utils.mgm_fqdn" . }}
           envFrom:
             - configMapRef:
                 name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
