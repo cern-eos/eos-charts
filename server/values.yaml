@@ -1,2 +1,18 @@
 fst:
   replicaCount: 4
+
+global:
+  repository: gitlab-registry.cern.ch/dss/eos
+  tag: 4.8.39
+
+  #
+  # SSS keytab for the eos cluster
+  #   All the components (qdb, mq, fst, mgm) will use the keytab specified here.
+  #   Options:
+  #   - name: Name of an existing kubernetes secret storing the eos keytab to use.
+  #             Takes priority over 'file' option (see below).
+  #   - file: Path to a file storing the keytab. The secret 'eos-sss-keytab' will be generated from it.
+  #             Defaults to 'files/eos.keytab'
+  sssKeytab:
+    name:
+    file:

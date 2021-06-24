@@ -1,5 +1,3 @@
-{{- $pullPolicy := .Values.image.pullPolicy -}}
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -26,24 +24,36 @@ spec:
       {{- end }}
       initContainers:
         - name: eos-mgm-init0-logfolder-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ $pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["for fld in mgm tx; do mkdir -p /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
           volumeMounts:
             - name: mgm-logs
               mountPath: /var/log/eos
         - name: eos-mgm-init1-vareos-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ $pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["for fld in ns-queue; do mkdir -p /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]
           volumeMounts:
             - name: mgm-data
               mountPath: /var/eos
-        - name: eos-mgm-init2-mgm-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ $pullPolicy }}
+        # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
+        - name: eos-mgm-init2-sss-keytab-ownership
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          command: ["/bin/bash", "-c"]
+          args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
+          volumeMounts:
+            - name: eos-sss-keytab
+              mountPath: /root/sss_keytab/input/eos.keytab
+              subPath: eos.keytab
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /root/sss_keytab/output
+        - name: eos-mgm-init3-mgm-init
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           envFrom:
             - configMapRef:
                 name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos
@@ -57,6 +67,9 @@ spec:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
             - name: mgm-data
               mountPath: /var/eos
             - name: mgm-logs
@@ -64,13 +77,10 @@ spec:
             - name: mgm-cfgmap-mgm-init
               mountPath: /root/mgm_init.sh
               subPath: mgm_init.sh
-            - name: eoskeytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
       containers:
         - name: eos-mgm
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ $pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]   # TODO: Check which xrootd binary should be used
           env:
@@ -101,18 +111,18 @@ spec:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
             - name: mgm-data
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
-            - name: eoskeytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
         {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd
           {{- with .Values.ldapBindUsers.nslcd.image }}
           image: "{{ .repository }}:{{ .tag }}"
-          imagePullPolicy: {{ .pullPolicy | default $pullPolicy }}
+          imagePullPolicy: {{ default "Always" .pullPolicy }}
           {{- end }}
           volumeMounts:
             - name: nslcd-cfgmap-nslcd-conf
@@ -123,7 +133,7 @@ spec:
         - name: nscd
           {{- with .Values.ldapBindUsers.nscd.image }}
           image: "{{ .repository }}:{{ .tag }}"
-          imagePullPolicy: {{ .pullPolicy | default $pullPolicy }}
+          imagePullPolicy: {{ default "Always" .pullPolicy }}
           {{- end }}
           volumeMounts:
             - name: cfgmap-nsswitch-conf
@@ -159,23 +169,25 @@ spec:
           configMap:
             name: {{ include "mgm.fullname" . }}-cfgmap-mgm-init
             defaultMode: 0755
+        - name: eos-sss-keytab
+          secret:
+            secretName: {{ include "utils.sssKeytabName" . }}
+            defaultMode: 0400
+        - name: eos-sss-keytab-fixedownership
+          emptyDir: {}
         - name: mgm-logs
           emptyDir: {}
-        - name: eoskeytab
-          secret:
-            secretName: common-secret-eoskeytab
-            defaultMode: 0400
-{{- if eq ( include "persistence" . ) "disabled" }}
+{{- if eq ( include "utils.persistence" . ) "disabled" }}
         - name: mgm-data
           emptyDir: {}
 {{- end }}
-{{- if eq ( include "persistence" . ) "hostpath" }}
+{{- if eq ( include "utils.persistence" . ) "hostpath" }}
         - name: mgm-data
           hostPath:
             path: {{ dig "hostPath" "path" (printf "/var/eos/%s" (include "mgm.fullname" . )) .Values.persistence }}
             type: {{ dig "hostPath" "type" "DirectoryOrCreate" .Values.persistence }}
 {{- end }}
-{{- if eq ( include "persistence" . ) "pvc" }}  
+{{- if eq ( include "utils.persistence" . ) "pvc" }}
   volumeClaimTemplates:
     - metadata:
         name: mgm-data

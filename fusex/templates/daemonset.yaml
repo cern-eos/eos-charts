@@ -24,12 +24,12 @@ spec:
       terminationGracePeriodSeconds: 60
       #initContainers:
       #  - name: eos-fusex-init0-cleanup
-      #    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      #    image: "{{ include "eos.image" . }}"
       #    imagePullPolicy: {{ .Values.image.pullPolicy }}
       #    command: ["/bin/sleep", "infinity"]
       containers:
         - name: eos-fusex
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "eos.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/usr/bin/eosxd"]
           args: ["-f", "-ofsname=eos"]

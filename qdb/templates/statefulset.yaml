@@ -37,9 +37,21 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       {{- end }}
       initContainers:
-        - name: eos-qdb-init0-quarkdb-create
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
+        - name: eos-qdb-init0-sss-keytab-ownership
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          command: ["/bin/bash", "-c"]
+          args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
+          volumeMounts:
+            - name: eos-sss-keytab
+              mountPath: /root/sss_keytab/input/eos.keytab
+              subPath: eos.keytab
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /root/sss_keytab/output
+        - name: eos-qdb-init1-quarkdb-create
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/bash", "/root/qdb_create.sh"]
           volumeMounts:
             - name: quarkdb-data
@@ -52,13 +64,13 @@ spec:
               subPath: xrd.cf.quarkdb.partial
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
               mountPath: /root/qdb-config/output
-            - name: eoskeytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
       containers:
         - name: eos-qdb
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n qdb -c /etc/xrd.cf.quarkdb -l /var/log/eos/xrdlog.qdb -Rdaemon"]
           env:
@@ -78,13 +90,13 @@ spec:
             - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
               mountPath: /etc/xrd.cf.quarkdb
               subPath: xrd.cf.quarkdb
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
             - name: quarkdb-data
               mountPath: /var/quarkdb
             - name: quarkdb-logs
               mountPath: /var/log/eos
-            - name: eoskeytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
       volumes:
         - name: quarkdb-cfgmap-qdb-create
           configMap:
@@ -95,23 +107,25 @@ spec:
             name: {{ include "qdb.fullname" . }}-xrd-cf-quarkdb-partial
         - name: quarkdb-cfgmap-xrd-cf-quarkdb-final
           emptyDir: {}
+        - name: eos-sss-keytab
+          secret:
+            secretName: {{ include "utils.sssKeytabName" . }}
+            defaultMode: 0400
+        - name: eos-sss-keytab-fixedownership
+          emptyDir: {}
         - name: quarkdb-logs
           emptyDir: {}
-        - name: eoskeytab
-          secret:
-            secretName: common-secret-eoskeytab
-            defaultMode: 0400
-{{- if eq ( include "persistence" . ) "disabled" }}
+{{- if eq ( include "utils.persistence" . ) "disabled" }}
         - name: quarkdb-data
           emptyDir: {}
 {{- end }}
-{{- if eq ( include "persistence" . ) "hostpath" }}
+{{- if eq ( include "utils.persistence" . ) "hostpath" }}
         - name: quarkdb-data
           hostPath:
             path: {{ dig "hostPath" "path" (printf "/var/eos/%s" (include "qdb.fullname" . )) .Values.persistence }}
             type: {{ dig "hostPath" "type" "DirectoryOrCreate" .Values.persistence }}
 {{- end }}
-{{- if eq ( include "persistence" . ) "pvc" }}
+{{- if eq ( include "utils.persistence" . ) "pvc" }}
   volumeClaimTemplates:
     - metadata:
         name: quarkdb-data

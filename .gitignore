@@ -3,3 +3,5 @@
 **/charts/*.tgz
 */Chart.lock
 .gitignoredir/
+*/Chart.lock
+*/charts

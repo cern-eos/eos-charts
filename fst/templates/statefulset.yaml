@@ -39,9 +39,21 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       {{- end }}
       initContainers:
-        - name: eos-fst-init0-chown-storage
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
+        - name: eos-fst-init0-sss-keytab-ownership
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          command: ["/bin/bash", "-c"]
+          args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
+          volumeMounts:
+            - name: eos-sss-keytab
+              mountPath: /root/sss_keytab/input/eos.keytab
+              subPath: eos.keytab
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /root/sss_keytab/output
+        - name: eos-fst-init1-chown-storage
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["chown daemon:daemon /fst_storage"]
           volumeMounts:
@@ -49,12 +61,12 @@ spec:
               mountPath: /fst_storage
         {{- if .Values.selfRegister }}
         {{- if .Values.selfRegister.enable }}
-        - name: eos-fst-init1-fst-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: eos-fst-init2-fst-init
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           env:
             - name: EOS_MGM_URL
-              value: root://{{ include "mgm.fqdn" . }}
+              value: root://{{ include "utils.mgm_fqdn" . }}
           envFrom:
             - configMapRef:
                 name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
@@ -68,6 +80,9 @@ spec:
             - name: fst-cfgmap-xrd-cf-fst
               mountPath: /etc/xrd.cf.fst
               subPath: xrd.cf.fst
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
             - name: fst-storage
               mountPath: /fst_storage
             - name: fst-cfgmap-fst-init
@@ -75,13 +90,10 @@ spec:
               subPath: fst_init.sh
         {{- end }}
         {{- end }}
-            - name: eoskeytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
       containers:
         - name: eos-fst
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
           env:
@@ -92,7 +104,7 @@ spec:
             #   value: {{ template "fst.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
             ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
             - name: EOS_MGM_URL
-              value: root://{{ include "mgm.fqdn" . }}
+              value: root://{{ include "utils.mgm_fqdn" . }}
           envFrom:
             - configMapRef:
                 name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
@@ -110,13 +122,13 @@ spec:
             ##   Should this be persisted?
             ## - name: fst-data
             ##   mountPath: /var/eos
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
             - name: fst-storage
               mountPath: /fst_storage
             - name: fst-logs
               mountPath: /var/log/eos
-            - name: eoskeytab
-              mountPath: /etc/eos.keytab.ro
-              subPath: eos.keytab.ro
       volumes:
         - name: fst-cfgmap-xrd-cf-fst
           configMap:
@@ -126,23 +138,25 @@ spec:
           configMap:
             name: {{ include "fst.fullname" . }}-cfgmap-fst-init
             defaultMode: 0755
+        - name: eos-sss-keytab
+          secret:
+            secretName: {{ include "utils.sssKeytabName" . }}
+            defaultMode: 0400
+        - name: eos-sss-keytab-fixedownership
+          emptyDir: {}
         - name: fst-logs
           emptyDir: {}
-        - name: eoskeytab
-          secret:
-            secretName: common-secret-eoskeytab
-            defaultMode: 0400
-{{- if eq ( include "persistence" . ) "disabled" }}
+{{- if eq ( include "utils.persistence" . ) "disabled" }}
         - name: fst-storage
           emptyDir: {}
 {{- end }}
-{{- if eq ( include "persistence" . ) "hostpath" }}
+{{- if eq ( include "utils.persistence" . ) "hostpath" }}
         - name: fst-storage
           hostPath:
             path: {{ dig "hostPath" "path" (printf "/var/eos/%s" (include "fst.fullname" . )) .Values.persistence }}
             type: {{ dig "hostPath" "type" "DirectoryOrCreate" .Values.persistence }}
 {{- end }}
-{{- if eq ( include "persistence" . ) "pvc" }}
+{{- if eq ( include "utils.persistence" . ) "pvc" }}
   volumeClaimTemplates:
     - metadata:
         name: fst-storage

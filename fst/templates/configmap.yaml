@@ -26,12 +26,12 @@ data:
     ofs.osslib libEosFstOss.so
     ofs.tpc pgm /usr/bin/xrdcp
     ###########################################################
-    fstofs.broker root://{{ include "mq.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
+    fstofs.broker root://{{ include "utils.mq_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
     fstofs.autoboot true
     fstofs.quotainterval 10
     fstofs.metalog /var/eos/md/
     fstofs.fmddict /var/eos/md/fstfmd.dict
     ##### QuarkDB #############################################
-    fstofs.qdbcluster {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
+    fstofs.qdbcluster {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
     fstofs.qdbpassword_file /etc/eos.keytab
     ###########################################################

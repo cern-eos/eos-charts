@@ -6,6 +6,10 @@ version: 0.0.2
 appVersion: 4.8.39
 #
 description: An EOS FuseX chart
-icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg 
+icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
 annotations:
   documentation: https://github.com/cern-eos/eos/blob/master/fusex/README.md
+dependencies:
+- name: utils
+  version: 0.1.0
+  repository: file://../utils

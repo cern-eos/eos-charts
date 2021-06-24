@@ -1,0 +1,7 @@
+{{/*
+Create a secret to store the eos keytab
+  unless a secret name is specified via .Values.global.sssKeytab.name
+*/}}
+{{- if not (dig "sssKeytab" "name" false .Values.global) -}}
+{{- include "utils.sssKeytab" . -}}
+{{- end }}

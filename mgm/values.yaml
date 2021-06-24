@@ -4,6 +4,31 @@ image:
   pullPolicy: Always
 
 #
+# SSS keytab (needed to authenticate against other EOS components).
+#
+# The name of the kubernetes secret containing the eos keytab to use.
+# Can be helpful when when deploying qdb in standalone mode using a custom keytab.
+#
+# Warning: This chart does not automatically create any secret.
+#   The secret storing they key should be pre-created and its name passed here.
+#   Docs to create secrets: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/
+#
+#   When creating the secret, the key in the data fragment must be 'eos.keytab':
+#     ~# kubectl create secret generic test-keytab --from-file=eos.keytab
+#     secret/test-keytab created
+#     ~# kubectl describe secret test-keytab
+#     [...]
+#     Data
+#     ====
+#     eos.keytab:  138 bytes
+#
+# Default: eos-sss-keytab
+#   Can be overriden by .Values.global.sssKeytab.name
+# 
+sssKeytab:
+  name:
+
+#
 # Assign mgm pod to a node with a specific label.
 # If true, requires a node labeled as per customLabels (see below).
 #
@@ -163,20 +188,23 @@ probes:
 ldapBindUsers:
   enable: false
   #enable: true
-  #nscd:
-  #  image:
-  #    repository: gitlab-registry.cern.ch/sciencebox/docker-images/nscd
-  #    tag: stable
-  #nslcd:
-  #  image:
-  #    repository: gitlab-registry.cern.ch/sciencebox/docker-images/nslcd
-  #    tag: stable
-  #  config:
-  #    ldap_uri: ldap://my-ldap-server:12345
-  #    ldap_base: dc=example,dc=org
-  #    ldap_binddn: cn=admin,dc=example,dc=org
-  #    ldap_bindpw: admin
-  #    ldap_user_search_base: dc=example,dc=org
-  #    ldap_group_search_base: ou=groups,dc=example,dc=org
-  #    ldap_filter_passwd: (objectClass=posixAccount)
-  #    ldap_filter_group: (objectClass=group)
+  nscd:
+    image:
+      repository: gitlab-registry.cern.ch/sciencebox/docker-images/nscd
+      tag: stable
+  nslcd:
+    image:
+      repository: gitlab-registry.cern.ch/sciencebox/docker-images/nslcd
+      tag: stable
+    config:
+      ldap_uri: ldap://my-ldap-server:12345
+      ldap_base: dc=example,dc=org
+      ldap_binddn: cn=admin,dc=example,dc=org
+      ldap_bindpw: admin
+      ldap_user_search_base: dc=example,dc=org
+      ldap_group_search_base: ou=groups,dc=example,dc=org
+      ldap_filter_passwd: (objectClass=posixAccount)
+      ldap_filter_group: (objectClass=group)
+
+# keytab:
+#   name: default-keytab

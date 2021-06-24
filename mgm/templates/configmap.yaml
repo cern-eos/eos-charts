@@ -42,7 +42,7 @@ data:
     #mgmofs.authorize 1
     ###########################################################
     #mgmofs.trace all debug
-    mgmofs.broker root://{{ include "mq.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
+    mgmofs.broker root://{{ include "utils.mq_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
 
     # configuration and namespace location
     mgmofs.configdir /var/eos/config
@@ -81,7 +81,7 @@ data:
     ##### Namespace plugin implementation #####################
     #mgmofs.nslib /usr/lib64/libEosNsInMemory.so
     mgmofs.nslib /usr/lib64/libEosNsQuarkdb.so
-    mgmofs.qdbcluster {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
+    mgmofs.qdbcluster {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
     mgmofs.qdbpassword_file /etc/eos.keytab
     mgmofs.cfgtype quarkdb
 
@@ -119,17 +119,9 @@ data:
       done
     }
 
-    #### @note Until https://github.com/kubernetes/kubernetes/issues/81089 is merged
-    echo "INFO: making /etc/eos.keytab 0400 and owned by daemon:daemon ..."
-    cp /etc/eos.keytab.ro /etc/eos.keytab || exit 1
-    chown daemon:daemon /etc/eos.keytab || exit 1
-    chmod 0400 /etc/eos.keytab || exit 1
-    echo "INFO: /etc/eos.keytab is 0400 and owned by daemon:daemon"
-    #### @note Until https://github.com/kubernetes/kubernetes/issues/81089 is merged
-
     # Check QDB backend is running
     echo "INFO: Checking QDB is running..."
-    init_probe redis-cli -h {{ include "qdbcluster.hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local -p 7777 ping
+    init_probe redis-cli -h {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local -p 7777 ping
     echo "INFO: QDB is online."
 
     # Start the MGM process in background so that we can run other commands
