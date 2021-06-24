@@ -125,10 +125,10 @@ All the ports can be set according to (example for xrootd_mgm):
 {{- $xrootd_syncGlobal := "" -}}
 {{- if .Values.ports -}}
   {{ $xrootd_syncLocal = dig "xrootd_sync" "" .Values.ports -}}
-{{- end}}
+{{- end }}
 {{- if .Values.global -}}
   {{ $xrootd_syncGlobal = dig "ports" "xrootd_sync" "" .Values.global -}}
-{{- end}}
+{{- end }}
 {{- coalesce $xrootd_syncGlobal $xrootd_syncLocal $xrootd_syncDefault }}
 {{- end }}
 
@@ -138,10 +138,10 @@ All the ports can be set according to (example for xrootd_mgm):
 {{- $xrootd_httpGlobal := "" -}}
 {{- if .Values.ports -}}
   {{ $xrootd_httpLocal = dig "xrootd_http" "" .Values.ports -}}
-{{- end}}
+{{- end }}
 {{- if .Values.global -}}
   {{ $xrootd_httpGlobal = dig "ports" "xrootd_http" "" .Values.global -}}
-{{- end}}
+{{- end }}
 {{- coalesce $xrootd_httpGlobal $xrootd_httpLocal $xrootd_httpDefault }}
 {{- end }}
 
@@ -151,10 +151,10 @@ All the ports can be set according to (example for xrootd_mgm):
 {{- $fusexGlobal := "" -}}
 {{- if .Values.ports -}}
   {{ $fusexLocal = dig "fusex" "" .Values.ports -}}
-{{- end}}
+{{- end }}
 {{- if .Values.global -}}
   {{ $fusexGlobal = dig "ports" "fusex" "" .Values.global -}}
-{{- end}}
+{{- end }}
 {{- coalesce $fusexGlobal $fusexLocal $fusexDefault }}
 {{- end }}
 

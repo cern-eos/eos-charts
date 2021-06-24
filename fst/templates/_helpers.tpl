@@ -103,10 +103,10 @@ All the ports can be set according to (example for fst):
 {{- $microhttpGlobal := "" -}}
 {{- if .Values.ports -}}
   {{ $microhttpLocal = dig "microhttp" "" .Values.ports -}}
-{{- end}}
+{{- end }}
 {{- if .Values.global -}}
   {{ $microhttpGlobal = dig "ports" "microhttp" "" .Values.global -}}
-{{- end}}
+{{- end }}
 {{- coalesce $microhttpGlobal $microhttpLocal $microhttpDefault }}
 {{- end }}
 

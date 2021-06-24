@@ -39,8 +39,8 @@ spec:
       initContainers:
         # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
         - name: eos-qdb-init0-sss-keytab-ownership
-          image: {{ include "eos.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/bash", "-c"]
           args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
           volumeMounts:
@@ -50,8 +50,8 @@ spec:
             - name: eos-sss-keytab-fixedownership
               mountPath: /root/sss_keytab/output
         - name: eos-qdb-init1-quarkdb-create
-          image: {{ include "eos.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/bash", "/root/qdb_create.sh"]
           volumeMounts:
             - name: quarkdb-data
@@ -69,8 +69,8 @@ spec:
               subPath: eos.keytab
       containers:
         - name: eos-qdb
-          image: {{ include "eos.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n qdb -c /etc/xrd.cf.quarkdb -l /var/log/eos/xrdlog.qdb -Rdaemon"]
           env:

@@ -51,8 +51,8 @@ spec:
       initContainers:
         # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
         - name: eos-mq-init0-sss-keytab-ownership
-          image: {{ include "eos.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/bash", "-c"]
           args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
           volumeMounts:
@@ -63,8 +63,8 @@ spec:
               mountPath: /root/sss_keytab/output
       containers:
         - name: eos-mq
-          image: {{ include "eos.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["/usr/bin/xrootd -n mq -c /etc/xrd.cf.mq -l /var/log/eos/xrdlog.mq -Rdaemon"]   # TODO: Check which xrootd binary should be used
           env:
