@@ -1,0 +1,4 @@
+{{/*
+Create a configMap to store the krb5.conf kerberos client configuration
+*/}}
+{{- include "utils.krb5Conf" . -}}

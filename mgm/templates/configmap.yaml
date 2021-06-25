@@ -24,16 +24,22 @@ data:
     sec.protocol unix
     # SSS authentication
     sec.protocol sss -c /etc/eos.keytab -s /etc/eos.keytab
+    {{- if .Values.kerberos.enable }}
     # KRB  authentication
-    #sec.protocol krb5 /etc/eos.krb5.keytab host/<host>@TEST.EOS
+    sec.protocol krb5 /etc/eos.krb5.keytab host/<host>@EXAMPLE.COM
+    {{- end }}
+
     # GSI authentication
     #sec.protocol gsi -crl:0 -cert:/etc/grid-security/daemon/hostcert.pem -key:/etc/grid-security/daemon/hostkey.pem -gridmap:/etc/grid-security/grid-mapfile -d:0 -gmapopt:2
 
     ###########################################################
     sec.protbind localhost.localdomain unix sss
     sec.protbind localhost unix sss
-    #sec.protbind * only krb5 sss unix
+    {{- if .Values.kerberos.enable }}
+    sec.protbind * only krb5 sss unix
+    {{- else }}
     sec.protbind * only sss unix
+    {{- end }}
     ###########################################################
     mgmofs.instance {{ include "mgm.instancename" . }}
     mgmofs.fs /
@@ -144,6 +150,10 @@ data:
     # Enable SSS
     echo "INFO: Enabling mapping via SSS..."
     eos -b vid enable sss
+    {{- if .Values.kerberos.enable }}
+    eos -b vid enable krb5
+    {{- end }}
+
 
     # Add daemon to sudoers list
     echo "INFO: Adding daemon to sudoers list..."
