@@ -56,6 +56,11 @@ spec:
               {{- else }}
               mountPath: /eos
               {{- end }}
+            {{- if .Values.kerberos.enable }}
+            - name: krb5-conf
+              mountPath: /etc/krb5.conf
+              subPath: krb5.conf
+            {{- end }}
       volumes:
         - name: fusex-cfgmap-fuse-conf
           configMap:
@@ -74,4 +79,10 @@ spec:
           emptyDir:
             medium: Memory
           {{- end }}
+        {{- if .Values.kerberos.enable }}
+        - name: krb5-conf
+          configMap:
+            name: krb5-conf
+            defaultMode: 0644
+        {{- end }}
 {{- end }}
