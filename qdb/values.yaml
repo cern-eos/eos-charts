@@ -36,10 +36,10 @@ clusterID: 24964842-7852-48fd-bbb9-43beb5bfeea9
 #     eos.keytab:  138 bytes
 #
 # Default: eos-sss-keytab
-#   Can be overriden by .Values.global.sssKeytab.name
+#   Can be overriden by .Values.global.sssKeytab.secret
 # 
 sssKeytab:
-  name:
+  secret:
 
 #
 # Assign qdb pod to a node with a specific label

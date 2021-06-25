@@ -1,7 +1,7 @@
 {{/*
 Name of the secret storing the SSS keytab
-  - Global value '.Values.global.sssKeytab.name' has highest priority
-  - Local value '.Values.sssKeytab.name' has lower priority
+  - Global value '.Values.global.sssKeytab.secret' has highest priority
+  - Local value '.Values.sssKeytab.secret' has lower priority
   - Default is 'eos-sss-keytab'
 */}}
 {{- define "utils.sssKeytabName" -}}
@@ -9,10 +9,10 @@ Name of the secret storing the SSS keytab
 {{- $sssNameLocal := "" -}}
 {{- $sssNameGlobal := "" -}}
 {{- if .Values.global }}
-  {{- $sssNameGlobal = dig "sssKeytab" "name" "" .Values.global -}}
+  {{- $sssNameGlobal = dig "sssKeytab" "secret" "" .Values.global -}}
 {{- end }}
 {{- if .Values.sssKeytab -}}
-  {{- $sssNameLocal = dig "name" "" .Values.sssKeytab -}}
+  {{- $sssNameLocal = dig "secret" "" .Values.sssKeytab -}}
 {{- end }}
 {{- coalesce $sssNameGlobal $sssNameLocal $sssNameDefault }}
 {{- end }}
