@@ -7,7 +7,7 @@ image:
 # SSS keytab (needed to authenticate against other EOS components).
 #
 # The name of the kubernetes secret containing the eos keytab to use.
-# Can be helpful when when deploying qdb in standalone mode using a custom keytab.
+# Can be helpful when when deploying mgm in standalone mode using a custom keytab.
 #
 # Warning: This chart does not automatically create any secret.
 #   The secret storing they key should be pre-created and its name passed here.
@@ -23,10 +23,10 @@ image:
 #     eos.keytab:  138 bytes
 #
 # Default: eos-sss-keytab
-#   Can be overriden by .Values.global.sssKeytab.name
+#   Can be overriden by .Values.global.sssKeytab.secret
 # 
 sssKeytab:
-  name:
+  secret:
 
 #
 # Assign mgm pod to a node with a specific label.
