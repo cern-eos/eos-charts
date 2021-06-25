@@ -64,3 +64,9 @@ fusex:
       oauth2: 1
     options:
       hide_versions: 0
+
+kerberos:
+  enable: false
+  admin_princ:
+    name: ""
+    password: ""

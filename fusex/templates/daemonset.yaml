@@ -45,6 +45,11 @@ spec:
             - name: fusex-sss-keytab
               mountPath: /etc/eos.keytab
               subPath: eos.keytab
+            {{- if .Values.kerberos.enable }}
+            - name: krb5-conf
+              mountPath: /etc/krb5.conf
+              subPath: krb5.conf
+            {{- end }}
             - name: fusex-eos-export
               mountPath: /eos:rshared
       volumes:
@@ -60,3 +65,9 @@ spec:
           hostPath:
             path: {{ default "/eos" .Values.fusex.hostMountpoint }}
             type: DirectoryOrCreate
+        {{- if .Values.kerberos.enable }}
+        - name: krb5-conf
+          configMap:
+            name: krb5-conf
+            defaultMode: 0644
+        {{- end }}
