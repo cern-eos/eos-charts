@@ -208,3 +208,9 @@ ldapBindUsers:
 
 # keytab:
 #   name: default-keytab
+
+kerberos:
+  enable: false
+  admin_princ:
+    name: ""
+    password: ""
