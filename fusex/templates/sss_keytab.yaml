@@ -16,7 +16,7 @@ metadata:
   labels:
     {{- include "fusex.labels" . | nindent 4 }}
 data:
-  fuse.sss.keytab: |-
+  eos.keytab: |-
     {{ $keytab | b64enc }}
 {{- end }}
 {{- else if .Values.fusex.keytab.value }}
@@ -27,6 +27,6 @@ metadata:
   labels:
     {{- include "fusex.labels" . | nindent 4 }}
 data:
-  fuse.sss.keytab: |-
+  eos.keytab: |-
     {{ .Values.fusex.keytab.value | b64enc }}
 {{- end }}

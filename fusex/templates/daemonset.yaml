@@ -43,8 +43,8 @@ spec:
               mountPath: /etc/eos/fuse.eos.conf
               subPath: fuse.eos.conf
             - name: fusex-sss-keytab
-              mountPath: /etc/eos/fuse.sss.keytab
-              subPath: fuse.sss.keytab
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
             - name: fusex-eos-export
               mountPath: /eos:rshared
       volumes:

@@ -22,7 +22,7 @@ data:
       "auth": {
         "shared-mount": {{ if kindIs "float64" .auth.shared_mount }}{{ .auth.shared_mount }}{{ else }}1{{ end }},
         "sss": {{ if kindIs "float64" .auth.sss }}{{ .auth.sss }}{{ else }}1{{ end }},
-        "ssskeytab": "/etc/eos/fuse.sss.keytab",
+        "ssskeytab": "/etc/eos.keytab",
         "gsi-first": {{ if kindIs "float64" .auth.gsi_first }}{{ .auth.gsi_first }}{{ else }}0{{ end }},
         "krb5": {{ if kindIs "float64" .auth.krb5 }}{{ .auth.krb5 }}{{ else }}0{{ end }},
         "oauth2": {{ if kindIs "float64" .auth.oauth2 }}{{ .auth.oauth2 }}{{ else }}1{{ end }}
