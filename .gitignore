@@ -1,5 +1,5 @@
 *.tgz
-**/charts/*.tgz
+**/charts
+**/Chart.lock
 .gitignoredir/
-*/Chart.lock
-*/charts
+kuberos/
