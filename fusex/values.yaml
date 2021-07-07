@@ -1,6 +1,6 @@
 image:
-  repository: gitlab-registry.cern.ch/dss/eos
-  tag: 4.8.39
+  repository: gitlab-registry.cern.ch/dss/eos/eos-fusex
+  tag: 4.8.57
 
 #
 # Assign fusex pod to a node with a specific label.
