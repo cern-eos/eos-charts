@@ -2,8 +2,8 @@ apiVersion: v2
 #
 name: mgm
 type: application
-version: 0.0.8
-appVersion: 4.8.55
+version: 0.0.9
+appVersion: 4.8.57
 #
 description: An EOS MGM chart
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg

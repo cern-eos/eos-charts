@@ -2,8 +2,8 @@ apiVersion: v2
 #
 name: qdb
 type: application
-version: 0.0.6
-appVersion: 4.8.55
+version: 0.0.7
+appVersion: 4.8.57
 #
 description: An EOS QDB chart
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
