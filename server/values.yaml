@@ -1,6 +1,25 @@
 fst:
   replicaCount: 4
 
+testFramework:
+  enabled: true
+  image: "bats/bats"
+  tag: "v1.1.0"
+  imagePullPolicy: IfNotPresent
+  securityContext: {}
+serviceAccount:
+  create: true
+  name:
+  nameTest:
+
+image:
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  
+  # pullSecrets:
+  #   - myRegistrKeySecretName
+
 global:
   repository: gitlab-registry.cern.ch/dss/eos/eos-all
   tag: 4.8.57
