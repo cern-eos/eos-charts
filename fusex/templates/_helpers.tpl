@@ -77,7 +77,8 @@ Liveness Probe definition
 livenessProbe:
   exec:
     command:
-    - /usr/sbin/pidof
+    - /bin/ps
+    - -C
     - eosxd
   initialDelaySeconds: 5
   periodSeconds: 10
