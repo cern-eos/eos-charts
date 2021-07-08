@@ -9,7 +9,7 @@ data:
   # Helm interprets a value set to 0 as null and hence uses the default
   # This is buggy for us as it does not allow to override a 1 default with a 0.
   #
-  # Here we check if the type of the values is float64 and, if so, we use it instead of the default.
+  # Here we check if the type of the values is int64 and, if so, we use it instead of the default.
   # Upstream tracker: https://github.com/helm/helm/issues/3164
   #
   fuse.eos.conf: |
@@ -20,15 +20,15 @@ data:
       "remotemountdir": "{{ .remotemountdir }}",
       "localmountdir": "/eos",
       "auth": {
-        "shared-mount": {{ if kindIs "float64" .auth.shared_mount }}{{ .auth.shared_mount }}{{ else }}1{{ end }},
-        "sss": {{ if kindIs "float64" .auth.sss }}{{ .auth.sss }}{{ else }}1{{ end }},
+        "shared-mount": {{ if kindIs "int64" .auth.shared_mount }}{{ .auth.shared_mount }}{{ else }}1{{ end }},
+        "sss": {{ if kindIs "int64" .auth.sss }}{{ .auth.sss }}{{ else }}1{{ end }},
         "ssskeytab": "/etc/eos.keytab",
-        "gsi-first": {{ if kindIs "float64" .auth.gsi_first }}{{ .auth.gsi_first }}{{ else }}0{{ end }},
-        "krb5": {{ if kindIs "float64" .auth.krb5 }}{{ .auth.krb5 }}{{ else }}0{{ end }},
-        "oauth2": {{ if kindIs "float64" .auth.oauth2 }}{{ .auth.oauth2 }}{{ else }}1{{ end }}
+        "gsi-first": {{ if kindIs "int64" .auth.gsi_first }}{{ .auth.gsi_first }}{{ else }}0{{ end }},
+        "krb5": {{ if kindIs "int64" .auth.krb5 }}{{ .auth.krb5 }}{{ else }}0{{ end }},
+        "oauth2": {{ if kindIs "int64" .auth.oauth2 }}{{ .auth.oauth2 }}{{ else }}1{{ end }}
       },
       "options": {
-        "hide-versions": {{ if kindIs "float64" .options.hide_versions }}{{ .options.hide_versions }}{{ else }}0{{ end }}
+        "hide-versions": {{ if kindIs "int64" .options.hide_versions }}{{ .options.hide_versions }}{{ else }}0{{ end }}
       }
     }
     {{- end }}
