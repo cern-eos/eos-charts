@@ -214,3 +214,5 @@ kerberos:
   admin_princ:
     name: ""
     password: ""
+  krb5:
+    default_realm : example.com

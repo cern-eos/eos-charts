@@ -57,7 +57,7 @@ spec:
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/bash", "-c"]
           args: ["yum install -y krb5-workstation;
-            sukadmin() { echo {{ .Values.kerberos.admin_princ.password }} | kadmin -r EXAMPLE.COM -p {{ .Values.kerberos.admin_princ.name }}/admin $@; };
+            sukadmin() { echo {{ .Values.kerberos.admin_princ.password }} | kadmin -r {{ .Values.kerberos.krb5.default_realm | upper }} -p {{ .Values.kerberos.admin_princ.name }}/admin $@; };
             sukadmin addprinc -pw $(hostname) host/$(hostname -f);
             sukadmin ktadd -k /root/krb5_keytab/output/eos.krb5.keytab host/$(hostname -f);
             chown daemon:daemon /root/krb5_keytab/output/eos.krb5.keytab"]

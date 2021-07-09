@@ -27,6 +27,24 @@ spec:
       #    image: {{ include "utils.image" . }}
       #    imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
       #    command: ["/bin/sleep", "infinity"]
+      # {{- if .Values.kerberos.enable }}
+      # initContainers:
+      # - name: eos-fusex-init0-get-krb5-keytab
+      #   image: {{ include "utils.image" . }}
+      #   imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+      #   command: ["/bin/bash", "-c"]
+      #   args: ["yum install -y krb5-workstation; sleep 600;
+      #     sukadmin() { echo {{ .Values.kerberos.admin_princ.password }} | kadmin -r {{ .Values.kerberos.krb5.default_realm | upper }} -p {{ .Values.kerberos.admin_princ.name }}/admin $@; };
+      #     sukadmin addprinc -pw $(hostname) host/$(hostname -f);
+      #     sukadmin ktadd -k /root/krb5_keytab/output/eos.krb5.keytab host/$(hostname -f);
+      #     chown daemon:daemon /root/krb5_keytab/output/eos.krb5.keytab"]
+      #   volumeMounts:
+      #     - name: krb5-conf
+      #       mountPath: /etc/krb5.conf
+      #       subPath: krb5.conf
+      #     - name: eos-krb5-keytab
+      #       mountPath: /root/krb5_keytab/output
+      # {{- end }}
       containers:
         - name: eos-fusex
           image: {{ include "utils.image" . }}
@@ -49,6 +67,9 @@ spec:
             - name: krb5-conf
               mountPath: /etc/krb5.conf
               subPath: krb5.conf
+            # - name: eos-krb5-keytab
+            #   mountPath: /etc/eos.krb5.keytab
+            #   subPath: eos.krb5.keytab
             {{- end }}
             - name: fusex-eos-export
               mountPath: /eos:rshared
@@ -70,4 +91,6 @@ spec:
           configMap:
             name: krb5-conf
             defaultMode: 0644
+        # - name: eos-krb5-keytab
+        #   emptyDir: {}
         {{- end }}
