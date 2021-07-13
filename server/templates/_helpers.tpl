@@ -53,6 +53,18 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{/*
+Namespace definition
+*/}}
+{{- define "server.namespace" -}}
+{{- $namespace := default "default" .Values.namespace -}}
+{{- if .Values.global -}}
+    {{ dig "namespace" $namespace .Values.global }}
+{{- else -}}
+    {{ $namespace }}
+{{- end }}
+{{- end }}
+
+{{/*
 Test service account name
 */}}
 {{- define "server.serviceAccountNameTest" -}}
