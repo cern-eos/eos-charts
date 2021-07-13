@@ -69,10 +69,7 @@ Test service account name
 */}}
 {{- define "server.serviceAccountNameTest" -}}
 {{- if .Values.serviceAccount.create -}}
-{{/*
     {{ default (print (include "server.fullname" .) "-test") .Values.serviceAccount.nameTest }}
-*/}}
-    {{ default (include "server.fullname" .)"-test" .Values.serviceAccount.nameTest }}
 {{- else -}}
     {{ default "default" .Values.serviceAccount.nameTest }}
 {{- end -}}

@@ -10,7 +10,7 @@ testFramework:
 serviceAccount:
   create: true
   name:
-  nameTest: eos-server-test
+  nameTest: default
 
 image:
   ## Optionally specify an array of imagePullSecrets.
