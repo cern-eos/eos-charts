@@ -10,7 +10,7 @@ testFramework:
 serviceAccount:
   create: true
   name:
-  nameTest:
+  nameTest: pcr
 
 image:
   ## Optionally specify an array of imagePullSecrets.
