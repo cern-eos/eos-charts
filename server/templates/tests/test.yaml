@@ -7,7 +7,6 @@ metadata:
     {{- include "server.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
-  namespace: {{ template "server.namespace" . }}
 spec:
   serviceAccountName: {{ template "server.serviceAccountNameTest" . }}
   {{- if .Values.testFramework.securityContext }}
@@ -23,7 +22,11 @@ spec:
     - name: {{ .Release.Name }}-test
       image: "{{ .Values.testFramework.image}}:{{ .Values.testFramework.tag }}"
       imagePullPolicy: "{{ .Values.testFramework.imagePullPolicy}}"
-      command: ["/opt/bats/bin/bats", "-t", "/tests/run.sh"]
+      command:
+        - "/opt/bats/bin/bats"
+      args:
+        - "-t"
+        - "/tests/run.sh"
       volumeMounts:
         - mountPath: /tests
           name: tests
@@ -31,6 +34,6 @@ spec:
   volumes:
   - name: tests
     configMap:
-      name: {{ template "server.fullname" . }}-test
+      name: test-volume
   restartPolicy: Never
 {{- end }}
