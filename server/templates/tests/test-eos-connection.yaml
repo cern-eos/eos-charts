@@ -10,6 +10,7 @@ data:
     #!/usr/bin/env bats
     
     setup() {
+      echo "Setting up the BATS env"
       # get the containing directory of this file
       # use $BATS_TEST_FILENAME instead of ${BASH_SOURCE[0]} or $0,
       # as those will point to the bats executable's location or the preprocessed file respectively
@@ -23,8 +24,8 @@ data:
       #EOF
       #yum install -y yum-utils
       #yum-config-manager --add-repo=https://storage-ci.web.cern.ch/storage-ci/eos/citrine/tag/testing/el-7/x86_64/
-      dnf config-manager --add-repo https://storage-ci.web.cern.ch/storage-ci/eos/citrine/tag/testing/el-7/x86_64/
-      dnf install -y eos-client
+      wget https://storage-ci.web.cern.ch/storage-ci/eos/citrine/tag/testing/el-7/x86_64/eos-client-4.8.57-1.el7.cern.x86_64.rpm -O ~/eos-client-4.8.57-1.el7.cern.x86_64.rpm
+      rpm -i ~/eos-client-4.8.57-1.el7.cern.x86_64.rpm
       # make executables in src/ visible to PATH
       PATH="$DIR/../src:$PATH"
     }
