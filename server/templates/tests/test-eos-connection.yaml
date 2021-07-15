@@ -21,9 +21,10 @@ data:
       #  gpgcheck=0 
       #  enabled=1
       #EOF
-      yum install -y yum-utils
-      yum-config-manager --add-repo=https://storage-ci.web.cern.ch/storage-ci/eos/citrine/tag/testing/el-7/x86_64/
-      yum install -y eos-client
+      #yum install -y yum-utils
+      #yum-config-manager --add-repo=https://storage-ci.web.cern.ch/storage-ci/eos/citrine/tag/testing/el-7/x86_64/
+      dnf config-manager --add-repo https://storage-ci.web.cern.ch/storage-ci/eos/citrine/tag/testing/el-7/x86_64/
+      dnf install -y eos-client
       # make executables in src/ visible to PATH
       PATH="$DIR/../src:$PATH"
     }
