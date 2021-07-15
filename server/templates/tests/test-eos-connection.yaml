@@ -24,8 +24,6 @@ data:
       #EOF
       #yum install -y yum-utils
       #yum-config-manager --add-repo=https://storage-ci.web.cern.ch/storage-ci/eos/citrine/tag/testing/el-7/x86_64/
-      wget https://storage-ci.web.cern.ch/storage-ci/eos/citrine/tag/testing/el-7/x86_64/eos-client-4.8.57-1.el7.cern.x86_64.rpm -O ~/eos-client-4.8.57-1.el7.cern.x86_64.rpm
-      rpm -i ~/eos-client-4.8.57-1.el7.cern.x86_64.rpm
       # make executables in src/ visible to PATH
       PATH="$DIR/../src:$PATH"
     }
@@ -35,6 +33,8 @@ data:
       echo "Tearing down"
     }
     @test "EOS Instance Health Test" {
+      wget https://storage-ci.web.cern.ch/storage-ci/eos/citrine/tag/testing/el-7/x86_64/eos-client-4.8.57-1.el7.cern.x86_64.rpm -O ~/eos-client-4.8.57-1.el7.cern.x86_64.rpm
+      rpm -i ~/eos-client-4.8.57-1.el7.cern.x86_64.rpm
       eos ns | grep -i booted
       [  $? eq 0 ]
     }
