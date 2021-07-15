@@ -32,3 +32,4 @@ data:
     vlimant:x:2547:99::/home/vlimant:/bin/bash
     mrieger:x:42240:99::/home/mrieger:/bin/bash
     ozapatam:x:85369:99::/home/ozapatam:/bin/bash
+    mkomm:x:57226:99::/home/mkomm:/bin/bash
