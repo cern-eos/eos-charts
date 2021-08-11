@@ -21,9 +21,9 @@ data:
 
     [realms]
       EXAMPLE.COM = {
-       kdc = kuberos-kuberos-kdc.default.svc.cluster.local:88
-       master_kdc = kuberos-kuberos-kdc.default.svc.cluster.local:88
-       admin_server = kuberos-kuberos-kadmin.default.svc.cluster.local:749
+       kdc = kuberos-kuberos-kdc.{{ .Release.Namespace }}.svc.cluster.local:88
+       master_kdc = kuberos-kuberos-kdc.{{ .Release.Namespace }}.svc.cluster.local:88
+       admin_server = kuberos-kuberos-kadmin.{{ .Release.Namespace }}.svc.cluster.local:749
        default_domain = cluster.local
        ; pkinit_anchors = FILE:/path/to/kdc-ca-bundle.pem
        ; pkinit_pool = FILE:/path/to/ca-bundle.pem
