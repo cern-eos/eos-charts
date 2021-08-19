@@ -45,8 +45,10 @@ spec:
             - name: fusex-sss-keytab
               mountPath: /etc/eos.keytab
               subPath: eos.keytab
+            {{- if .Values.fusex.enableHostMountpoint }}
             - name: fusex-eos-export
               mountPath: /eos:rshared
+            {{- end }}
       volumes:
         - name: fusex-cfgmap-fuse-conf
           configMap:
@@ -56,7 +58,9 @@ spec:
           secret:
             secretName: {{ include "fusex.sssKeytabSecretName" . }}
             defaultMode: 0400
+        {{- if .Values.fusex.enableHostMountpoint }}
         - name: fusex-eos-export
           hostPath:
             path: {{ default "/eos" .Values.fusex.hostMountpoint }}
             type: DirectoryOrCreate
+        {{- end }}

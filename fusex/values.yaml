@@ -51,7 +51,9 @@ fusex:
     file:
 
   # Expose eos mount to the host
+  # - enableHostMountpoint: Enables/disables exposing eos to the host
   # - hostMountpoint: Path where to expose eos on the host
+  enableHostMountpoint: true
   hostMountpoint: /eos
 
   # Share host process ID namespace with the pod
