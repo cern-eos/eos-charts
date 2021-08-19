@@ -3,6 +3,15 @@ image:
   tag: 4.8.57
 
 #
+# Deployment kind for fusex pod.
+#
+# Options:
+#   - DaemonSet: Deploy fusex pod on all nodes of the cluster, or the ones identified by customLabels if using NodeSelector (see below).
+#   - Deployment: Fusex pod is deployed as one-replica pod, mainly meant for testing.
+#
+deploymentKind: DaemonSet
+
+#
 # Assign fusex pod to a node with a specific label.
 #   If true, it will be deployed only on nodes labeled as per customLabels (see below).
 #   If false, it will be deployed on all nodes of the cluster (it is a daemonSet).

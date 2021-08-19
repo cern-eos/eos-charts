@@ -1,11 +1,12 @@
-{{- if (eq .Values.deploymentKind "DaemonSet") }}
+{{- if (eq .Values.deploymentKind "Deployment") }}
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: {{ include "fusex.fullname" . }}
   labels:
     {{- include "fusex.labels" . | nindent 4 }}
 spec:
+  replicas: 1
   selector:
     matchLabels:
       {{- include "fusex.selectorLabels" . | nindent 6 }}
