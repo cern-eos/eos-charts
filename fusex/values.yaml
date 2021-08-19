@@ -49,10 +49,25 @@ fusex:
     secret:
     value:
     file:
+
+  # Expose eos mount to the host
+  # - hostMountpoint: Path where to expose eos on the host
   hostMountpoint: /eos
+
+  # Share host process ID namespace with the pod
+  #   Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
   hostPID: true
+
+  # Pod networking
+  #   - hostNetwork: Share host network namespace with pod
+  #       Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
+  #   - dnsPolicy: Sets the policy for DNS
+  #       --> Change to 'ClusterFirstWithHostNet' when 'hostNetwotk: true'
+  #       Docs: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
   hostNetwork: false
   dnsPolicy: ClusterFirst
+
+  #
   config:
     eos_mgm_alias: eos-mgm.default.svc.cluster.local
     remotemountdir: /eos
