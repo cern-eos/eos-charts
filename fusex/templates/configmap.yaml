@@ -33,3 +33,44 @@ data:
     }
     {{- end }}
 
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "fusex.fullname" . }}-cfgmap-fusex-waitformgm
+  labels:
+    {{- include "fusex.labels" . | nindent 4 }}
+data:
+  fusex_waitformgm.sh: |
+    #!/bin/bash
+    set -x
+    alias eos='eos -r 0 0'
+    shopt -s expand_aliases
+
+    init_probe() {
+      local cmd=$@
+      local max_wait=60
+      local sleep=5
+      start_time=$(date +%s)
+      rc=-1
+      while [ $rc -ne 0 ];
+      do
+        timeout --preserve-status $sleep $cmd >/dev/null 2>&1
+        rc=$?
+
+        # Bail out after max_wait
+        tot_wait=$(($(date +%s)-start_time))
+        echo "        $tot_wait seconds... (timeout at $max_wait)"
+        if [ $tot_wait -ge $max_wait ]; then
+          echo "ERROR: cmd \`$cmd\` failed after $tot_wait secs. Giving up."
+          exit 1
+        fi
+        sleep $sleep
+      done
+    }
+
+    # Wait for the MGM to be online
+    echo "INFO: Checking the MGM is online..."
+    init_probe eos ns
+    echo "INFO: MGM is online."

@@ -23,7 +23,21 @@ spec:
         {{- toYaml .Values.customLabels | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: 60
-      #initContainers:
+      initContainers:
+        - name: eos-fusex-init0-waitformgm
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          env:
+            - name: EOS_MGM_URL
+              value: root://{{ include "utils.mgm_fqdn" . }}
+          command: ["/bin/bash", "/root/fusex_waitformgm.sh"]
+          volumeMounts:
+            - name: fusex-cfgmap-fusex-waitformgm
+              mountPath: /root/fusex_waitformgm.sh
+              subPath: fusex_waitformgm.sh
+            - name: fusex-sss-keytab
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
       #  - name: eos-fusex-init0-cleanup
       #    image: {{ include "utils.image" . }}
       #    imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
@@ -65,6 +79,10 @@ spec:
           configMap:
             name: {{ include "fusex.fullname" . }}-cfgmap-fuse-conf
             defaultMode: 0644
+        - name: fusex-cfgmap-fusex-waitformgm
+          configMap:
+            name: {{ include "fusex.fullname" . }}-cfgmap-fusex-waitformgm
+            defaultMode: 0755
         - name: fusex-sss-keytab
           secret:
             secretName: {{ include "fusex.sssKeytabSecretName" . }}
