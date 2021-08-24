@@ -1,0 +1,20 @@
+#
+# kerberos client configuration configmap
+#
+#   Reads file at the location given by '.Values.kerberos.clientConfig.file' and creates a configMap out of it.
+#   If the source file does not exist (or it is empty), no configMap will be created.
+#
+{{- if and .Values.kerberos.enabled .Values.kerberos.clientConfig.file }}
+{{- $conf := .Files.Get .Values.kerberos.clientConfig.file }}
+{{- if $conf }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mgm.krb5ConfConfigMapName" . }}
+  labels:
+    {{- include "mgm.labels" . | nindent 4 }}
+data:
+  krb5.conf: |-
+    {{ $conf | b64enc }}
+{{- end }}
+{{- end }}

@@ -1,6 +1,9 @@
 {{/*
-A default krb5.conf kerberos client configuration, framed by a configMap
-  Just plug the content expected from kuberos@1.0 defaults and creates the cfgmap 'krb5-conf' out of it.
+Create a default krb5.conf kerberos client configuration as configMap
+  Used by mgm and fusex if kerberos is enabled
+
+#TODO: This should be properly templated
+#TODO: This is not used at the moment
 */}}
 {{- define "utils.krb5Conf" -}}
 apiVersion: v1

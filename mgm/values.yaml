@@ -206,10 +206,22 @@ ldapBindUsers:
       ldap_filter_passwd: (objectClass=posixAccount)
       ldap_filter_group: (objectClass=group)
 
+
+# kerberos configuration for mgm
+#   Provides kerberos configuration for krb5-based authentication
+#   Warning: Remember to enable krb5 authentication in fusex.config.auth.krb5
+#
+#   Options:
+#   - enabled: Projects (or not) /etc/krb5.conf from configMap
+#   - clientConfig.file: Path to a file containing the desired krb5 configuration (has priority over configMap)
+#   - clientConfig.configMap: Name of the configMap storing the krb5 configuration
+#
 kerberos:
-  enable: false
-  admin_princ:
-    name: ""
-    password: ""
-  krb5:
-    default_realm : example.com
+  enabled: false
+  clientConfig:
+    file:
+    configMap:
+  adminPrinc:
+    name:
+    password:
+  defaultRealm : example.com

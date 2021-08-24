@@ -225,3 +225,21 @@ readinessProbe:
   failureThreshold: 3
 {{- end }}
 {{- end }}
+
+{{/*
+Name of the configMap storing the kerberos configuration
+Returns:
+  - "<release_fullname>-mgm-krb5-conf" when .Values.kerberos.clientConfig.file is passed
+  - the name of the secret passed as .Values.kerberos.clientConfig.configMap
+  - "<release_fullname>-mgm-krb5-conf" by default.
+If the configMap does not exist, the pod will hang due to the missing mount.
+*/}}
+{{- define "mgm.krb5ConfConfigMapName" -}}
+{{- if .Values.kerberos.clientConfig.file }}
+{{- printf "%s%s" (include "mgm.fullname" .) "-mgm-krb5-conf" }}
+{{- else if .Values.kerberos.clientConfig.configMap }}
+{{- printf "%s" .Values.kerberos.clientConfig.configMap }}
+{{- else }}
+{{- printf "%s%s" (include "mgm.fullname" .) "-mgm-krb5-conf" }}
+{{- end }}
+{{- end }}

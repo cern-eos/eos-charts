@@ -51,18 +51,18 @@ spec:
               subPath: eos.keytab
             - name: eos-sss-keytab-fixedownership
               mountPath: /root/sss_keytab/output
-        {{- if .Values.kerberos.enable }}
+        {{- if .Values.kerberos.enabled }}
         - name: eos-mgm-init3-get-krb5-keytab
           image: {{ include "utils.image" . }}
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/bash", "-c"]
           args: ["yum install -y krb5-workstation;
-            sukadmin() { echo {{ .Values.kerberos.admin_princ.password }} | kadmin -r {{ .Values.kerberos.krb5.default_realm | upper }} -p {{ .Values.kerberos.admin_princ.name }}/admin $@; };
+            sukadmin() { echo {{ .Values.kerberos.adminPrinc.password }} | kadmin -r {{ .Values.kerberos.defaultRealm | upper }} -p {{ .Values.kerberos.adminPrinc.name }}/admin $@; };
             sukadmin addprinc -pw $(hostname) host/$(hostname -f);
             sukadmin ktadd -k /root/krb5_keytab/output/eos.krb5.keytab host/$(hostname -f);
             chown daemon:daemon /root/krb5_keytab/output/eos.krb5.keytab"]
           volumeMounts:
-            - name: krb5-conf
+            - name: eos-krb5-conf
               mountPath: /etc/krb5.conf
               subPath: krb5.conf
             - name: eos-krb5-keytab
@@ -89,8 +89,8 @@ spec:
             - name: eos-sss-keytab-fixedownership
               mountPath: /etc/eos.keytab
               subPath: eos.keytab
-            {{- if .Values.kerberos.enable }}
-            - name: krb5-conf
+            {{- if .Values.kerberos.enabled }}
+            - name: eos-krb5-conf
               mountPath: /etc/krb5.conf
               subPath: krb5.conf
             - name: eos-krb5-keytab
@@ -141,8 +141,8 @@ spec:
             - name: eos-sss-keytab-fixedownership
               mountPath: /etc/eos.keytab
               subPath: eos.keytab
-            {{- if .Values.kerberos.enable }}
-            - name: krb5-conf
+            {{- if .Values.kerberos.enabled }}
+            - name: eos-krb5-conf
               mountPath: /etc/krb5.conf
               subPath: krb5.conf
             - name: eos-krb5-keytab
@@ -210,10 +210,10 @@ spec:
             defaultMode: 0400
         - name: eos-sss-keytab-fixedownership
           emptyDir: {}
-        {{- if .Values.kerberos.enable }}
-        - name: krb5-conf
+        {{- if .Values.kerberos.enabled }}
+        - name: eos-krb5-conf
           configMap:
-            name: krb5-conf
+            name: {{ include "mgm.krb5ConfConfigMapName" . }}
             defaultMode: 0644
         - name: eos-krb5-keytab
           emptyDir: {}

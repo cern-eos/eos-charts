@@ -24,7 +24,7 @@ data:
     sec.protocol unix
     # SSS authentication
     sec.protocol sss -c /etc/eos.keytab -s /etc/eos.keytab
-    {{- if .Values.kerberos.enable }}
+    {{- if .Values.kerberos.enabled }}
     # KRB  authentication
     sec.protocol krb5 /etc/eos.krb5.keytab host/<host>@EXAMPLE.COM
     {{- end }}
@@ -35,7 +35,7 @@ data:
     ###########################################################
     sec.protbind localhost.localdomain unix sss
     sec.protbind localhost unix sss
-    {{- if .Values.kerberos.enable }}
+    {{- if .Values.kerberos.enabled }}
     sec.protbind * only krb5 sss unix
     {{- else }}
     sec.protbind * only sss unix
@@ -150,7 +150,7 @@ data:
     # Enable SSS
     echo "INFO: Enabling mapping via SSS..."
     eos -b vid enable sss
-    {{- if .Values.kerberos.enable }}
+    {{- if .Values.kerberos.enabled }}
     eos -b vid enable krb5
     {{- end }}
 
