@@ -1,29 +1,32 @@
 #
-# SSS keytab
+# SSS keytab configmap
 #
-# Example of keytab:
-#   '0 u:daemon g:daemon n:eos-test+ N:6927582626958016513 c:1612953522 e:0 f:0 k:4d6faa5829d44b32a19c74e2915d94dd86125bfe7dfffb7c2badcb000f9a8327'
+#   Example of keytab:
+#     '0 u:daemon g:daemon n:eos-test+ N:6927582626958016513 c:1612953522 e:0 f:0 k:4d6faa5829d44b32a19c74e2915d94dd86125bfe7dfffb7c2badcb000f9a8327'
 #
-{{- if .Values.fusex.keytab.file }}
+
 #  Reads file at the location given by '.Values.fusex.keytab.file' and creates a secret out of it.
-#  If the source file doe not exist (or it is empty), no secrets will be created.
+#  If the source file does not exist (or it is empty), no secrets will be created.
+{{- if .Values.fusex.keytab.file }}
 {{- $keytab := .Files.Get .Values.fusex.keytab.file }}
 {{- if $keytab }}
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ include "fusex.fullname" . }}-fusex-sss-keytab
+  name: {{ include "fusex.sssKeytabSecretName" . }}
   labels:
     {{- include "fusex.labels" . | nindent 4 }}
 data:
   eos.keytab: |-
     {{ $keytab | b64enc }}
 {{- end }}
+#  Uses the value variable as keytab source and creates a secret out of it.
+#  If value is not defined (or it is empty), no secrets will be created.
 {{- else if .Values.fusex.keytab.value }}
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ include "fusex.fullname" . }}-fusex-sss-keytab
+  name: {{ include "fusex.sssKeytabSecretName" . }}
   labels:
     {{- include "fusex.labels" . | nindent 4 }}
 data:
