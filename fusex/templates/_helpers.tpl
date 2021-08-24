@@ -108,16 +108,16 @@ If the secret does not exist, the pod will hang due to the missing mount.
 {{/*
 Name of the configMap storing the kerberos configuration for fusex
 Returns:
-  - "<release_fullname>-fusex-krb5-conf" when .Values.fusex.kerberos.file is passed
-  - the name of the secret passed as .Values.fusex.kerberos.configMap
+  - "<release_fullname>-fusex-krb5-conf" when .Values.fusex.kerberos.clientConfig.file is passed
+  - the name of the secret passed as .Values.fusex.kerberos.clientConfig.configMap
   - "<release_fullname>-fusex-krb5-conf" by default.
 If the configMap does not exist, the pod will hang due to the missing mount.
 */}}
 {{- define "fusex.krb5ConfConfigMapName" -}}
-{{- if .Values.fusex.kerberos.file }}
+{{- if .Values.fusex.kerberos.clientConfig.file }}
 {{- printf "%s%s" (include "fusex.fullname" .) "-fusex-krb5-conf" }}
-{{- else if .Values.fusex.kerberos.configMap }}
-{{- printf "%s" .Values.fusex.kerberos.configMap }}
+{{- else if .Values.fusex.kerberos.clientConfig.configMap }}
+{{- printf "%s" .Values.fusex.kerberos.clientConfig.configMap }}
 {{- else }}
 {{- printf "%s%s" (include "fusex.fullname" .) "-fusex-krb5-conf" }}
 {{- end }}

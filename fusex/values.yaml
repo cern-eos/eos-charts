@@ -65,13 +65,14 @@ fusex:
   #
   #   Options:
   #   - enabled: Projects (or not) /etc/krb5.conf from configMap
-  #   - file: Path to a file containing the desired krb5 configuration (has priority over configMap)
-  #   - configMap: Name of the configMap storing the krb5 configuration
+  #   - clientConfig.file: Path to a file containing the desired krb5 configuration (has priority over configMap)
+  #   - clientConfig.configMap: Name of the configMap storing the krb5 configuration
   #
   kerberos:
     enabled: false
-    file:
-    configMap:
+    clientConfig:
+      file:
+      configMap:
 
   # Expose eos mount to the host
   # - enableHostMountpoint: Enables/disables exposing eos to the host

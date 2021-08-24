@@ -1,11 +1,11 @@
 #
 # kerberos client configuration configmap
 #
-#   Reads file at the location given by '.Values.fusex.kerberos.file' and creates a configMap out of it.
+#   Reads file at the location given by '.Values.fusex.kerberos.clientConfig.file' and creates a configMap out of it.
 #   If the source file does not exist (or it is empty), no configMap will be created.
 #
-{{- if and .Values.fusex.kerberos.enabled .Values.fusex.kerberos.file }}
-{{- $conf := .Files.Get .Values.fusex.kerberos.file }}
+{{- if and .Values.fusex.kerberos.enabled .Values.fusex.kerberos.clientConfig.file }}
+{{- $conf := .Files.Get .Values.fusex.kerberos.clientConfig.file }}
 {{- if $conf }}
 apiVersion: v1
 kind: ConfigMap
