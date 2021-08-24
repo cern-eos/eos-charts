@@ -48,8 +48,8 @@ data:
   fst_init.sh: |
     #!/bin/bash
     set -x
-    shopt -s expand_aliases
     alias eos='eos -r 0 0'
+    shopt -s expand_aliases
 
     init_probe() {
       local cmd=$@
@@ -59,23 +59,23 @@ data:
       rc=-1
       while [ $rc -ne 0 ];
       do
-        timeout --preserve-status $sleep $cmd
+        timeout --preserve-status $sleep $cmd >/dev/null 2>&1
         rc=$?
 
         # Bail out after max_wait
         tot_wait=$(($(date +%s)-start_time))
         echo "        $tot_wait seconds... (timeout at $max_wait)"
         if [ $tot_wait -ge $max_wait ]; then
-          echo "ERROR: MGM not reachable after $tot_wait secs. Giving up."
+          echo "ERROR: cmd \`$cmd\` failed after $tot_wait secs. Giving up."
           exit 1
         fi
         sleep $sleep
       done
     }
 
-    # Check the MGM is online before registering the node and the filesystem
+    # Wait for the MGM to be online before registering the node and the filesystem
     echo "INFO: Checking the MGM is online..."
-    init_probe eos ns >/dev/null 2>&1
+    init_probe eos ns
     echo "INFO: MGM is online."
 
     # Start the FST process in background so that we can run other commands
