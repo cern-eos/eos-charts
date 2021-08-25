@@ -2,8 +2,8 @@ apiVersion: v2
 #
 name: fusex
 type: application
-version: 0.0.5
-appVersion: 4.8.57
+version: 0.1.0
+appVersion: 4.8.62
 #
 description: An EOS FuseX chart
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
@@ -11,5 +11,5 @@ annotations:
   documentation: https://github.com/cern-eos/eos/blob/master/fusex/README.md
 dependencies:
 - name: utils
-  version: 0.1.1
+  version: 0.1.2
   repository: "https://registry.cern.ch/chartrepo/eos"
