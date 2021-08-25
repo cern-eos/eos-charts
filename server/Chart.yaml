@@ -2,25 +2,25 @@ apiVersion: v2
 #
 name: server
 type: application
-version: 0.0.6
-appVersion: 4.8.57
+version: 0.1.0
+appVersion: 4.8.62
 #
 description: A fully-fledge EOS server instance with qdb, mgm, mq, and fst
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
 #
 dependencies:
   - name: qdb
-    version: 0.0.7
+    version: 0.1.0
     repository: "https://registry.cern.ch/chartrepo/eos"
   - name: mgm
-    version: 0.0.9
+    version: 0.1.0
     repository: "https://registry.cern.ch/chartrepo/eos"
   - name: mq
-    version: 0.0.9
+    version: 0.1.0
     repository: "https://registry.cern.ch/chartrepo/eos"
   - name: fst
-    version: 0.0.9
+    version: 0.1.0
     repository: "https://registry.cern.ch/chartrepo/eos"
   - name: utils
-    version: 0.1.1
+    version: 0.1.2
     repository: "https://registry.cern.ch/chartrepo/eos"
