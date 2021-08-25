@@ -82,7 +82,7 @@ spec:
         {{- if .Values.fusex.kerberos.enabled }}
         - name: fusex-krb5-conf
           configMap:
-            name: {{ include "fusex.krb5ConfigConfigMapName" . }}
+            name: {{ include "fusex.krb5ConfConfigMapName" . }}
             defaultMode: 0644
         {{- end }}
 {{- end }}
