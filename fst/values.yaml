@@ -139,6 +139,13 @@ selfRegister:
 geotag: ""
 
 #
+# EOS minimum size of filesystem on FST to allow writes
+#   See EOS_FS_FULL_SIZE_IN_GB in
+#   https://gitlab.cern.ch/dss/eos/-/blob/master/fst/storage/Storage.cc
+#
+minFsSizeGb: 5
+
+#
 # Manage persistence of data stored by FST,
 #   namely the actualy bytes of files stored by users is EOS
 #

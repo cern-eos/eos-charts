@@ -97,14 +97,10 @@ spec:
           command: ["/bin/sh", "-c"]
           args: ["/opt/eos/xrootd/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
           env:
-            # Inspiration from cockroachdb, in case we need it:
-            # - name: STATEFULSET_NAME
-            #   value: {{ template "fst.fullname" . }}
-            # - name: STATEFULSET_FQDN
-            #   value: {{ template "fst.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-            ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
             - name: EOS_MGM_URL
               value: root://{{ include "utils.mgm_fqdn" . }}
+            - name: EOS_FS_FULL_SIZE_IN_GB
+              value: {{ default 5 .Values.minFsSizeGb }}
           envFrom:
             - configMapRef:
                 name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
