@@ -23,5 +23,11 @@ spec:
       targetPort: 1100
       protocol: TCP
       name: fusex
+{{- if eq ( include "podSharing.mgmMq" . ) "true" }}
+    - port: {{ include "mq.service.port.xrootd_mq" . }}
+      targetPort: 1097
+      protocol: TCP
+      name: xrtood-mq
+{{- end }}
   selector:
     {{- include "mgm.selectorLabels" . | nindent 4 }}

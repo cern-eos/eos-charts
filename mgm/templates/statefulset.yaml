@@ -111,12 +111,6 @@ spec:
           command: ["/bin/sh", "-c"]
           args: ["/opt/eos/xrootd/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]
           env:
-            # Inspiration from cockroachdb, in case we need it:
-            # - name: STATEFULSET_NAME
-            #   value: {{ template "mgm.fullname" . }}
-            # - name: STATEFULSET_FQDN
-            #   value: {{ template "mgm.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-            ### work around current Kubernetes setup issues. This should *NOT* be enabled in production
             - name: LD_PRELOAD
               value: "/usr/lib64/libjemalloc.so"
           envFrom:
@@ -153,6 +147,32 @@ spec:
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
+        {{- if eq ( include "podSharing.mgmMq" . ) "true" }}
+        - name: eos-mq
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          command: ["/bin/sh", "-c"]
+          args: ["/opt/eos/xrootd/bin/xrootd -n mq -c /etc/xrd.cf.mq -l /var/log/eos/xrdlog.mq -Rdaemon"]
+          env:
+          envFrom:
+            - configMapRef:
+                name: {{ include "mq.fullname" . }}-cfgmap-sysconfig-eos
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: ["SYS_PTRACE"]
+          {{- include "mq.livenessProbe" . | nindent 10 }}
+          volumeMounts:
+            - name: mq-cfgmap-xrd-cf-mq
+              mountPath: /etc/xrd.cf.mq
+              subPath: xrd.cf.mq
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
+            - name: mq-logs
+              mountPath: /var/log/eos
+        {{- end }}
         {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd
           {{- with .Values.ldapBindUsers.nslcd.image }}
@@ -210,6 +230,14 @@ spec:
             defaultMode: 0400
         - name: eos-sss-keytab-fixedownership
           emptyDir: {}
+        {{- if eq ( include "podSharing.mgmMq" . ) "true" }}
+        - name: mq-cfgmap-xrd-cf-mq
+          configMap:
+            name: {{ include "mq.fullname" . }}-cfgmap-xrd-cf-mq
+            defaultMode: 0644
+        - name: mq-logs
+          emptyDir: {}
+        {{- end }}
         {{- if .Values.kerberos.enabled }}
         - name: eos-krb5-conf
           configMap:

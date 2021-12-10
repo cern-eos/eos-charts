@@ -29,6 +29,27 @@ sssKeytab:
   secret:
 
 #
+# Colocate mgm and mq containers in the same pod
+#   This is required by EOS 5 Diopside and harmless for EOS 4.
+#   It is highly encouraged to use a shared pod for mgm and mq daemons.
+#
+#   The two containers will:
+#     - have the same pod name (container names will differ: eos-mgm, eos-mq)
+#     - have a unique network identifier, coming from the pod name
+#         - configuration parameters in the charts using MGM and MQ FQDNs remain separate
+#         - in the case of colocation, they will point to the same pod
+#     - land on the same node and share node selector features
+#     - share custom labels
+#     - share hostNetwork and DNS policies
+#
+#   Available options: true, false
+#   Default: true
+#   The setting can be overriden with: '.Values.global.splitMgmMq'
+#
+#   global:
+#     splitMgmMq: false
+
+#
 # Assign mgm pod to a node with a specific label.
 # If true, requires a node labeled as per customLabels (see below).
 #
@@ -62,7 +83,7 @@ hostNetwork: false
 #
 dnsPolicy: ClusterFirst
 #
-# Service ports declaration for mgm.
+# Service ports declaration for mgm (and mq -- when colocated in the same pod).
 # These are the ports exposed by the Kubernetes service.
 #
 # Defaults:
@@ -70,9 +91,10 @@ dnsPolicy: ClusterFirst
 #   - xrootd_sync: 1096
 #   - xrootd_http: 8000
 #   - fusex:       1100
+#   - xrootd_mq:   1097
 #
 # Values can be overridden with:
-# - .Values.ports.{xrootd_mgm, xrootd_sync, xrootd_http, fusex} below
+# - .Values.ports.{xrootd_mgm, xrootd_sync, xrootd_http, fusex, xrootd_mq} below
 # - Global .Values.global.ports.<service_name> in a parent chart.
 #     Global takes precedence over local values.
 #
@@ -81,20 +103,23 @@ ports:
   xrootd_sync:
   xrootd_http:
   fusex:
+  xrootd_mq:
 
 #
-# Short hostnames of the components to be reached from the mgm.
+# Short hostnames of the components to be reached from the mgm and mq.
 # The corresponding FQDNs are generated appending the namespace and '.svc.cluster.local'.
 #
 # These values depend on the Helm release name given to each component.
 # Leave them blank to let Helm infer the names automatically according to .Release.Name
 #
 # Values can be overridden with:
-# - .Values.hostnames.{mq, qdbcluster} below
-# - Global .Values.global.hostnames.{mq, qdbcluster} in a parent chart.
+# - .Values.hostnames.{mgm, mq, qdbcluster} below
+# - Global .Values.global.hostnames.{mgm, mq, qdbcluster} in a parent chart.
 #     Global takes precedence over local values.
 #
 hostnames:
+  # Hostname of the mgm.
+  mgm: ""
   # Hostname of the mq (aka, broker).
   mq: ""
   # Hostname of the quarkdb cluster.
@@ -158,23 +183,23 @@ persistence:
   #  annotations: {}
 
 #
-# Enable or disable health probes for mgm.
+# Enable or disable health probes.
 #   Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 #
-# Startup Probe:
+# Startup Probe (mgm only):
 #   Checks whether it is possible to open a TCP socket againsts port 1094.
 #   Allows for a startup delay of 120 seconds (10s period * 12 failureThreshold)
 #
-# Liveness Probe:
+# Liveness Probe (mgm and mq):
 #   Checks every 10 seconds whether it is possible to open a TCP socket againsts port 1094.
 #   The mgm container will be restarted after 3 failures.
 #
-# Readiness Probe:
+# Readiness Probe (mgm only):
 #   Checks every 10 seconds whether `eos ns` returns successfully.
 #   If not, the failing pod will be removed from the alias
 #     (which is not that useful because we have no slave at the moment)
 #
-# # Default: All probes enabled.
+# Default: All probes enabled.
 #   This can be overridden with:
 #   - .Values.probes.{startup, liveness, readiness} below
 #   - Global .Values.global.probes.mgm_{startup, liveness} in a parent chart.
@@ -185,6 +210,9 @@ probes:
   liveness: true
   readiness: true
 
+#
+# Bind to external LDAP service for unix user accounts
+#
 ldapBindUsers:
   enable: false
   #enable: true
