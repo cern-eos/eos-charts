@@ -59,9 +59,14 @@ MQ cluster hostname definition
   See MGM hostname definition for the details on the logic.
 */}}
 {{- define "utils.mq_hostname" -}}
-{{- $mqDefault := printf "%s-mq" .Release.Name -}}
+{{- $mqDefault := "" -}}
 {{- $mqLocal := "" -}}
 {{- $mqGlobal := "" -}}
+{{- if ( include "podSharing.mgmMq" . ) }}
+  {{- $mqDefault = printf "%s-mgm" .Release.Name -}}
+{{- else -}}
+  {{- $mqDefault = printf "%s-mq" .Release.Name -}}
+{{- end -}}
 {{- if .Values.hostnames -}}
   {{ $mqLocal = dig "mq" "" .Values.hostnames }}
 {{- end }}
