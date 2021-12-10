@@ -16,3 +16,8 @@ global:
   sssKeytab:
     secret:
     file:
+
+  #
+  # Run mgm and mq containers in the same pod.
+  #
+  splitMgmMq: false
