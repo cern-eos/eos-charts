@@ -3,7 +3,7 @@ fst:
 
 global:
   repository: gitlab-registry.cern.ch/dss/eos/eos-all
-  tag: 4.8.62
+  tag: 4.8.78
 
   #
   # SSS keytab for the eos cluster
