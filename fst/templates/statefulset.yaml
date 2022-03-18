@@ -100,7 +100,7 @@ spec:
             - name: EOS_MGM_URL
               value: root://{{ include "utils.mgm_fqdn" . }}
             - name: EOS_FS_FULL_SIZE_IN_GB
-              value: {{ default 5 .Values.minFsSizeGb }}
+              value: {{ default 5 .Values.minFsSizeGb | quote }}
           envFrom:
             - configMapRef:
                 name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos
