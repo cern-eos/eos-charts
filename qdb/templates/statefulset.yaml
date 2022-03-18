@@ -80,10 +80,11 @@ spec:
               - name: LD_PRELOAD
                 value: "/usr/lib64/libjemalloc.so.1"
           securityContext:
-            privileged: true
-            allowPrivilegeEscalation: true
+            privileged: false
+            allowPrivilegeEscalation: false
             capabilities:
-              add: ["SYS_PTRACE"]
+              add:
+              - SYS_PTRACE
           {{- include "qdb.livenessProbe" . | nindent 10 }}
           {{- include "qdb.readinessProbe" . | nindent 10 }}
           volumeMounts:

@@ -77,10 +77,11 @@ spec:
             - configMapRef:
                 name: {{ include "mq.fullname" . }}-cfgmap-sysconfig-eos
           securityContext:
-            privileged: true
-            allowPrivilegeEscalation: true
+            privileged: false
+            allowPrivilegeEscalation: false
             capabilities:
-              add: ["SYS_PTRACE"]
+              add:
+              - SYS_PTRACE
           {{- include "mq.livenessProbe" . | nindent 10 }}
           volumeMounts:
             - name: mq-cfgmap-xrd-cf-mq
