@@ -112,7 +112,7 @@ spec:
           args: ["/opt/eos/xrootd/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]
           env:
             - name: LD_PRELOAD
-              value: "/usr/lib64/libjemalloc.so"
+              value: "/usr/lib64/libjemalloc.so.1"
           envFrom:
             - configMapRef:
                 name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos

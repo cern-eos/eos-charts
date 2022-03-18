@@ -78,7 +78,7 @@ spec:
               - name: EOS_SKIP_SSS_HOSTNAME_MATCH
                 value: "true"
               - name: LD_PRELOAD
-                value: "/usr/lib64/libjemalloc.so"
+                value: "/usr/lib64/libjemalloc.so.1"
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true
