@@ -65,7 +65,8 @@ spec:
               subPath: eos.keytab
             - name: fusex-eos-mount
               {{- if .Values.fusex.enableHostMountpoint }}
-              mountPath: /eos:rshared
+              mountPath: /eos
+              mountPropagation: Bidirectional
               {{- else }}
               mountPath: /eos
               {{- end }}
