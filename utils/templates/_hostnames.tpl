@@ -49,7 +49,7 @@ MGM FQDN definition
 */}}
 {{- define "utils.mgm_fqdn" -}}
 {{- $mgmHostname := (include "utils.mgm_hostname" . ) -}}
-{{ printf "%s-0.%s.%s.svc.cluster.local" $mgmHostname $mgmHostname .Release.Namespace }}
+{{ printf "%s-0.%s.%s.svc.%s" $mgmHostname $mgmHostname .Release.Namespace .Values.global.clusterDomain }}
 {{- end }}
 
 

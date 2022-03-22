@@ -48,7 +48,7 @@ data:
     #mgmofs.authorize 1
     ###########################################################
     #mgmofs.trace all debug
-    mgmofs.broker root://{{ include "utils.mq_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:1097//eos/
+    mgmofs.broker root://{{ include "utils.mq_hostname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:1097//eos/
 
     # configuration and namespace location
     mgmofs.configdir /var/eos/config
@@ -87,7 +87,7 @@ data:
     ##### Namespace plugin implementation #####################
     #mgmofs.nslib /usr/lib64/libEosNsInMemory.so
     mgmofs.nslib /usr/lib64/libEosNsQuarkdb.so
-    mgmofs.qdbcluster {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
+    mgmofs.qdbcluster {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:7777
     mgmofs.qdbpassword_file /etc/eos.keytab
     mgmofs.cfgtype quarkdb
 
@@ -127,7 +127,7 @@ data:
 
     # Check QDB backend is running
     echo "INFO: Checking QDB is running..."
-    init_probe redis-cli -h {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local -p 7777 ping
+    init_probe redis-cli -h {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }} -p 7777 ping
     echo "INFO: QDB is online."
 
     # Start the MGM process in background so that we can run other commands
@@ -208,7 +208,7 @@ data:
     mq.queue /eos/
 
     ##### QuarkDB #############################################
-    mq.qdbcluster {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.cluster.local:7777
+    mq.qdbcluster {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:7777
     mq.qdbpassword_file /etc/eos.keytab
     ###########################################################
 {{- end }}

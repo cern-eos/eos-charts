@@ -4,6 +4,8 @@ fst:
 global:
   repository: gitlab-registry.cern.ch/dss/eos/eos-all
   tag: 4.8.78
+  # Set this to the domain name of your cluster if it does not use the kubernetes default.
+  clusterDomain: "cluster.local"
 
   #
   # SSS keytab for the eos cluster

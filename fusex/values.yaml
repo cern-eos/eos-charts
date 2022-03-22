@@ -111,7 +111,7 @@ fusex:
   hostNetwork: false
   dnsPolicy: ClusterFirst
 
-  #
+  # Change eos_mgm_alias to the correct namespace and cluster domain for your deployment.
   config:
     eos_mgm_alias: eos-mgm.default.svc.cluster.local
     remotemountdir: /eos

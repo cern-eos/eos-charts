@@ -1,3 +1,7 @@
+global:
+  # Set this to the domain name of your cluster if it does not use the kubernetes default.
+  clusterDomain: "cluster.local"
+
 replicaCount: 4
 
 image:
@@ -86,7 +90,7 @@ ports:
 
 #
 # Short hostnames of the components to be reached from the fst.
-# The corresponding FQDNs are generated appending the namespace and '.svc.cluster.local'.
+# The corresponding FQDNs are generated appending the namespace and '.svc.{{ .Values.global.clusterDomain }}'.
 #
 # These values depend on the Helm release name given to each component.
 # Leave them blank to let Helm infer the names automatically according to .Release.Name
