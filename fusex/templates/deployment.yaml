@@ -38,6 +38,9 @@ spec:
           env:
             - name: EOS_MGM_URL
               value: root://{{ .Values.fusex.config.eos_mgm_alias }}
+            {{- with .Values.extraEnv }}
+            {{- include "utils.extraEnv" . | nindent 12 }}
+            {{- end }}
           securityContext:
             privileged: true
             capabilities:

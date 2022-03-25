@@ -117,5 +117,23 @@ hostnames:
 probes:
   liveness: true
 
+#
+# Additional Extra environment varialbes
+#   Several formats of defining varialbes are supported, including:
+#     ```
+#     extraEnv:
+#       ENV_VAR1: var1
+#       ENV_VAR2: var2
+#     ```
+#   or
+#     ```
+#     extraEnv:
+#     - name: ENV_VAR1
+#       value: "var1"
+#     - name: ENV_VAR2
+#       value: "var2"
+#     ```
+extraEnv: {}
+
 # keytab:
 #   name: default-keytab

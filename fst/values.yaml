@@ -146,6 +146,24 @@ geotag: ""
 minFsSizeGb: 5
 
 #
+# Additional Extra environment varialbes
+#   Several formats of defining varialbes are supported, including:
+#     ```
+#     extraEnv:
+#       ENV_VAR1: var1
+#       ENV_VAR2: var2
+#     ```
+#   or
+#     ```
+#     extraEnv:
+#     - name: ENV_VAR1
+#       value: "var1"
+#     - name: ENV_VAR2
+#       value: "var2"
+#     ```
+extraEnv: {}
+
+#
 # Manage persistence of data stored by FST,
 #   namely the actualy bytes of files stored by users is EOS
 #

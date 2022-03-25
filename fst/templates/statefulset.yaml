@@ -102,6 +102,9 @@ spec:
               value: root://{{ include "utils.mgm_fqdn" . }}
             - name: EOS_FS_FULL_SIZE_IN_GB
               value: {{ default 5 .Values.minFsSizeGb | quote }}
+            {{- with .Values.extraEnv }}
+            {{- include "utils.extraEnv" . | nindent 12 }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "fst.fullname" . }}-cfgmap-sysconfig-eos

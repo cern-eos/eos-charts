@@ -114,6 +114,9 @@ spec:
           env:
             - name: LD_PRELOAD
               value: "/usr/lib64/libjemalloc.so.1"
+            {{- with .Values.extraEnv }}
+            {{- include "utils.extraEnv" . | nindent 12 }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos

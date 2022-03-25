@@ -137,6 +137,24 @@ mgmofs:
   instance: ""
 
 #
+# Additional Extra environment varialbes
+#   Several formats of defining varialbes are supported, including:
+#     ```
+#     extraEnv:
+#       ENV_VAR1: var1
+#       ENV_VAR2: var2
+#     ```
+#   or
+#     ```
+#     extraEnv:
+#     - name: ENV_VAR1
+#       value: "var1"
+#     - name: ENV_VAR2
+#       value: "var2"
+#     ```
+extraEnv: {}
+
+#
 # Manage persistence of data stored in MGM.
 #
 # If persistence is not enabled, data stored in MGM will not survive the restart of pods.
