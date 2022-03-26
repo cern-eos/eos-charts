@@ -62,7 +62,7 @@ MQ cluster hostname definition
 {{- $mqDefault := "" -}}
 {{- $mqLocal := "" -}}
 {{- $mqGlobal := "" -}}
-{{- if ( include "podSharing.mgmMq" . ) }}
+{{- if eq ( include "podSharing.mgmMq" . ) "true" }}
   {{- $mqDefault = printf "%s-mgm" .Release.Name -}}
 {{- else -}}
   {{- $mqDefault = printf "%s-mq" .Release.Name -}}
