@@ -29,7 +29,7 @@ spec:
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           env:
             - name: EOS_MGM_URL
-              value: root://{{ include "utils.mgm_fqdn" . }}
+              value: root://{{ .Values.fusex.config.eos_mgm_alias }}
           command: ["/bin/bash", "/root/fusex_waitformgm.sh"]
           volumeMounts:
             - name: fusex-cfgmap-fusex-waitformgm
