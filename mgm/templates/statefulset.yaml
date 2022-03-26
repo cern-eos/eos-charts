@@ -159,6 +159,9 @@ spec:
           command: ["/bin/sh", "-c"]
           args: ["/opt/eos/xrootd/bin/xrootd -n mq -c /etc/xrd.cf.mq -l /var/log/eos/xrdlog.mq -Rdaemon"]
           env:
+            {{- with .Values.extraEnv }}
+            {{- include "utils.extraEnv" . | nindent 12 }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "mq.fullname" . }}-cfgmap-sysconfig-eos
