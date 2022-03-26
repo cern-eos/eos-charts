@@ -11,5 +11,5 @@ annotations:
   documentation: https://github.com/cern-eos/eos/blob/master/fusex/README.md
 dependencies:
 - name: utils
-  version: 0.1.2
+  version: 0.1.4
   repository: "https://registry.cern.ch/chartrepo/eos"
