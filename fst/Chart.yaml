@@ -9,5 +9,5 @@ description: An EOS FST chart
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
 dependencies:
 - name: utils
-  version: 0.1.2
+  version: 0.1.4
   repository: "https://registry.cern.ch/chartrepo/eos"
