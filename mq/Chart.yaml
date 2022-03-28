@@ -1,3 +1,11 @@
+#
+# Deprecation Notice
+#   Since mgm@0.1.1, the mgm pod support running the mq in a dedicated container part of the same pod.
+#   This is the recommended way of running the service, and is a hard requirement for EOS 5 Diopside.
+#
+#   This chart is now deprecated.
+#   Recent additions may not be implemented in this chart.
+#
 apiVersion: v2
 #
 name: mq
