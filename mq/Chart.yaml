@@ -6,11 +6,13 @@
 #   This chart is now deprecated.
 #   Recent additions may not be implemented in this chart.
 #
+#   Last known tagged version: mq@0.1.1, tagged on March 28, 2022.
+#
 apiVersion: v2
 #
 name: mq
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: 4.8.78
 #
 description: An EOS MQ chart
