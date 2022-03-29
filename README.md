@@ -91,3 +91,5 @@ Relevant documentation about SSS keys is available at:
 ### Known limitations
 Many, for sure. But we have not compiled a list yet.
 
+### Developers help
+Additional instructions for developers can be found in our [developers help page](docs/README.md)
