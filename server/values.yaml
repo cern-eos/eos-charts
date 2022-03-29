@@ -17,7 +17,7 @@ global:
   #             Defaults to 'files/eos.keytab'
   sssKeytab:
     secret:
-    file:
+    file: files/eos.keytab
 
   #
   # Run mgm and mq containers in the same pod.
