@@ -63,6 +63,31 @@ ALL      Replication                      mode=master-rw state=master-rw master=
 ```
 
 
+### Create a custom sss keytab
+The SSS Keytab is a pre-shared secret used by all EOS components to establish trust against each other and allow for communication across the cluster. The `server` chart provides a default keytab at `files/eos.keytab`.
+
+To change the default keytab with another forged for the deployment, use the following command:
+```
+xrdsssadmin -k <keyname>+ -u daemon -g daemon add <outputfile>
+```
+where:
+- `keyname` is a custom string to identify the key; always remember to add `+` at the end of the key name to make the key forwardable.
+- `outputfile` is the resulting file containing the produced keytab.
+
+In case `xrdsssadmin` is not available on the host, it is possible to create it using the EOS container:
+```
+docker run -it gitlab-registry.cern.ch/dss/eos/eos-all:4.8.78
+xrdsssadmin -k <keyname>+ -u daemon -g daemon add <outputfile>
+```
+
+The keytab must then be mounted (via a Kubernetes secret) by all the pods part of the EOS cluster.
+The parameter `global.sssKeytab.file` must point to the file containing the keytab.
+
+Relevant documentation about SSS keys is available at:
+- https://eos-docs.web.cern.ch/develop.html#mgm
+- https://xrootd.slac.stanford.edu/doc/dev49/sec_config.htm#_Toc517294121
+
+
 ### Notes and Limitations
 
 Note: Currently the deployment fails without the `eos.keytab` secret. In order to deploy the required secret run:
