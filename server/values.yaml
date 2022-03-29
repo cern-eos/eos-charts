@@ -21,5 +21,6 @@ global:
 
   #
   # Run mgm and mq containers in the same pod.
-  #
+  #   This is the recommended way of running the service,
+  #   and required for EOS 5 Diopside.
   splitMgmMq: false
