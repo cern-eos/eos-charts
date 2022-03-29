@@ -88,11 +88,6 @@ Relevant documentation about SSS keys is available at:
 - https://xrootd.slac.stanford.edu/doc/dev49/sec_config.htm#_Toc517294121
 
 
-### Notes and Limitations
-
-Note: Currently the deployment fails without the `eos.keytab` secret. In order to deploy the required secret run:
-```
-kubectl create secret generic eos-sss-keytab --from-file=files/eos.keytab
-```
-The eos.keytab can be found [here](https://github.com/sciencebox/charts/blob/master/sciencebox/files/eos.keytab).
+### Known limitations
+Many, for sure. But we have not compiled a list yet.
 
