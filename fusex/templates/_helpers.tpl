@@ -63,6 +63,24 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+MGM's FQDN definition.
+  Define the value for environment variable EOS_MGM_URL.
+  - It is mainly used by the initContainer to make sure the MGM is online before starting the mount.
+  - It is also set in the main fuxes container for convenience while debugging
+
+Returns:
+  - The FQDN provided by utils.mgm_fqdn, if eosMgmUrlAuto is set;
+  - The value manually defined in eosMgmUrl otherwise.
+*/}}
+{{- define "fusex.eos_mgm_url" -}}
+{{- if .Values.checkMgmOnline.eosMgmUrlAuto -}}
+{{- printf "%s" ( include "utils.mgm_fqdn" . ) -}}
+{{- else }}
+{{- printf "%s" .Values.checkMgmOnline.eosMgmUrl -}}
+{{- end }}
+{{- end }}
+
+{{/*
 Liveness Probe definition
 */}}
 {{- define "fusex.livenessProbe" -}}

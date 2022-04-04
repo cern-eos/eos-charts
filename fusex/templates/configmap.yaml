@@ -35,6 +35,7 @@ data:
 
 
 ---
+{{- if .Values.checkMgmOnline.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -74,3 +75,4 @@ data:
     echo "INFO: Checking the MGM is online..."
     init_probe eos ns
     echo "INFO: MGM is online."
+{{- end }}

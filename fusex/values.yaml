@@ -1,3 +1,7 @@
+global:
+  # Set this to the domain name of your cluster if it does not use the kubernetes default.
+  clusterDomain: "cluster.local"
+
 image:
   repository: gitlab-registry.cern.ch/dss/eos/eos-fusex
   tag: 4.8.62
@@ -28,6 +32,24 @@ podAssignment:
 customLabels:
   service: swan
   component: swan-users
+
+#
+# Check for the MGM to be online before starting the mount
+#
+#   Parameters:
+#   - enabled: If set to true, an initContainer running `eos ns` will execute before starting the mount
+#   - eosMgmUrlAuto: If set to true, use the FQDN provided by utils.mgm_fqdn.
+#                      This is helpful only when deploying fusex as dependency of a full eos deployment,
+#                      e.g., via the server chart or ScienceBox. Otherwise, it will not be possible to
+#                      infer the FQDN of the mgm automatically. Use eosMgmUrl to set it manually instead.
+#   - eosMgmUrl: Set the FQDN of the MGM manually. In this case, eosMgmUrlAuto should be set to false.
+#                  Example: "eos-mgm.default.svc.cluster.local" will result in the environment variable
+#                             EOS_MGM_URL="root://eos-mgm-0.eos-mgm.default.svc.cluster.local".
+#
+checkMgmOnline:
+  enabled: true
+  eosMgmUrlAuto: false
+  eosMgmUrl: "eos-mgm.default.svc.cluster.local"
 
 #
 # Short hostnames of the components to be reached from the fusex mount.
