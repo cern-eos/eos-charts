@@ -15,9 +15,9 @@ spec:
         {{- include "fusex.selectorLabels" . | nindent 8 }}
         {{- toYaml .Values.customLabels | nindent 8 }}
     spec:
-      hostPID: {{ default false .Values.fusex.hostPID }}
-      hostNetwork: {{ default false .Values.fusex.hostNetwork }}
-      dnsPolicy: {{ default "ClusterFirst" .Values.fusex.dnsPolicy }}
+      hostPID: {{ default false .Values.hostPID }}
+      hostNetwork: {{ default false .Values.hostNetwork }}
+      dnsPolicy: {{ default "ClusterFirst" .Values.dnsPolicy }}
       {{- if .Values.podAssignment.enableNodeSelector }}
       nodeSelector:
         {{- toYaml .Values.customLabels | nindent 8 }}

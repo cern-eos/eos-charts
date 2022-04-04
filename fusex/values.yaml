@@ -9,7 +9,7 @@ image:
 #
 # Deployment kind for fusex pod.
 #
-# Options:
+#   Options:
 #   - DaemonSet: Deploy fusex pod on all nodes of the cluster, or the ones identified by customLabels if using NodeSelector (see below).
 #   - Deployment: Fusex pod is deployed as one-replica pod, mainly meant for testing.
 #
@@ -25,13 +25,29 @@ podAssignment:
 
 #
 # Custom labels to identify fusex pod.
-#
-# They are used by node selection, if enabled (see above).
-# Label nodes accordingly to avoid scheduling problems.
+#   They are used by node selection, if enabled (see above).
+#   Label nodes accordingly to avoid scheduling problems.
 #
 customLabels:
   service: swan
   component: swan-users
+
+#
+# Pod networking
+#   - hostNetwork: Share host network namespace with pod
+#       Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
+#   - dnsPolicy: Sets the policy for DNS
+#       --> Change to 'ClusterFirstWithHostNet' when 'hostNetwotk: true'
+#       Docs: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+#
+hostNetwork: false
+dnsPolicy: ClusterFirst
+
+#
+# Share host process ID namespace with the pod
+#   Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
+#
+hostPID: true
 
 #
 # Check for the MGM to be online before starting the mount
@@ -135,19 +151,6 @@ fusex:
   # - hostMountpoint: Path where to expose eos on the host
   enableHostMountpoint: true
   hostMountpoint: /eos
-
-  # Share host process ID namespace with the pod
-  #   Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
-  hostPID: true
-
-  # Pod networking
-  #   - hostNetwork: Share host network namespace with pod
-  #       Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
-  #   - dnsPolicy: Sets the policy for DNS
-  #       --> Change to 'ClusterFirstWithHostNet' when 'hostNetwotk: true'
-  #       Docs: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
-  hostNetwork: false
-  dnsPolicy: ClusterFirst
 
   # Change eos_mgm_alias to the correct namespace and cluster domain for your deployment.
   config:
