@@ -133,6 +133,9 @@ spec:
             {{- if .Values.ldapBindUsers.enable }}
             - name: nscd-socket
               mountPath: /run/nscd
+            - name: cfgmap-nsswitch-conf
+              mountPath: /etc/nsswitch.conf
+              subPath: nsswitch.conf
             {{- end }}
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
