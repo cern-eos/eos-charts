@@ -3,7 +3,7 @@ apiVersion: v2
 name: mgm
 type: application
 version: 0.1.2
-appVersion: 4.8.78
+appVersion: 4.8.80
 #
 description: An EOS MGM + MQ chart
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
