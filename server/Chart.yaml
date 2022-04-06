@@ -3,7 +3,7 @@ apiVersion: v2
 name: server
 type: application
 version: 0.1.2
-appVersion: 4.8.78
+appVersion: 4.8.80
 #
 description: A fully-fledge EOS server instance with qdb, mgm, mq, and fst
 icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
