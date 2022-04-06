@@ -13,7 +13,7 @@ image:
 # SSS keytab (needed to authenticate against other EOS components).
 #
 # The name of the kubernetes secret containing the eos keytab to use.
-# Can be helpful when when deploying fst in standalone mode using a custom keytab.
+# Can be helpful when deploying fst in standalone mode using a custom keytab.
 #
 # Warning: This chart does not automatically create any secret.
 #   The secret storing they key should be pre-created and its name passed here.
@@ -72,7 +72,7 @@ hostNetwork: false
 #
 dnsPolicy: ClusterFirst
 #
-# Service ports declaration for fst.
+# Service port declaration for fst.
 # These are the ports exposed by the Kubernetes service.
 #
 # Defaults:
@@ -111,7 +111,7 @@ hostnames:
 #
 # Self-registration of the FST filesystem in EOS
 #
-# When enable, the FST will register the available filesystem upon booting.
+# When enabled, the FST will register the available filesystem upon booting.
 #   It is possible to configure:
 #   - the eos space where the file system should be added,
 #   - how many filesystems can end up in one scheduling group,
@@ -151,7 +151,7 @@ minFsSizeGb: 5
 
 #
 # Additional Extra environment varialbes
-#   Several formats of defining varialbes are supported, including:
+#   Several formats of defining variables are supported, including:
 #     ```
 #     extraEnv:
 #       ENV_VAR1: var1
@@ -168,26 +168,33 @@ minFsSizeGb: 5
 extraEnv: {}
 
 #
-# Manage persistence of data stored by FST,
-#   namely the actualy bytes of files stored by users is EOS
-#
-# If persistence is not enabled, data stored by FST will not survive the restart of pods.
-# It is recommended to configure persistence according to the hosting infrastrcuture.
+# Manage persistence of data stored by FSTs,
+# namely the actual bytes of files stored by users in EOS.
+# Note that each FST requires its own separate and independent storage location.
+# If persistence is not enabled, data stored by FSTs will not survive the restarting of pods.
+# It is recommended to configure persistence according to the hosting infrastructure.
 #
 # The following type of persistence are supported:
 # - disabled:
-#     No persistence provided. Data is stored in 'emptyDir'
+#     No persistence provided. Data is stored in emptyDir volumes.
 #
 # - hostpath:
 #     Persistence provided by mounting a directory from the host filesystem.
+#     (This might be suitable for a bare metal k8s cluster;
+#     however also consider using PVCs and PVs of type 'local' in that case.)
 #     Docs: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
 #     Additional parameters:
 #     - path: Directory location on host (defaults to /var/eos/<fst.fullname>)
 #     - type: Type of mount (defaults to DirectoryOrCreate)
 #
 # - pvc:
-#     Persistence provided by mounting a persistent volume.
-#     Requires the availability of such feature on the hosting infrastructure.
+#     Persistence provided by mounting a PersistentVolume via a claim.
+#     Requires either:
+#       - a dynamic provisioner (for example, on Openstack, Cinder CSI or Manila CSI), or
+#       - statically provisioned PersistentVolumes prepared by an administrator
+#     When using a shared filesystem such as CephFS, since the storage of each FST must be independent,
+#     each PV must be a separate directory, which should be handled automatically in the case of a dynamic provisioner,
+#     and must be configured manually (by use of 'path' and 'claimRef') in the case of static PVs.
 #     Docs: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 #     Additional parameters:
 #     - storageClass: If set to "-", disable dynamic provisioning.
@@ -219,7 +226,7 @@ persistence:
 #   Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 #
 # Liveness Probe:
-#   Checks every 10 seconds whether it is possible to open a TCP socket againsts port 1095.
+#   Checks every 10 seconds whether it is possible to open a TCP socket against port 1095.
 #   The fst container will be restarted after 3 failures.
 #
 # Default: All probes enabled.
