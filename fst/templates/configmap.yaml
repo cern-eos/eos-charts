@@ -75,6 +75,7 @@ data:
 
     # Wait for the MGM to be online before registering the node and the filesystem
     echo "INFO: Checking the MGM is online..."
+    echo "INFO: EOS_MGM_URL="$EOS_MGM_URL
     init_probe eos ns
     echo "INFO: MGM is online."
 
