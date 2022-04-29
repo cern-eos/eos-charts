@@ -167,6 +167,10 @@ spec:
               mountPath: /etc/eos.krb5.keytab
               subPath: eos.krb5.keytab
             {{- end }}
+            {{- if .Values.fstSharedFs }}
+            - name: fst-shared-fs
+              mountPath: /fst_shared_fs
+            {{- end }}
             - name: mgm-data
               mountPath: /var/eos
             - name: mgm-logs
@@ -273,6 +277,12 @@ spec:
             defaultMode: 0644
         - name: eos-krb5-keytab
           emptyDir: {}
+        {{- end }}
+        {{- if .Values.fstSharedFs }}
+        - name: fst-shared-fs
+          hostPath:
+            path: {{ .Values.fstSharedFs }}
+            type: Directory
         {{- end }}
         - name: mgm-logs
           emptyDir: {}

@@ -207,6 +207,20 @@ persistence:
   size: 10Gi
 
 #
+# Mount filesystem (e.g., CephFS, NFS) shared by all FSTs for local redirection.
+#
+# If fstSharedFs is set, the provided path will be mounted in the MGM container at /fst_shared_fs.
+# The MGM must have visibility on the whole filesystem, while FSTs may still mount subdirectories.
+#   Please set fstSharedFs accordingly.
+#
+# See:
+#   - https://eos-docs.web.cern.ch/using/policies.html#shared-filesystem-redirection
+#   - https://eos-community.web.cern.ch/t/direct-access-to-eos-data-on-cephfs-in-k8s/734/
+#   - https://gitlab.cern.ch/eos/eos-charts/-/issues/72
+#
+fstSharedFs:
+
+#
 # Enable or disable health probes.
 #   Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 #
