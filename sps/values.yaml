@@ -1,0 +1,146 @@
+global:
+  # Set this to the domain name of your cluster if it does not use the kubernetes default.
+  clusterDomain: "cluster.local"
+
+image:
+  repository: gitlab-registry.cern.ch/dss/eos/eos-all
+  tag: 4.8.78
+  pullPolicy: Always
+
+#
+# Assign sps pods to a node with a specific label
+#   and distribute them on different nodes to avoid single points of failure.
+#
+podAssignment:
+  # If true, requires a node labeled as per customLabels.
+  enableNodeSelector: false
+
+#
+# Custom labels to identify eos sps pods.
+#
+# They are used by node selection, if enabled (see above).
+# Label nodes accordingly to avoid scheduling problems.
+#
+customLabels:
+  service: eos
+  component: eos-sps
+
+#
+# Pod networking
+#   - hostNetwork: Share host network namespace with pod
+#       Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
+#   - dnsPolicy: Sets the policy for DNS
+#       --> Change to 'ClusterFirstWithHostNet' when 'hostNetwotk: true'
+#       Docs: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+#
+hostNetwork: false
+dnsPolicy: ClusterFirst
+
+
+#
+# Check for the MGM to be online before starting the proxy
+#
+#   Parameters:
+#   - enabled: If set to true, an initContainer running `eos ns` will execute before starting the mount
+#   - eosMgmUrlAuto: If set to true, use the FQDN provided by utils.mgm_fqdn.
+#                      This is helpful only when deploying the proxy as dependency of a full eos deployment,
+#                      e.g., via the server chart or ScienceBox. Otherwise, it will not be possible to
+#                      infer the FQDN of the mgm automatically. Use eosMgmUrl to set it manually instead.
+#   - eosMgmUrl: Set the FQDN of the MGM manually. In this case, eosMgmUrlAuto should be set to false.
+#                  Example: "eos-mgm.default.svc.cluster.local" will result in the environment variable
+#                             EOS_MGM_URL="root://eos-mgm-0.eos-mgm.default.svc.cluster.local".
+#
+checkMgmOnline:
+  enabled: false
+  eosMgmUrlAuto: false
+  eosMgmUrl:
+
+#
+# Additional Extra environment varialbes
+#   Several formats of defining variables are supported, including:
+#     ```
+#     extraEnv:
+#       ENV_VAR1: var1
+#       ENV_VAR2: var2
+#     ```
+#   or
+#     ```
+#     extraEnv:
+#     - name: ENV_VAR1
+#       value: "var1"
+#     - name: ENV_VAR2
+#       value: "var2"
+#     ```
+extraEnv: {}
+
+#
+# Enable or disable health probes for sps.
+#   Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+#
+# Liveness Probe:
+#   Checks every 10 seconds whether it is possible to open a TCP socket against port 1094.
+#   The sps container will be restarted after 3 failures.
+#
+# Default: All probes enabled.
+#   This can be overridden with:
+#   - .Values.probes.liveness below
+#   - Global .Values.global.probes.sps_liveness in a parent chart.
+#       Global takes precedence over local values.
+#
+probes:
+  liveness: true
+
+#
+# Service port declaration for sps.
+# These are the ports exposed by the Kubernetes service.
+#
+# Defaults:
+#   - xrootd_sps: 1094
+#
+# Values can be overridden with:
+# - .Values.ports.{xrtood_sps} below
+# - Global .Values.global.ports.<service_name> in a parent chart.
+#     Global takes precedence over local values.
+#
+ports:
+  xrootd_sps:
+
+#
+# Ingress configuration
+#   See README.md
+#
+
+#
+# Configuration for the Standard Proxy Service
+#
+sps:
+  # Hostname and port of the cluster for which this sps is a fronting direct mode proxy.
+  originHost: myeoscluster.mydomain
+  originPort: 1094
+
+  # Define the paths that are publically available.
+  #   This directive is specific to the proxy server (i.e., the proxy will only allow access to the specified paths).
+  #   Data servers can provide read-write access to particular paths while the proxy server can only provide read-only access to some or all such paths.
+  exportPath: "/"
+
+  # Limit hosts that can use the proxy server
+  allowedHosts: "*"
+
+  # Enable checksumming on the proxy server
+  enableChecksum: false
+
+  # The keytab to connect to the MGM via SSS
+  #   Options:
+  #     - secret: Use an existing secret (containing the eos keytab) by providing its name
+  #     - value: Provide the full keytab as a string
+  #           Example: "0 u:daemon g:daemon n:eos-test+ N:69275826269580..."
+  #         A secret with name "<release_fullname>-sps-sss-keytab" will be created from it.
+  #         Takes priority over 'secret'.
+  #     - file: Provide the path to a file containing the eos keytab.
+  #         A secret with name "<release_fullname>-sps-sss-keytab" will be created from it.
+  #         Takes priority over 'value' and 'secret'.
+  #   Defaults to a secret named "<release_fullname>-sps-sss-keytab"
+  keytab:
+    secret:
+    value:
+    file:

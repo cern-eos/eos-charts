@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sps.fullname" . }}-cfgmap-xrd-cf-sps
+  labels:
+    {{- include "sps.labels" . | nindent 4 }}
+data:
+  xrd.cf.sps: |
+    ###########################################################
+    # See documentation at
+    # https://xrootd.slac.stanford.edu/doc/dev51/pss_config.htm#_Toc50581497
+    #
+
+    # We need to load the proxy plugin for this to actually work
+    ofs.osslib libXrdPss.so
+
+    # Specify that we are a direct mode proxy fronting the EOS cluster at the specified URL (originHost:originPort)
+    pss.origin {{ .Values.sps.originHost }}:{{ default 1094 .Values.sps.originPort }}
+    
+    # The export allows access to any path via proxy as the origin host will enforce its own exports
+    all.export {{ default "/" .Values.sps.exportPath }}
+    
+    # To support checksum calculation you must also indicate that the checksum manager is a proxy as well
+    {{- if .Values.sps.enableChecksum }}
+    ofs.ckslib * libXrdPss.so
+    {{- else }}
+    #   checksum disabled.
+    #   Enable at .Values.sps.enableChecksum if needed
+    {{- end }}
+    
+    # The sec.protocol directive can restrict access to authenticated clients.
+    sec.protocol sss -c /etc/eos.keytab -s /etc/eos.keytab
+    
+    ## # The xrd.allow directive can restrict access by domain when you use the asterisk notation
+    ## xrd.allow host {{ default "*" .Values.sps.allowedHosts }}
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sps.fullname" . }}-cfgmap-sps-waitformgm
+  labels:
+    {{- include "sps.labels" . | nindent 4 }}
+data:
+  sps_waitformgm.sh: |
+    #!/bin/bash
+    set -x
+    alias eos='eos -r 0 0'
+    shopt -s expand_aliases
+
+    init_probe() {
+      local cmd=$@
+      local max_wait=180
+      local sleep=5
+      start_time=$(date +%s)
+      rc=-1
+      while [ $rc -ne 0 ];
+      do
+        timeout --preserve-status $sleep $cmd >/dev/null 2>&1
+        rc=$?
+
+        # Bail out after max_wait
+        tot_wait=$(($(date +%s)-start_time))
+        echo "        $tot_wait seconds... (timeout at $max_wait)"
+        if [ $tot_wait -ge $max_wait ]; then
+          echo "ERROR: cmd \`$cmd\` failed after $tot_wait secs. Giving up."
+          exit 1
+        fi
+        sleep $sleep
+      done
+    }
+
+    # Wait for the MGM to be online before registering the node and the filesystem
+    echo "INFO: Checking the MGM is online..."
+    echo "INFO: EOS_MGM_URL="$EOS_MGM_URL
+    init_probe eos ns
+    echo "INFO: MGM is online."
