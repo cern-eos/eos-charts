@@ -1,0 +1,13 @@
+apiVersion: v2
+#
+name: sps
+type: application
+version: 0.0.1
+appVersion: 4.8.78
+#
+description: An XRootD Standard Proxy Service chart
+icon: https://xrootd.slac.stanford.edu/doc/dev51/pss_config_files/image001.gif
+dependencies:
+- name: utils
+  version: 0.1.4
+  repository: "https://registry.cern.ch/chartrepo/eos"

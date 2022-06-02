@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sps.fullname" . }}
+  labels:
+    {{- include "sps.labels" . | nindent 4 }}
+spec:
+  replicas: 1   # One replica for now. More repliacas, would require clustering
+                # https://xrootd.slac.stanford.edu/doc/dev51/pss_config.htm#_Toc50581499
+  selector:
+    matchLabels:
+      {{- include "sps.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "sps.selectorLabels" . | nindent 8 }}
+        {{- toYaml .Values.customLabels | nindent 8 }}
+    spec:
+      hostNetwork: {{ default false .Values.hostNetwork }}
+      dnsPolicy: {{ default "ClusterFirst" .Values.dnsPolicy }}
+      {{- if .Values.podAssignment.enableNodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.customLabels | nindent 8 }}
+      {{- end }}
+      initContainers:
+        # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
+        - name: eos-sps-init0-sss-keytab-ownership
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          command: ["/bin/bash", "-c"]
+          args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
+          volumeMounts:
+            - name: eos-sss-keytab
+              mountPath: /root/sss_keytab/input/eos.keytab
+              subPath: eos.keytab
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /root/sss_keytab/output
+        {{- if .Values.checkMgmOnline.enabled }}
+        - name: eos-sps-init1-waitformgm
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          env:
+            - name: EOS_MGM_URL
+              value: root://{{ include "sps.eos_mgm_url" . }}
+          command: ["/bin/bash", "/root/sps_waitformgm.sh"]
+          volumeMounts:
+            - name: sps-cfgmap-sps-waitformgm
+              mountPath: /root/sps_waitformgm.sh
+              subPath: sps_waitformgm.sh
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
+        {{- end }}
+      containers:
+        - name: eos-sps
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          command: ["/bin/sh", "-c"]
+          args: ["/opt/eos/xrootd/bin/xrootd -n sps -c /etc/xrd.cf.sps -l /var/log/eos/xrdlog.sps -Rdaemon"]
+          env:
+            - name: EOS_MGM_URL
+              value: root://{{ include "sps.eos_mgm_url" . }}
+            {{- with .Values.extraEnv }}
+            {{- include "utils.extraEnv" . | nindent 12 }}
+            {{- end }}
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+              - SYS_PTRACE
+          {{- include "sps.livenessProbe" . | nindent 10 }}
+          volumeMounts:
+            - name: sps-cfgmap-xrd-cf-sps
+              mountPath: /etc/xrd.cf.sps
+              subPath: xrd.cf.sps
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /etc/eos.keytab
+              subPath: eos.keytab
+            - name: sps-logs
+              mountPath: /var/log/eos
+      volumes:
+        {{- if .Values.checkMgmOnline.enabled }}
+        - name: sps-cfgmap-sps-waitformgm
+          configMap:
+            name: {{ include "sps.fullname" . }}-cfgmap-sps-waitformgm
+            defaultMode: 0755
+        {{- end }}
+        - name: sps-cfgmap-xrd-cf-sps
+          configMap:
+            name: {{ include "sps.fullname" . }}-cfgmap-xrd-cf-sps
+            defaultMode: 0755
+        - name: eos-sss-keytab
+          secret:
+            secretName: {{ include "sps.sssKeytabSecretName" . }}
+            defaultMode: 0400
+        - name: eos-sss-keytab-fixedownership
+          emptyDir: {}
+        - name: sps-logs
+          emptyDir: {}

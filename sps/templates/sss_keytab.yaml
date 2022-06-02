@@ -1,0 +1,35 @@
+#
+# SSS keytab configmap
+#
+#   Example of keytab:
+#     '0 u:daemon g:daemon n:eos-test+ N:6927582626958016513 c:1612953522 e:0 f:0 k:4d6faa5829d44b32a19c74e2915d94dd86125bfe7dfffb7c2badcb000f9a8327'
+#
+
+#  Reads file at the location given by '.Values.sps.keytab.file' and creates a secret out of it.
+#  If the source file does not exist (or it is empty), no secrets will be created.
+{{- if .Values.sps.keytab.file }}
+{{- $keytab := .Files.Get .Values.sps.keytab.file }}
+{{- if $keytab }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "sps.sssKeytabSecretName" . }}
+  labels:
+    {{- include "sps.labels" . | nindent 4 }}
+data:
+  eos.keytab: |-
+    {{ $keytab | b64enc }}
+{{- end }}
+#  Uses the value variable as keytab source and creates a secret out of it.
+#  If value is not defined (or it is empty), no secrets will be created.
+{{- else if .Values.sps.keytab.value }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "sps.sssKeytabSecretName" . }}
+  labels:
+    {{- include "sps.labels" . | nindent 4 }}
+data:
+  eos.keytab: |-
+    {{ .Values.sps.keytab.value | b64enc }}
+{{- end }}

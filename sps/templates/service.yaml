@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sps.fullname" . }}
+  labels:
+    {{- include "sps.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ include "sps.service.port.xrootd_sps" . }}
+      targetPort: 1094
+      protocol: TCP
+      name: xrootd-sps
+  selector:
+    {{- include "sps.selectorLabels" . | nindent 4 }}
