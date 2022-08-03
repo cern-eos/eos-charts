@@ -4,7 +4,7 @@ global:
 
 image:
   repository: gitlab-registry.cern.ch/dss/eos/eos-fusex
-  tag: 4.8.62
+  tag: 4.8.86
 
 #
 # Deployment kind for fusex pod.
