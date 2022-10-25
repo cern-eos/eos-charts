@@ -259,9 +259,9 @@ ldapBindUsers:
 kerberos:
   enabled: false
   clientConfig:
-    file:
-    configMap:
+    file: ""
+    configMap: ""
   adminPrinc:
-    name:
-    password:
+    name: ""
+    password: ""
   defaultRealm : example.com
