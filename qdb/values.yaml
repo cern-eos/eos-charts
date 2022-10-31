@@ -39,7 +39,7 @@ clusterID: 24964842-7852-48fd-bbb9-43beb5bfeea9
 #   Can be overriden by .Values.global.sssKeytab.secret
 # 
 sssKeytab:
-  secret:
+  secret: ""
 
 #
 # Assign qdb pod to a node with a specific label
