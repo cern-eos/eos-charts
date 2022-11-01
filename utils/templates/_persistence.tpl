@@ -2,14 +2,14 @@
 Persistence definition
 */}}
 {{- define "utils.persistence" -}}
-{{- $persistenceDefault := "disabled" -}}
+{{- $persistenceDefault := "false" -}}
 {{- $persistenceLocal := "" -}}
 {{- $persistenceGlobal := "" -}}
 {{- if .Values.persistence -}}
-  {{- $persistenceLocal = dig "type" "" .Values.persistence -}}
+  {{- $persistenceLocal = (dig "enabled" "" .Values.persistence | toString) -}}
 {{- end }}
 {{- if .Values.global -}}
-  {{- $persistenceGlobal = dig "eos" "persistence" "type" "" .Values.global }}
+  {{- $persistenceGlobal = (dig "persistence" "enabled" "" .Values.global | toString) }}
 {{- end }}
 {{- lower (coalesce $persistenceGlobal $persistenceLocal $persistenceDefault) }}
 {{- end }}

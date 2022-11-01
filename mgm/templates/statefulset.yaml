@@ -260,35 +260,33 @@ spec:
         {{- end }}
         - name: mgm-logs
           emptyDir: {}
-{{- if eq ( include "utils.persistence" . ) "disabled" }}
+  # For persistent volumes, we have 2 alternatives
+  # 1. Persistence is disabled: use emptyDir
+  # 2. Persistence is enable and no existingClaim: set the claim
+  {{- if eq (include "utils.persistence" . ) "false" }}
         - name: mgm-data
-          emptyDir: {}
-{{- end }}
-{{- if eq ( include "utils.persistence" . ) "hostpath" }}
-        - name: mgm-data
-          hostPath:
-            path: {{ dig "hostPath" "path" (printf "/var/eos/%s" (include "mgm.fullname" . )) .Values.persistence }}
-            type: {{ dig "hostPath" "type" "DirectoryOrCreate" .Values.persistence }}
-{{- end }}
-{{- if eq ( include "utils.persistence" . ) "pvc" }}
+          emptyDir: {} 
+  {{- else }}
   volumeClaimTemplates:
     - metadata:
         name: mgm-data
-        {{- if .Values.persistence.pvc.annotations }}
+        {{- if .Values.persistence.annotations }}
         annotations:
-          {{- toYaml .Values.persistence.pvc.annotations | nindent 10 }}
+          {{- toYaml .Values.persistence.annotations | nindent 10 }}
         {{- end }}
       spec:
-        {{- if .Values.persistence.pvc.storageClass }}
-        {{- if (eq "-" .Values.persistence.pvc.storageClass) }}
+        {{- if .Values.persistence.storageClass }}
+        {{- if (eq "-" .Values.persistence.storageClass) }}
         storageClassName: ""
         {{- else }}
         storageClassName: "{{ .Values.persistence.pvc.storageClass }}"
         {{- end }}
-        {{- end }}
+        {{- end }}        
         accessModes:
-          {{- toYaml .Values.persistence.pvc.accessModes | nindent 10 }}
+          {{- range .Values.persistence.accessModes }}
+          - {{ . | quote }}
+          {{- end }}
         resources:
           requests:
-            storage: "{{ .Values.persistence.pvc.size }}"
-{{- end }}
+            storage: {{ .Values.persistence.size | quote }}
+  {{- end }}

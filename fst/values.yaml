@@ -168,34 +168,25 @@ minFsSizeGb: 5
 extraEnv: {}
 
 #
-# Manage persistence of data stored by FSTs,
-# namely the actual bytes of files stored by users in EOS.
-# Note that each FST requires its own separate and independent storage location.
-# If persistence is not enabled, data stored by FSTs will not survive the restarting of pods.
-# It is recommended to configure persistence according to the hosting infrastructure.
+# Manage persistence of data stored by FSTs, namely the actual bytes of files stored in EOS.
 #
-# The following type of persistence are supported:
-# - disabled:
+# If persistence is not enabled, data stored in FSTs will not survive the restart of pods.
+# It is recommended to configure persistence according to the hosting infrastrcuture.
+#
+# The persistency can be configured by setting the `enabled` flag:
+# - false:
 #     No persistence provided. Data is stored in emptyDir volumes.
-#
-# - hostpath:
-#     Persistence provided by mounting a directory from the host filesystem.
-#     (This might be suitable for a bare metal k8s cluster;
-#     however also consider using PVCs and PVs of type 'local' in that case.)
-#     Docs: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
-#     Additional parameters:
-#     - path: Directory location on host (defaults to /var/eos/<fst.fullname>)
-#     - type: Type of mount (defaults to DirectoryOrCreate)
-#
-# - pvc:
-#     Persistence provided by mounting a PersistentVolume via a claim.
-#     Requires either:
+# - true:
+#     Persistence provided by mounting a PersistentVolume via a claim. Requires either:
 #       - a dynamic provisioner (for example, on Openstack, Cinder CSI or Manila CSI), or
-#       - statically provisioned PersistentVolumes prepared by an administrator
-#     When using a shared filesystem such as CephFS, since the storage of each FST must be independent,
-#     each PV must be a separate directory, which should be handled automatically in the case of a dynamic provisioner,
+#       - statically provisioned PersistentVolumes pre-created by an administrator
+#
+#     Note that each FST requires its own separate and independent storage location.
+#     When using a shared filesystem as persistent backend, each PV must live in a separate directory.
+#     This is handed automatically in the case of a dynamic provisioner,
 #     and must be configured manually (by use of 'path' and 'claimRef') in the case of static PVs.
-#     Docs: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+#       Docs: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+#
 #     Additional parameters:
 #     - storageClass: If set to "-", disable dynamic provisioning.
 #                     If undefined or null, the default provisioner is chosen.
@@ -203,23 +194,15 @@ extraEnv: {}
 #     - size: Size of the pvs (example, 10Gi)
 #     - annotations: Custom annotations on the pvc, in key:value format
 #
-# The persistence type can be overriden via .Values.global.eos.persistence.type.
+# The persistence type can be overriden via .Values.global.persistence.enabled.
 #
 persistence:
-  type: disabled
-  #
-  #type: hostpath
-  #hostPath:
-  #  path: ""
-  #  type: ""
-  #
-  #type: pvc
-  #pvc:
-  #  storageClass: ""
-  #  accessModes:
-  #    - ReadWriteOnce
-  #  size: 1Ti
-  #  annotations: {}
+  enabled: false
+  storageClass: ""
+  annotations: {}
+  accessModes:
+    - ReadWriteOnce
+  size: 1Ti
 
 #
 # Enable or disable health probes for fst.

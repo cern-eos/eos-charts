@@ -94,7 +94,7 @@ data:
 
     # If there is an eos fsid || fsuuid, bail out
     if [ -f $DATADIR/.eosfsid ] || [ -f $DATADIR/.eosfsuuid ]; then
-      echo "INFO: FS IDs already exist. Not cofiguring any further"
+      echo "INFO: FS IDs already exist. Not configuring any further"
       echo "INFO: FS uuid is "$(cat $DATADIR/.eosfsuuid)
       exit 0
     fi
@@ -102,6 +102,7 @@ data:
     # Write filesystem identifier
     echo "INFO: FS uuid is $UUID"
     echo "$UUID" > $DATADIR/.eosfsuuid
+    chown daemon:daemon $DATADIR/.eosfsuuid
 
     # If needed, create the EOS space
     if [ $(eos space ls $SPACE -m | wc -l) -eq 0 ]; then
