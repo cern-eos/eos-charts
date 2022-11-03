@@ -30,7 +30,7 @@ image:
 #   Can be overriden by .Values.global.sssKeytab.secret
 # 
 sssKeytab:
-  secret:
+  secret: ""
 
 #
 # Assign mq pod to a node with a specific label or express an affinity with the mgm.

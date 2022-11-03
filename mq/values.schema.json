@@ -1,0 +1,86 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "type": "object",
+    "required": [
+        "image"
+    ],
+    "properties": {
+        "replicaCount": {
+            "type": "integer"
+        },
+        "image": {
+            "type": "object",
+            "required": [
+                "repository",
+                "tag",
+                "pullPolicy"
+            ],
+            "properties": {
+                "repository": {
+                    "type": "string",
+                    "pattern": "^[.a-z0-9-_\/]+$"
+                },
+                "pullPolicy": {
+                    "type": "string",
+                    "enum": ["Always", "Never", "IfNotPresent"]
+                },
+                "tag": {
+                    "type": "string"
+                }
+            }
+        },
+        "hostNetwork": {
+            "type": "boolean"
+        },
+        "dnsPolicy": {
+            "type": "string",
+            "enum": ["Default", "ClusterFirst", "ClusterFirstWithHostNet", "None"]
+        },
+        "podAssignment": {
+            "type": "object",
+            "properties": {
+                "enableNodeSelector": {
+                    "type": "boolean"
+                },
+                "enablePodAntiAffinity": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "sssKeytab": {
+            "type": "object",
+            "required": [
+                "secret"
+            ],
+            "properties": {
+                "secret": {
+                    "type": "string"
+                }
+            }
+        },
+        "hostnames": {
+            "type": "object",
+            "properties": {
+                "mgm": {
+                    "type": "string"
+                },
+                "qdbcluster": {
+                    "type": "string"
+                }
+            }
+        },
+
+        "probes": {
+            "type": "object",
+            "properties": {
+                "liveness": {
+                    "type": "boolean"
+                },
+                "readiness": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }    
+
+}
