@@ -127,9 +127,9 @@ fusex:
   #         Takes priority over 'value' and 'secret'.
   #   Defaults to a secret named "<release_fullname>-fusex-sss-keytab"
   keytab:
-    secret:
-    value:
-    file:
+    secret: ""
+    value: ""
+    file: ""
 
   # kerberos configuration for fusex
   #   Provides kerberos configuration for krb5-based authentication from fusex
@@ -143,8 +143,8 @@ fusex:
   kerberos:
     enabled: false
     clientConfig:
-      file:
-      configMap:
+      file: ""
+      configMap: ""
 
   # Expose eos mount to the host
   # - enableHostMountpoint: Enables/disables exposing eos to the host
