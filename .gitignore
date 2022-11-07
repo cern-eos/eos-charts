@@ -3,3 +3,4 @@
 **/Chart.lock
 .gitignoredir/
 kuberos/
+target/
