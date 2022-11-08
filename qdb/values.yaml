@@ -1,98 +1,87 @@
 image:
+  # -- image repository for qdb
   repository: gitlab-registry.cern.ch/dss/eos/eos-all
+  # -- QDB image tag
   tag: 4.8.78
+  # -- QDB image pull policy
   pullPolicy: Always
 
-#
-# Set replicaCount to:
-#   1 for standalone operation
-#   3 (or more) to create a distributed cluster with raft consensus replication
-#
+# -- Set replicaCount to:
+#     1 for standalone operation
+#     3 (or more) to create a distributed cluster with raft consensus replication
 replicaCount: 3
 
-#
-# The clusted ID is just a random string that identifies the cluster uniquely
-#   See the docs at https://quarkdb.web.cern.ch/quarkdb/docs/master/configuration/
-#
+# -- The clusted ID is just a random string that identifies the cluster uniquely
+#    See the docs at https://quarkdb.web.cern.ch/quarkdb/docs/master/configuration/
 clusterID: 24964842-7852-48fd-bbb9-43beb5bfeea9
 
+# -- SSS keytab (needed to authenticate against other EOS components).
 #
-# SSS keytab (needed to authenticate against other EOS components).
+#    The name of the kubernetes secret containing the eos keytab to use.
+#    Can be helpful when when deploying qdb in standalone mode using a custom keytab.
 #
-# The name of the kubernetes secret containing the eos keytab to use.
-# Can be helpful when when deploying qdb in standalone mode using a custom keytab.
+#    Warning: This chart does not automatically create any secret.
+#    The secret storing they key should be pre-created and its name passed here.
+#    Docs to create secrets: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/
 #
-# Warning: This chart does not automatically create any secret.
-#   The secret storing they key should be pre-created and its name passed here.
-#   Docs to create secrets: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/
+#    When creating the secret, the key in the data fragment must be 'eos.keytab':
+#       ~# kubectl create secret generic test-keytab --from-file=eos.keytab
+#       secret/test-keytab created
+#       ~# kubectl describe secret test-keytab
+#       [...]
+#       Data
+#       ====
+#       eos.keytab:  138 bytes
 #
-#   When creating the secret, the key in the data fragment must be 'eos.keytab':
-#     ~# kubectl create secret generic test-keytab --from-file=eos.keytab
-#     secret/test-keytab created
-#     ~# kubectl describe secret test-keytab
-#     [...]
-#     Data
-#     ====
-#     eos.keytab:  138 bytes
-#
-# Default: eos-sss-keytab
-#   Can be overriden by .Values.global.sssKeytab.secret
-# 
+#    Default: eos-sss-keytab
+#    Can be overriden by .Values.global.sssKeytab.secret
 sssKeytab:
   secret: ""
 
-#
-# Assign qdb pod to a node with a specific label
-#   and distribute them on different nodes to avoid single points of failure.
-#
+
+# -- Assign qdb pod to a node with a specific label
+#    and distribute them on different nodes to avoid single points of failure.
 podAssignment:
-  # If true, requires a node labeled as per customLabels (see below)
+  # -- If true, requires a node labeled as per customLabels (see below)
   enableNodeSelector: false
-  # Shard the cluster members on different nodes
+  # -- Shard the cluster members on different nodes
   enablePodAntiAffinity: false
 
-#
-# Custom labels to identify eos qdb pod(s).
-#
-# They are used by node selection, if enabled (see above).
-# Label nodes accordingly to avoid scheduling problems.
-#
+
+# -- Custom labels to identify eos qdb pod(s).
+#    They are used by node selection, if enabled (see above).
+#    Label nodes accordingly to avoid scheduling problems.
 customLabels:
   service: eos
   component: eos-qdb
 
-#
-# Network configuration.
-#
-# hostNetwork allows the pod to use the host network namespace.
-#   Available options: true, false
-#   Default: false
-#
+
+# -- Network configuration.
+#    hostNetwork allows the pod to use the host network namespace.
+#     Available options: true, false
+#     Default: false
 hostNetwork: false
-#
-# dnsPolicy regulates how the pod resolves hostnames with DNS servers.
-#   In case hostNetwork is set to true, dnsPolicy must be ClusterFirstWithHostNet
-#   Documentation: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
-#   Available options: Default, ClusterFirst, ClusterFirstWithHostNet, None
-#   Default: ClusterFirst
-#
+
+# -- dnsPolicy regulates how the pod resolves hostnames with DNS servers.
+#    In case hostNetwork is set to true, dnsPolicy must be ClusterFirstWithHostNet
+#    Documentation: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+#    Available options: Default, ClusterFirst, ClusterFirstWithHostNet, None
+#    Default: ClusterFirst
 dnsPolicy: ClusterFirst
+
+# -- Service ports declaration for qdb.
+#    These are the ports exposed by the Kubernetes service.
 #
-# Service ports declaration for qdb.
-# These are the ports exposed by the Kubernetes service.
-#
-# Defaults:
-#   - xrootd_qdb: 7777
-#
-# Values can be overridden with:
-# - .Values.ports.xrootd_qdb below
-# - Global .Values.global.ports.xrtood_qdb in a parent chart.
+#    Defaults:
+#     - xrootd_qdb: 7777
+#    Values can be overridden with:
+#     - .Values.ports.xrootd_qdb below
+#     - Global .Values.global.ports.xrtood_qdb in a parent chart.
 #     Global takes precedence over local values.
-#
 ports:
   xrootd_qdb:
 
-#
+
 # Additional Extra environment varialbes
 #   Several formats of defining varialbes are supported, including:
 #     ```
@@ -110,17 +99,17 @@ ports:
 #     ```
 extraEnv: {}
 
+
+# -- Manage persistence of data stored in QDB,
+#     namely the instance configuration and the namespace data.
 #
-# Manage persistence of data stored in QDB,
-#   namely the instance configuration and the namespace data.
+#    If persistence is not enabled, data stored in QDB will not survive the restart of pods.
+#    It is recommended to configure persistence according to the hosting infrastrcuture.
 #
-# If persistence is not enabled, data stored in QDB will not survive the restart of pods.
-# It is recommended to configure persistence according to the hosting infrastrcuture.
-#
-# The persistency can be configured by setting the `enabled` flag:
-# - false:
+#    The persistency can be configured by setting the `enabled` flag:
+#      - false:
 #     No persistence provided. Data is stored in emptyDir volumes.
-# - true:
+#      - true:
 #     Persistence provided by mounting a PersistentVolume via a claim. Requires either:
 #       - a dynamic provisioner (for example, on Openstack, Cinder CSI or Manila CSI), or
 #       - statically provisioned PersistentVolumes pre-created by an administrator
@@ -137,8 +126,7 @@ extraEnv: {}
 #     - size: Size of the pvs (example, 10Gi)
 #     - annotations: Custom annotations on the pvc, in key:value format
 #
-# The persistence type can be overriden via .Values.global.persistence.enabled.
-#
+#    The persistence type can be overriden via .Values.global.persistence.enabled.
 persistence:
   enabled: false
   storageClass: ""
