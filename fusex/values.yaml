@@ -1,86 +1,79 @@
 global:
-  # Set this to the domain name of your cluster if it does not use the kubernetes default.
+  # -- Set this to the domain name of your cluster if it does not use the kubernetes default.
   clusterDomain: "cluster.local"
 
 image:
+  # -- image repository for the fusex image
   repository: gitlab-registry.cern.ch/dss/eos/eos-fusex
+  # -- fusex image tag
   tag: 4.8.86
 
-#
-# Deployment kind for fusex pod.
+
+# -- Deployment kind for fusex pod.
 #
 #   Options:
 #   - DaemonSet: Deploy fusex pod on all nodes of the cluster, or the ones identified by customLabels if using NodeSelector (see below).
 #   - Deployment: Fusex pod is deployed as one-replica pod, mainly meant for testing.
-#
 deploymentKind: DaemonSet
 
-#
-# Assign fusex pod to a node with a specific label.
-#   If true, it will be deployed only on nodes labeled as per customLabels (see below).
-#   If false, it will be deployed on all nodes of the cluster (it is a daemonSet).
-#
+# -- Assign fusex pod to a node with a specific label.
+#    If true, it will be deployed only on nodes labeled as per customLabels (see below).
+#    If false, it will be deployed on all nodes of the cluster (it is a daemonSet).
 podAssignment:
   enableNodeSelector: false
 
-#
-# Custom labels to identify fusex pod.
-#   They are used by node selection, if enabled (see above).
-#   Label nodes accordingly to avoid scheduling problems.
-#
+
+# -- Custom labels to identify fusex pod.
+#    They are used by node selection, if enabled (see above).
+#    Label nodes accordingly to avoid scheduling problems.
 customLabels:
   service: swan
   component: swan-users
 
-#
-# Pod networking
-#   - hostNetwork: Share host network namespace with pod
-#       Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
-#   - dnsPolicy: Sets the policy for DNS
-#       --> Change to 'ClusterFirstWithHostNet' when 'hostNetwotk: true'
-#       Docs: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
-#
+# -- Pod networking
+#    - hostNetwork: Share host network namespace with pod
+#        Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
+#    - dnsPolicy: Sets the policy for DNS
+#        --> Change to 'ClusterFirstWithHostNet' when 'hostNetwotk: true'
+#        Docs: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
 hostNetwork: false
 dnsPolicy: ClusterFirst
 
-#
-# Share host process ID namespace with the pod
-#   Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
-#
+
+# -- Share host process ID namespace with the pod
+#    Docs: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
 hostPID: true
 
+
+# -- Check for the MGM to be online before starting the mount
 #
-# Check for the MGM to be online before starting the mount
-#
-#   Parameters:
-#   - enabled: If set to true, an initContainer running `eos ns` will execute before starting the mount
-#   - eosMgmUrlAuto: If set to true, use the FQDN provided by utils.mgm_fqdn.
-#                      This is helpful only when deploying fusex as dependency of a full eos deployment,
-#                      e.g., via the server chart or ScienceBox. Otherwise, it will not be possible to
-#                      infer the FQDN of the mgm automatically. Use eosMgmUrl to set it manually instead.
-#   - eosMgmUrl: Set the FQDN of the MGM manually. In this case, eosMgmUrlAuto should be set to false.
-#                  Example: "eos-mgm.default.svc.cluster.local" will result in the environment variable
+#    Parameters:
+#    - enabled: If set to true, an initContainer running `eos ns` will execute before starting the mount
+#    - eosMgmUrlAuto: If set to true, use the FQDN provided by utils.mgm_fqdn.
+#                       This is helpful only when deploying fusex as dependency of a full eos deployment,
+#                       e.g., via the server chart or ScienceBox. Otherwise, it will not be possible to
+#                       infer the FQDN of the mgm automatically. Use eosMgmUrl to set it manually instead.
+#    - eosMgmUrl: Set the FQDN of the MGM manually. In this case, eosMgmUrlAuto should be set to false.
+#                   Example: "eos-mgm.default.svc.cluster.local" will result in the environment variable
 #                             EOS_MGM_URL="root://eos-mgm-0.eos-mgm.default.svc.cluster.local".
-#
 checkMgmOnline:
   enabled: true
   eosMgmUrlAuto: false
   eosMgmUrl: "eos-mgm.default.svc.cluster.local"
 
+
+# -- Short hostnames of the components to be reached from the fusex mount.
+#   The corresponding FQDNs are generated appending the namespace and '.svc.{{ .Values.global.clusterDomain }}'.
 #
-# Short hostnames of the components to be reached from the fusex mount.
-# The corresponding FQDNs are generated appending the namespace and '.svc.{{ .Values.global.clusterDomain }}'.
+#   These values depend on the Helm release name given to each component.
+#   Leave them blank to let Helm infer the names automatically according to .Release.Name
 #
-# These values depend on the Helm release name given to each component.
-# Leave them blank to let Helm infer the names automatically according to .Release.Name
-#
-# Values can be overriden with:
-# - .Values.hostnames.mgm
-# - Global .Values.global.hostnames.mgm in a parent chart.
-#     Global takes precedence over local values.
-#
+#   Values can be overriden with:
+#   - .Values.hostnames.mgm
+#   - Global .Values.global.hostnames.mgm in a parent chart.
+#       Global takes precedence over local values.
 hostnames:
-  # Hostname of the mgm.
+  # -- Hostname of the mgm.
   mgm: ""
 
 #
@@ -112,47 +105,45 @@ probes:
 extraEnv: {}
 
 #
-# Configuration for fusex.
-#
+# -- Configuration for fusex.
 fusex:
-  # The keytab to connect to the MGM via SSS
-  #   Options:
-  #     - secret: Use an existing secret (containing the eos keytab) by providing its name
-  #     - value: Provide the full keytab as a string
-  #           Example: "0 u:daemon g:daemon n:eos-test+ N:69275826269580..."
-  #         A secret with name "<release_fullname>-fusex-sss-keytab" will be created from it.
-  #         Takes priority over 'secret'.
-  #     - file: Provide the path to a file containing the eos keytab.
-  #         A secret with name "<release_fullname>-fusex-sss-keytab" will be created from it.
-  #         Takes priority over 'value' and 'secret'.
-  #   Defaults to a secret named "<release_fullname>-fusex-sss-keytab"
+  # -- The keytab to connect to the MGM via SSS
+  #      Options:
+  #        - secret: Use an existing secret (containing the eos keytab) by providing its name
+  #        - value: Provide the full keytab as a string
+  #              Example: "0 u:daemon g:daemon n:eos-test+ N:69275826269580..."
+  #            A secret with name "<release_fullname>-fusex-sss-keytab" will be created from it.
+  #            Takes priority over 'secret'.
+  #        - file: Provide the path to a file containing the eos keytab.
+  #            A secret with name "<release_fullname>-fusex-sss-keytab" will be created from it.
+  #            Takes priority over 'value' and 'secret'.
+  #      Defaults to a secret named "<release_fullname>-fusex-sss-keytab"
   keytab:
     secret: ""
     value: ""
     file: ""
 
-  # kerberos configuration for fusex
-  #   Provides kerberos configuration for krb5-based authentication from fusex
-  #   Warning: Remember to enable krb5 authentication in fusex.config.auth.krb5
+  # -- kerberos configuration for fusex
+  #      Provides kerberos configuration for krb5-based authentication from fusex
+  #      Warning: Remember to enable krb5 authentication in fusex.config.auth.krb5
   #
-  #   Options:
-  #   - enabled: Projects (or not) /etc/krb5.conf from configMap
-  #   - clientConfig.file: Path to a file containing the desired krb5 configuration (has priority over configMap)
-  #   - clientConfig.configMap: Name of the configMap storing the krb5 configuration
-  #
+  #      Options:
+  #      - enabled: Projects (or not) /etc/krb5.conf from configMap
+  #      - clientConfig.file: Path to a file containing the desired krb5 configuration (has priority over configMap)
+  #      - clientConfig.configMap: Name of the configMap storing the krb5 configuration
   kerberos:
     enabled: false
     clientConfig:
       file: ""
       configMap: ""
 
-  # Expose eos mount to the host
-  # - enableHostMountpoint: Enables/disables exposing eos to the host
-  # - hostMountpoint: Path where to expose eos on the host
+  # -- Expose eos mount to the host
+  #    - enableHostMountpoint: Enables/disables exposing eos to the host
+  #    - hostMountpoint: Path where to expose eos on the host
   enableHostMountpoint: true
   hostMountpoint: /eos
 
-  # Change eos_mgm_alias to the correct namespace and cluster domain for your deployment.
+  # -- Change eos_mgm_alias to the correct namespace and cluster domain for your deployment.
   config:
     eos_mgm_alias: eos-mgm.default.svc.cluster.local
     remotemountdir: /eos
