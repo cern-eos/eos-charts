@@ -1,123 +1,114 @@
 global:
-  # Set this to the domain name of your cluster if it does not use the kubernetes default.
+  # -- Set this to the domain name of your cluster if it does not use the kubernetes default.
   clusterDomain: "cluster.local"
 
 image:
+  # -- image repository for eos mq
   repository: gitlab-registry.cern.ch/dss/eos/eos-all
+  # -- image tag for mq image
   tag: 4.8.78
+  # -- image pull policy
   pullPolicy: Always
 
+# -- SSS keytab (needed to authenticate against other EOS components).
 #
-# SSS keytab (needed to authenticate against other EOS components).
+#    The name of the kubernetes secret containing the eos keytab to use.
+#    Can be helpful when when deploying mq in standalone mode using a custom keytab.
 #
-# The name of the kubernetes secret containing the eos keytab to use.
-# Can be helpful when when deploying mq in standalone mode using a custom keytab.
+#    Warning: This chart does not automatically create any secret.
+#    The secret storing they key should be pre-created and its name passed here.
+#    Docs to create secrets: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/
 #
-# Warning: This chart does not automatically create any secret.
-#   The secret storing they key should be pre-created and its name passed here.
-#   Docs to create secrets: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/
+#    When creating the secret, the key in the data fragment must be 'eos.keytab':
+#      ~# kubectl create secret generic test-keytab --from-file=eos.keytab
+#      secret/test-keytab created
+#      ~# kubectl describe secret test-keytab
+#      [...]
+#      Data
+#      ====
+#      eos.keytab:  138 bytes
 #
-#   When creating the secret, the key in the data fragment must be 'eos.keytab':
-#     ~# kubectl create secret generic test-keytab --from-file=eos.keytab
-#     secret/test-keytab created
-#     ~# kubectl describe secret test-keytab
-#     [...]
-#     Data
-#     ====
-#     eos.keytab:  138 bytes
-#
-# Default: eos-sss-keytab
-#   Can be overriden by .Values.global.sssKeytab.secret
-# 
+#   Default: eos-sss-keytab
+#     Can be overriden by .Values.global.sssKeytab.secret
 sssKeytab:
   secret: ""
 
-#
-# Assign mq pod to a node with a specific label or express an affinity with the mgm.
-# Node selection and affinity are mutually exclusive.
-#
+
+# -- Assign mq pod to a node with a specific label or express an affinity with the mgm.
+#    Node selection and affinity are mutually exclusive.
 podAssignment:
-  # If true, requires a node labeled as per customLabels (see below).
-  #   Set enableNodeAffinity, enableMgmColocation to false.
+  # -- If true, requires a node labeled as per customLabels (see below).
+  #    Set enableNodeAffinity, enableMgmColocation to false.
   enableNodeSelector: false
-  # If true, requires a node labeled as 'service: eos'
+  # -- If true, requires a node labeled as 'service: eos'
   enableNodeAffinity: false
-  # If true, assign weight 100 to colocation with 'component: eos-mgm'
+  # -- If true, assign weight 100 to colocation with 'component: eos-mgm'
   enableMgmColocation: false
 
+# -- Custom labels to identify eos mq pod.
 #
-# Custom labels to identify eos mq pod.
-#
-# They are used by node selection, if enabled (see above).
-# Label nodes accordingly to avoid scheduling problems.
-#
+#    They are used by node selection, if enabled (see above).
+#    Label nodes accordingly to avoid scheduling problems.
 customLabels:
   service: eos
   component: eos-mq
 
-#
-# Network configuration.
-#
-# hostNetwork allows the pod to use the host network namespace.
-#   Available options: true, false
-#   Default: false
-#
+
+# -- Network configuration.
+#    hostNetwork allows the pod to use the host network namespace.
+#    Available options: true, false
+#    Default: false
 hostNetwork: false
-#
-# dnsPolicy regulates how the pod resolves hostnames with DNS servers.
-#   In case hostNetwork is set to true, dnsPolicy must be ClusterFirstWithHostNet
-#   Documentation: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
-#   Available options: Default, ClusterFirst, ClusterFirstWithHostNet, None
-#   Default: ClusterFirst
-#
+
+# -- dnsPolicy regulates how the pod resolves hostnames with DNS servers.
+#    In case hostNetwork is set to true, dnsPolicy must be ClusterFirstWithHostNet
+#    Documentation: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+#    Available options: Default, ClusterFirst, ClusterFirstWithHostNet, None
+#    Default: ClusterFirst
 dnsPolicy: ClusterFirst
+
+# -- Service ports declaration for mq.
+#    These are the ports exposed by the Kubernetes service.
 #
-# Service ports declaration for mq.
-# These are the ports exposed by the Kubernetes service.
+#    Defaults:
+#    - xrootd_mq: 1097
 #
-# Defaults:
-#   - xrootd_mq: 1097
-#
-# Values can be overridden with:
-# - .Values.ports.xrootd_mq below
-# - Global .Values.global.ports.xrootd_mq in a parent chart.
+#   Values can be overridden with:
+#   - .Values.ports.xrootd_mq below
+#   - Global .Values.global.ports.xrootd_mq in a parent chart.
 #     Global takes precedence over local values.
-#
 ports:
   xrootd_mq:
 
+
+# -- Short hostnames of the components to be reached from the mq.
+#    The corresponding FQDNs are generated appending the namespace and '.svc.{{ .Values.global.clusterDomain }}'.
 #
-# Short hostnames of the components to be reached from the mq.
-# The corresponding FQDNs are generated appending the namespace and '.svc.{{ .Values.global.clusterDomain }}'.
+#    These values depend on the Helm release name given to each component.
+#    Leave them blank to let Helm infer the names automatically according to .Release.Name
 #
-# These values depend on the Helm release name given to each component.
-# Leave them blank to let Helm infer the names automatically according to .Release.Name
-#
-# Values can be overriden with:
-# - .Values.hostnames.{mgm, qdbcluster}
-# - Global .Values.global.hostnames.{mgm, qdbcluster} in a parent chart.
-#     Global takes precedence over local values.
-#
+#    Values can be overriden with:
+#    - .Values.hostnames.{mgm, qdbcluster}
+#    - Global .Values.global.hostnames.{mgm, qdbcluster} in a parent chart.
+#        Global takes precedence over local values.
 hostnames:
-  # Hostname of the mgm.
+  # -- Hostname of the mgm.
   mgm: ""
-  # Hostname of the quarkdb cluster.
+  # -- Hostname of the quarkdb cluster.
   qdbcluster: ""
 
+# -- Enable or disable health probes for mq.
+#    Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 #
-# Enable or disable health probes for mq.
-#   Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+#    Liveness Probe:
+#      Checks every 10 seconds whether it is possible to open a TCP socket againsts port 1095.
+#      The mq container will be restarted after 3 failures.
 #
-# Liveness Probe:
-#   Checks every 10 seconds whether it is possible to open a TCP socket againsts port 1095.
-#   The mq container will be restarted after 3 failures.
-#
-# Default: All probes enabled.
-#   This can be overridden with:
-#   - .Values.probes.liveness below
-#   - Global .Values.global.probes.mq_liveness in a parent chart.
-#       Global takes precedence over local values.
-#
+#    Default: All probes enabled.
+#      This can be overridden with:
+#      - .Values.probes.liveness below
+#      - Global .Values.global.probes.mq_liveness in a parent chart.
+#          Global takes precedence over local values.
 probes:
   liveness: true
 
