@@ -6,7 +6,7 @@ version: 0.1.1
 appVersion: 4.8.78
 #
 description: An EOS QDB chart
-icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
+icon: https://eos-web.web.cern.ch/eos-web/assets/images/eos-icon-white-713x824.png
 dependencies:
 - name: utils
   version: 0.1.4

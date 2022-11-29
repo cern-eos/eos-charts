@@ -6,7 +6,7 @@ version: 0.1.5
 appVersion: 5.0.31
 #
 description: A fully-fledge EOS server instance with qdb, mgm, mq, and fst
-icon: https://eos-web.web.cern.ch/eos-web/img/logos/EOS_logo1.svg
+icon: https://eos-web.web.cern.ch/eos-web/assets/images/eos-icon-white-713x824.png
 #
 dependencies:
   - name: qdb
