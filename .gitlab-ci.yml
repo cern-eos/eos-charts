@@ -23,7 +23,7 @@ gen-docs:
     - bin/helm-docs-diff
 
 generate-json:
-  stage: gen-json
+  stage: generate-json
   image: gitlab-registry.cern.ch/cloud/ciadm
   script:
     - |
