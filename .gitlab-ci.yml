@@ -22,6 +22,20 @@ gen-docs:
   script:
     - bin/helm-docs-diff
 
+generate-json:
+  stage: gen-json
+  image: gitlab-registry.cern.ch/cloud/ciadm
+  script:
+    - |
+        CHART=$(git diff-tree --name-only --no-commit-id HEAD origin/master)
+        for base in $(find . -maxdepth 1 -type f | sed 's|./||' | xargs); do
+            CHART=$(echo ${CHART} | sed "s|${base}||")
+        done
+        for chart in $CHART
+        do
+          python3 tools/generate-json-schema.py $chart
+        done
+
 build:
   stage: build
   image: gitlab-registry.cern.ch/cloud/ciadm
