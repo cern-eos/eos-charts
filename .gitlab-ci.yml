@@ -10,6 +10,7 @@ variables:
 
 stages:
   - gen-docs
+  - generate-json
   - build
   - deploy
 
