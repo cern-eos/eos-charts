@@ -30,7 +30,7 @@ generate-json:
     - |
         git remote set-branches origin '*'
         git fetch origin master
-        CHART=$(git diff-tree --name-only --no-commit-id HEAD origin/master)
+        CHART=$(git diff-tree --name-only --no-commit-id HEAD master)
         for base in $(find . -maxdepth 1 -type f | sed 's|./||' | xargs); do
             CHART=$(echo ${CHART} | sed "s|${base}||")
         done
