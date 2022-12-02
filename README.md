@@ -1,5 +1,8 @@
 # eos-charts
 
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/eos)](https://artifacthub.io/packages/search?repo=eos)
+
+
 Helm Charts for EOS deployment on Kubernetes
 
 The deployment consists of a fully-fledge EOS cluster with:
