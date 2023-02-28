@@ -10,18 +10,18 @@ icon: https://eos-web.web.cern.ch/eos-web/assets/images/eos-icon-white-713x824.p
 #
 dependencies:
   - name: qdb
-    version: 0.1.1
+    version: 0.1.2
     repository: "https://registry.cern.ch/chartrepo/eos"
   - name: mgm
-    version: 0.1.4
+    version: 0.1.5
     repository: "https://registry.cern.ch/chartrepo/eos"
   - name: mq
-    version: 0.1.1
+    version: 0.1.2
     repository: "https://registry.cern.ch/chartrepo/eos"
     condition: global.splitMgmMq
   - name: fst
-    version: 0.1.1
+    version: 0.1.2
     repository: "https://registry.cern.ch/chartrepo/eos"
   - name: utils
-    version: 0.1.4
+    version: 0.1.5
     repository: "https://registry.cern.ch/chartrepo/eos"
