@@ -9,5 +9,5 @@ description: An XRootD Standard Proxy Service chart
 icon: https://xrootd.slac.stanford.edu/doc/dev51/pss_config_files/image001.gif
 dependencies:
 - name: utils
-  version: 0.1.4
+  version: 0.1.5
   repository: "https://registry.cern.ch/chartrepo/eos"

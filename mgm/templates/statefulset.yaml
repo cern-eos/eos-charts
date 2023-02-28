@@ -77,8 +77,8 @@ spec:
             - configMapRef:
                 name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos
           securityContext:
-            privileged: false
-            allowPrivilegeEscalation: false
+            privileged: {{ include "utils.securityContext.privileged" . }}
+            allowPrivilegeEscalation: {{ include "utils.securityContext.allowPrivilegeEscalation" . }}
             capabilities:
               add:
               - SYS_PTRACE
@@ -121,8 +121,8 @@ spec:
             - configMapRef:
                 name: {{ include "mgm.fullname" . }}-cfgmap-sysconfig-eos
           securityContext:
-            privileged: false
-            allowPrivilegeEscalation: false
+            privileged: {{ include "utils.securityContext.privileged" . }}
+            allowPrivilegeEscalation: {{ include "utils.securityContext.allowPrivilegeEscalation" . }}
             capabilities:
               add:
               - SYS_PTRACE
@@ -169,8 +169,8 @@ spec:
             - configMapRef:
                 name: {{ include "mq.fullname" . }}-cfgmap-sysconfig-eos
           securityContext:
-            privileged: false
-            allowPrivilegeEscalation: false
+            privileged: {{ include "utils.securityContext.privileged" . }}
+            allowPrivilegeEscalation: {{ include "utils.securityContext.allowPrivilegeEscalation" . }}
             capabilities:
               add:
               - SYS_PTRACE

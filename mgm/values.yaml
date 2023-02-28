@@ -70,6 +70,22 @@ customLabels:
   service: eos
   component: eos-mgm
 
+
+# -- Security context.
+#
+#   Define the security context for all containers (including initContainers) of the fst pod.
+#   Docs at https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+#
+#   Default:
+#     - privileged: false
+#     - allowPrivilegeEscalation: false
+securityContext:
+  # -- If true, the container will run in privileged mode.
+  privileged: false
+  # -- If true, a process can gain more privileges than its parent process.
+  allowPrivilegeEscalation: false
+
+
 #
 # Network configuration.
 #

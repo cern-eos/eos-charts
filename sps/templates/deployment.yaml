@@ -64,8 +64,8 @@ spec:
             {{- include "utils.extraEnv" . | nindent 12 }}
             {{- end }}
           securityContext:
-            privileged: false
-            allowPrivilegeEscalation: false
+            privileged: {{ include "utils.securityContext.privileged" . }}
+            allowPrivilegeEscalation: {{ include "utils.securityContext.allowPrivilegeEscalation" . }}
             capabilities:
               add:
               - SYS_PTRACE
