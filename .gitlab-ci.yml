@@ -9,18 +9,18 @@ variables:
   HELM_CHART_REPO: eos
 
 stages:
-  - gen-docs
+  #- gen-docs
   - build
   - deploy
 
 before_script:
   - mkdir -p .repo
 
-gen-docs:
-  stage: gen-docs
-  image: gitlab-registry.cern.ch/cloud/ciadm
-  script:
-    - bin/helm-docs-diff
+#gen-docs:
+#  stage: gen-docs
+#  image: gitlab-registry.cern.ch/cloud/ciadm
+#  script:
+#    - bin/helm-docs-diff
 
 build:
   stage: build
