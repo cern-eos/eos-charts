@@ -11,10 +11,6 @@ spec:
       targetPort: 1094
       protocol: TCP
       name: xrootd-mgm
-    - port: {{ include "mgm.service.port.xrootd_sync" . }}
-      targetPort: 1096
-      protocol: TCP
-      name: xrootd-sync
     - port: {{ include "mgm.service.port.xrootd_http" . }}
       targetPort: 8000
       protocol: TCP

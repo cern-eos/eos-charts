@@ -103,7 +103,6 @@ EOS instance name definition
 {{/*
 MGM network ports definition
   - xrootd mgm port (defaults to 1094)
-  - xrootd sync port (defaults to 1096)
   - xrootd http port (defaults to 8000)
   - xrootd fusex port (defaults to 1100)
 
@@ -123,19 +122,6 @@ All the ports can be set according to (example for xrootd_mgm):
   {{ $xrootd_mgmGlobal = dig "ports" "xrootd_mgm" "" .Values.global -}}
 {{- end }}
 {{- coalesce $xrootd_mgmGlobal $xrootd_mgmLocal $xrootd_mgmDefault }}
-{{- end }}
-
-{{- define "mgm.service.port.xrootd_sync" -}}
-{{- $xrootd_syncDefault := "1096" -}}
-{{- $xrootd_syncLocal := "" -}}
-{{- $xrootd_syncGlobal := "" -}}
-{{- if .Values.ports -}}
-  {{ $xrootd_syncLocal = dig "xrootd_sync" "" .Values.ports -}}
-{{- end }}
-{{- if .Values.global -}}
-  {{ $xrootd_syncGlobal = dig "ports" "xrootd_sync" "" .Values.global -}}
-{{- end }}
-{{- coalesce $xrootd_syncGlobal $xrootd_syncLocal $xrootd_syncDefault }}
 {{- end }}
 
 {{- define "mgm.service.port.xrootd_http" -}}

@@ -59,7 +59,6 @@ Helm Chart to deploy EOS MGM.
 | ports.xrootd_http | string | `nil` |  |
 | ports.xrootd_mgm | string | `nil` |  |
 | ports.xrootd_mq | string | `nil` |  |
-| ports.xrootd_sync | string | `nil` |  |
 | probes.liveness | bool | `true` |  |
 | probes.readiness | bool | `true` |  |
 | probes.startup | bool | `true` |  |
