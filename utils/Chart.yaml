@@ -2,7 +2,7 @@ apiVersion: v2
 #
 name: utils
 type: library
-version: 0.1.5
+version: 0.1.6
 #
 description: EOS utils library chart
 icon: https://eos-web.web.cern.ch/eos-web/assets/images/eos-icon-white-713x824.png
