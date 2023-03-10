@@ -91,6 +91,24 @@ data:
     mgmofs.qdbpassword_file /etc/eos.keytab
     mgmofs.cfgtype quarkdb
 
+    {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+    ##### Setup HTTP
+    http.exthandler EosMgmHttp libEosMgmHttp.so eos::mgm::http::redirect-to-https=0
+    http.exthandler xrdtpc libXrdHttpTPC.so
+    http.gridmap /etc/grid-security/grid-mapfile
+    http.secxtractor libXrdVoms.so
+    http.trace all
+    all.sitename eosdockertest
+    macaroons.secretkey /etc/eos.macaroon.secret
+    macaroons.trace all
+    mgmofs.macaroonslib libXrdMacaroons.so
+    xrd.protocol XrdHttp:8443 libXrdHttp.so
+    xrd.sched mint 64 maxt 2048 idle 300
+    xrd.timeout idle 86400
+    xrd.tlsca certdir /etc/grid-security/certificates/
+    xrd.tls /etc/grid-security/daemon/hostcert.pem /etc/grid-security/daemon/hostkey.pem
+    {{- end }}
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -129,6 +147,12 @@ data:
     echo "INFO: Checking QDB is running..."
     init_probe redis-cli -h {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }} -p 7777 ping
     echo "INFO: QDB is online."
+
+    # If HTTP support is enabled, we also needs to generate a host certificate (development image only)
+    {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+    echo "INFO: Generating host certificate..."
+    ./mkcert-ssl.sh
+    {{- end }}
 
     # Start the MGM process in background so that we can run other commands
     echo "INFO: Starting MGM..."

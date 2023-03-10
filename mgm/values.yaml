@@ -70,7 +70,6 @@ customLabels:
   service: eos
   component: eos-mgm
 
-
 # -- Security context.
 #
 #   Define the security context for all containers (including initContainers) of the fst pod.
@@ -84,7 +83,6 @@ securityContext:
   privileged: false
   # -- If true, a process can gain more privileges than its parent process.
   allowPrivilegeEscalation: false
-
 
 #
 # Network configuration.
@@ -235,6 +233,17 @@ probes:
   startup: true
   liveness: true
   readiness: true
+
+#
+# -- HTTP access configuration.
+#
+#   At the moment, this in only compatible with the container images produced in the EOS CI.
+#   Proper configuration will be implemented in the future if needed.
+#
+#   Default: false
+#
+http:
+  enabled: false
 
 #
 # Bind to external LDAP service for unix user accounts
