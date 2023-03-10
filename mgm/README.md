@@ -56,7 +56,7 @@ Helm Chart to deploy EOS MGM.
 | persistence.storageClass | string | `""` |  |
 | podAssignment.enableNodeSelector | bool | `false` |  |
 | ports.fusex | string | `nil` |  |
-| ports.xrootd_http | string | `nil` |  |
+| ports.xrootd_https | string | `nil` |  |
 | ports.xrootd_mgm | string | `nil` |  |
 | ports.xrootd_mq | string | `nil` |  |
 | probes.liveness | bool | `true` |  |

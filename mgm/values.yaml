@@ -107,19 +107,19 @@ dnsPolicy: ClusterFirst
 # These are the ports exposed by the Kubernetes service.
 #
 # Defaults:
-#   - xrootd_mgm:  1094
-#   - xrootd_http: 8000
-#   - fusex:       1100
-#   - xrootd_mq:   1097
+#   - xrootd_mgm:   1094
+#   - xrootd_https: 8443
+#   - fusex:        1100
+#   - xrootd_mq:    1097
 #
 # Values can be overridden with:
-# - .Values.ports.{xrootd_mgm, xrootd_http, fusex, xrootd_mq} below
+# - .Values.ports.{xrootd_mgm, xrootd_https, fusex, xrootd_mq} below
 # - Global .Values.global.ports.<service_name> in a parent chart.
 #     Global takes precedence over local values.
 #
 ports:
   xrootd_mgm:
-  xrootd_http:
+  xrootd_https:
   fusex:
   xrootd_mq:
 

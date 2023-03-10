@@ -11,10 +11,10 @@ spec:
       targetPort: 1094
       protocol: TCP
       name: xrootd-mgm
-    - port: {{ include "mgm.service.port.xrootd_http" . }}
-      targetPort: 8000
+    - port: {{ include "mgm.service.port.xrootd_https" . }}
+      targetPort: 8443
       protocol: TCP
-      name: xrootd-http
+      name: xrootd-https
     - port: {{ include "mgm.service.port.fusex" . }}
       targetPort: 1100
       protocol: TCP

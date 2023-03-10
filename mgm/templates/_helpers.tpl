@@ -103,7 +103,7 @@ EOS instance name definition
 {{/*
 MGM network ports definition
   - xrootd mgm port (defaults to 1094)
-  - xrootd http port (defaults to 8000)
+  - xrootd https port (defaults to 8443)
   - xrootd fusex port (defaults to 1100)
 
 All the ports can be set according to (example for xrootd_mgm):
@@ -124,17 +124,17 @@ All the ports can be set according to (example for xrootd_mgm):
 {{- coalesce $xrootd_mgmGlobal $xrootd_mgmLocal $xrootd_mgmDefault }}
 {{- end }}
 
-{{- define "mgm.service.port.xrootd_http" -}}
-{{- $xrootd_httpDefault := "8000" -}}
-{{- $xrootd_httpLocal := "" -}}
-{{- $xrootd_httpGlobal := "" -}}
+{{- define "mgm.service.port.xrootd_https" -}}
+{{- $xrootd_httpsDefault := "8443" -}}
+{{- $xrootd_httpsLocal := "" -}}
+{{- $xrootd_httpsGlobal := "" -}}
 {{- if .Values.ports -}}
-  {{ $xrootd_httpLocal = dig "xrootd_http" "" .Values.ports -}}
+  {{ $xrootd_httpsLocal = dig "xrootd_https" "" .Values.ports -}}
 {{- end }}
 {{- if .Values.global -}}
-  {{ $xrootd_httpGlobal = dig "ports" "xrootd_http" "" .Values.global -}}
+  {{ $xrootd_httpsGlobal = dig "ports" "xrootd_https" "" .Values.global -}}
 {{- end }}
-{{- coalesce $xrootd_httpGlobal $xrootd_httpLocal $xrootd_httpDefault }}
+{{- coalesce $xrootd_httpsGlobal $xrootd_httpsLocal $xrootd_httpsDefault }}
 {{- end }}
 
 {{- define "mgm.service.port.fusex" -}}
