@@ -34,8 +34,18 @@ data:
     ##### QuarkDB #############################################
     fstofs.qdbcluster {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:7777
     fstofs.qdbpassword_file /etc/eos.keytab
+    {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+    ##### HTTP ################################################
+    all.sitename eosdockertest
+    http.exthandler EosFstHttp libEosFstHttp.so none
+    http.exthandler xrdtpc libXrdHttpTPC.so
+    http.trace all
+    xrd.protocol XrdHttp:8443 libXrdHttp.so
+    xrd.timeout idle 86400
+    xrd.tlsca certdir /etc/grid-security/certificates/
+    xrd.tls /etc/grid-security/daemon/hostcert.pem /etc/grid-security/daemon/hostkey.pem
+    {{- end }}
     ###########################################################
-
 
 ---
 apiVersion: v1
@@ -78,6 +88,12 @@ data:
     echo "INFO: EOS_MGM_URL="$EOS_MGM_URL
     init_probe eos ns
     echo "INFO: MGM is online."
+
+    # If HTTP support is enabled, we also needs to generate a host certificate (development image only)
+    {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+    echo "INFO: Generating host certificate..."
+    ./mkcert-ssl.sh
+    {{- end }}
 
     # Start the FST process in background so that we can run other commands
     echo "INFO: Starting FST..."

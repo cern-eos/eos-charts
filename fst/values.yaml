@@ -89,15 +89,17 @@ dnsPolicy: ClusterFirst
 # -- Service port declaration for fst.
 #    These are the ports exposed by the Kubernetes service.
 #    Defaults:
-#     - xrootd_fst: 1095
-#     - microhttp:  8001
+#     - xrootd_fst:   1095
+#     - microhttp:    8001
+#     - xrootd_https: 8443
 #   Values can be overridden with:
-#   - .Values.ports.{xrtood_fst, microhttp} below
+#   - .Values.ports.{xrtood_fst, microhttp, xrootd_https} below
 #   - Global .Values.global.ports.<service_name> in a parent chart.
 #     Global takes precedence over local values.
 ports:
   xrootd_fst:
   microhttp:
+  xrootd_https:
 
 # -- Short hostnames of the components to be reached from the fst.
 #    The corresponding FQDNs are generated appending the namespace and '.svc.{{ .Values.global.clusterDomain }}'.
@@ -222,6 +224,17 @@ persistence:
 #
 probes:
   liveness: true
+
+#
+# -- HTTP access configuration.
+#
+#   At the moment, this in only compatible with the container images produced in the EOS CI.
+#   Proper configuration will be implemented in the future if needed.
+#
+#   Default: false
+#
+http:
+  enabled: false
 
 # keytab:
 #   name: default-keytab

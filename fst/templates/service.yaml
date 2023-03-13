@@ -15,5 +15,9 @@ spec:
       targetPort: 8001
       protocol: TCP
       name: microhttp
+    - port: {{ include "fst.service.port.xrootd_https" . }}
+      targetPort: 8443
+      protocol: TCP
+      name: xrootd-https
   selector:
     {{- include "fst.selectorLabels" . | nindent 4 }}

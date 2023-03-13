@@ -110,6 +110,19 @@ All the ports can be set according to (example for fst):
 {{- coalesce $microhttpGlobal $microhttpLocal $microhttpDefault }}
 {{- end }}
 
+{{- define "fst.service.port.xrootd_https" -}}
+{{- $xrootd_httpsDefault := "8443" -}}
+{{- $xrootd_httpsLocal := "" -}}
+{{- $xrootd_httpsGlobal := "" -}}
+{{- if .Values.ports -}}
+  {{ $xrootd_httpsLocal = dig "xrootd_https" "" .Values.ports -}}
+{{- end }}
+{{- if .Values.global -}}
+  {{ $xrootd_httpsGlobal = dig "ports" "xrootd_https" "" .Values.global -}}
+{{- end }}
+{{- coalesce $xrootd_httpsGlobal $xrootd_httpsLocal $xrootd_httpsDefault }}
+{{- end }}
+
 {{/*
 EOS GeoTag definition
   Used to set the geographical tags of storage nodes:
