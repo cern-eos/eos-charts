@@ -2,7 +2,7 @@ apiVersion: v2
 #
 name: server
 type: application
-version: 0.1.6
+version: 0.1.7
 appVersion: 5.0.31
 #
 description: A fully-fledge EOS server instance with qdb, mgm, mq, and fst
