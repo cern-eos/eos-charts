@@ -128,6 +128,10 @@ spec:
               - SYS_PTRACE
           {{- include "fst.livenessProbe" . | nindent 10 }}
           volumeMounts:
+            {{- if .Values.global.hostCertSecretName }}
+            - name: hostcert
+              mountPath: /etc/grid-security/daemon
+            {{- end }}
             - name: fst-cfgmap-xrd-cf-fst
               mountPath: /etc/xrd.cf.fst
               subPath: xrd.cf.fst
@@ -143,6 +147,11 @@ spec:
             - name: fst-logs
               mountPath: /var/log/eos
       volumes:
+        {{- if .Values.global.hostCertSecretName }}
+        - name: hostcert
+          secret:
+            secretName: {{ .Values.global.hostCertSecretName }}
+        {{- end }}
         - name: fst-cfgmap-xrd-cf-fst
           configMap:
             name: {{ include "fst.fullname" . }}-cfgmap-xrd-cf-fst

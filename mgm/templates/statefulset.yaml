@@ -148,6 +148,10 @@ spec:
           {{- include "mgm.livenessProbe" . | nindent 10 }}
           {{- include "mgm.readinessProbe" . | nindent 10 }}
           volumeMounts:
+            {{- if .Values.global.hostCertSecretName }}
+            - name: hostcert
+              mountPath: /etc/grid-security/daemon
+            {{- end }}
             {{- if .Values.ldapBindUsers.enable }}
             - name: nscd-socket
               mountPath: /run/nscd
@@ -230,6 +234,11 @@ spec:
               mountPath: /run/nscd
         {{- end }}
       volumes:
+        {{- if .Values.global.hostCertSecretName }}
+        - name: hostcert
+          secret:
+            secretName: {{ .Values.global.hostCertSecretName }}
+        {{- end }}
         {{- if .Values.ldapBindUsers.enable }}
         - name: nslcd-cfgmap-nslcd-conf
           configMap:
