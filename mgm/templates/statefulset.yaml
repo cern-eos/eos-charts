@@ -237,6 +237,7 @@ spec:
         {{- if .Values.global.hostCertSecretName }}
         - name: hostcert
           secret:
+            defaultMode: 0440
             secretName: {{ .Values.global.hostCertSecretName }}
         {{- end }}
         {{- if .Values.ldapBindUsers.enable }}
