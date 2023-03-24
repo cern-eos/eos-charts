@@ -91,15 +91,6 @@ spec:
               subPath: fst_init.sh
         {{- end }}
         {{- end }}
-        {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
-        - name: eos-fst-initopt-mkcert-ssl
-          image: {{ include "utils.image" . }}
-          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
-          command: ["/mkcert-ssl.sh"]
-          volumeMounts:
-            - name: eos-daemon-certs
-              mountPath: /etc/grid-security/daemon/
-        {{- end }}
       containers:
         - name: eos-fst
           image: {{ include "utils.image" . }}
@@ -135,10 +126,6 @@ spec:
             - name: eos-sss-keytab-fixedownership
               mountPath: /etc/eos.keytab
               subPath: eos.keytab
-            {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
-            - name: eos-daemon-certs
-              mountPath: /etc/grid-security/daemon/
-            {{- end }}
             - name: fst-storage
               mountPath: /fst_storage
             - name: fst-logs
@@ -158,10 +145,6 @@ spec:
             defaultMode: 0400
         - name: eos-sss-keytab-fixedownership
           emptyDir: {}
-        {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
-        - name: eos-daemon-certs
-          emptyDir: {}
-        {{- end }}
         - name: fst-logs
           emptyDir: {}
   # For persistent volumes, we have 2 alternatives
