@@ -52,7 +52,7 @@ spec:
             - name: eos-sss-keytab-fixedownership
               mountPath: /root/sss_keytab/output
         {{- if .Values.kerberos.enabled }}
-        - name: eos-mgm-init3-get-krb5-keytab
+        - name: eos-mgm-initopt-get-krb5-keytab
           image: {{ include "utils.image" . }}
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/bash", "-c"]
@@ -67,10 +67,17 @@ spec:
               subPath: krb5.conf
             - name: eos-krb5-keytab
               mountPath: /root/krb5_keytab/output
-        - name: eos-mgm-init4-mgm-init
-        {{- else }}
-        - name: eos-mgm-init3-mgm-init
         {{- end }}
+        {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+        - name: eos-mgm-initopt-mkcert-ssl
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          command: ["/mkcert-ssl.sh"]
+          volumeMounts:
+            - name: eos-daemon-certs
+              mountPath: /etc/grid-security/daemon/
+        {{- end }}
+        - name: eos-mgm-init3-mgm-init
           image: {{ include "utils.image" . }}
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           envFrom:
@@ -97,6 +104,10 @@ spec:
             - name: eos-krb5-keytab
               mountPath: /etc/eos.krb5.keytab
               subPath: eos.krb5.keytab
+            {{- end }}
+            {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+            - name: eos-daemon-certs
+              mountPath: /etc/grid-security/daemon/
             {{- end }}
             - name: mgm-data
               mountPath: /var/eos
@@ -150,6 +161,10 @@ spec:
             - name: eos-krb5-keytab
               mountPath: /etc/eos.krb5.keytab
               subPath: eos.krb5.keytab
+            {{- end }}
+            {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+            - name: eos-daemon-certs
+              mountPath: /etc/grid-security/daemon/
             {{- end }}
             - name: mgm-data
               mountPath: /var/eos
@@ -256,6 +271,10 @@ spec:
             name: {{ include "mgm.krb5ConfConfigMapName" . }}
             defaultMode: 0644
         - name: eos-krb5-keytab
+          emptyDir: {}
+        {{- end }}
+        {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+        - name: eos-daemon-certs
           emptyDir: {}
         {{- end }}
         - name: mgm-logs
