@@ -3,7 +3,7 @@
 
 An EOS MGM + MQ chart
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.80](https://img.shields.io/badge/AppVersion-4.8.80-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.80](https://img.shields.io/badge/AppVersion-4.8.80-informational?style=flat-square)
 
 Helm Chart to deploy EOS MGM.
 
@@ -11,7 +11,7 @@ Helm Chart to deploy EOS MGM.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://registry.cern.ch/chartrepo/eos | utils | 0.1.4 |
+| https://registry.cern.ch/chartrepo/eos | utils | 0.1.6 |
 
 ## Values
 
@@ -26,6 +26,7 @@ Helm Chart to deploy EOS MGM.
 | hostnames.mgm | string | `""` |  |
 | hostnames.mq | string | `""` |  |
 | hostnames.qdbcluster | string | `""` |  |
+| http | object | `{"enabled":false}` | HTTP access configuration.    At the moment, this in only compatible with the container images produced in the EOS CI.   Proper configuration will be implemented in the future if needed.    Default: false  |
 | image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"gitlab-registry.cern.ch/dss/eos/eos-all"` |  |
 | image.tag | string | `"4.8.80"` |  |
@@ -62,6 +63,9 @@ Helm Chart to deploy EOS MGM.
 | probes.liveness | bool | `true` |  |
 | probes.readiness | bool | `true` |  |
 | probes.startup | bool | `true` |  |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"privileged":false}` | Security context.    Define the security context for all containers (including initContainers) of the fst pod.   Docs at https://kubernetes.io/docs/tasks/configure-pod-container/security-context/    Default:     - privileged: false     - allowPrivilegeEscalation: false |
+| securityContext.allowPrivilegeEscalation | bool | `false` | If true, a process can gain more privileges than its parent process. |
+| securityContext.privileged | bool | `false` | If true, the container will run in privileged mode. |
 | sssKeytab.secret | string | `nil` |  |
 
 ----------------------------------------------

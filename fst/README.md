@@ -2,7 +2,7 @@
 
 An EOS FST chart
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.78](https://img.shields.io/badge/AppVersion-4.8.78-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.78](https://img.shields.io/badge/AppVersion-4.8.78-informational?style=flat-square)
 
 Helm Chart to deploy EOS FSTs.
 
@@ -10,7 +10,7 @@ Helm Chart to deploy EOS FSTs.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://registry.cern.ch/chartrepo/eos | utils | 0.1.4 |
+| https://registry.cern.ch/chartrepo/eos | utils | 0.1.6 |
 
 ## Values
 
@@ -26,6 +26,7 @@ Helm Chart to deploy EOS FSTs.
 | hostnames.mgm | string | `""` | Hostname of the mgm. |
 | hostnames.mq | string | `""` | Hostname of the mq (aka, broker) |
 | hostnames.qdbcluster | string | `""` | Hostname of the quarkdb cluster. |
+| http | object | `{"enabled":false}` | HTTP access configuration.    At the moment, this in only compatible with the container images produced in the EOS CI.   Proper configuration will be implemented in the future if needed.    Default: false  |
 | image.pullPolicy | string | `"Always"` | FST image pullPolicy |
 | image.repository | string | `"gitlab-registry.cern.ch/dss/eos/eos-all"` | image repository for fst image |
 | image.tag | string | `"4.8.78"` | FST image tag |
@@ -34,9 +35,12 @@ Helm Chart to deploy EOS FSTs.
 | podAssignment | object | `{"enableNodeSelector":false,"enablePodAntiAffinity":true}` | Assign fst pods to a node with a specific label    and distribute them on different nodes to avoid single points of failure.  |
 | podAssignment.enableNodeSelector | bool | `false` | If true, requires a node labeled as per customLabels. |
 | podAssignment.enablePodAntiAffinity | bool | `true` | If true, shard the stateful set on as many nodes as possible.    Highly recommended for production scenarios. |
-| ports | object | `{"microhttp":null,"xrootd_fst":null}` | Service port declaration for fst.    These are the ports exposed by the Kubernetes service.    Defaults:     - xrootd_fst: 1095     - microhttp:  8001   Values can be overridden with:   - .Values.ports.{xrtood_fst, microhttp} below   - Global .Values.global.ports.<service_name> in a parent chart.     Global takes precedence over local values. |
+| ports | object | `{"microhttp":null,"xrootd_fst":null,"xrootd_https":null}` | Service port declaration for fst.    These are the ports exposed by the Kubernetes service.    Defaults:     - xrootd_fst:   1095     - microhttp:    8001     - xrootd_https: 8443   Values can be overridden with:   - .Values.ports.{xrtood_fst, microhttp, xrootd_https} below   - Global .Values.global.ports.<service_name> in a parent chart.     Global takes precedence over local values. |
 | probes.liveness | bool | `true` |  |
 | replicaCount | int | `4` |  |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"privileged":false}` | Security context.    Define the security context for all containers (including initContainers) of the fst pod.   Docs at https://kubernetes.io/docs/tasks/configure-pod-container/security-context/    Default:     - privileged: false     - allowPrivilegeEscalation: false |
+| securityContext.allowPrivilegeEscalation | bool | `false` | If true, a process can gain more privileges than its parent process. |
+| securityContext.privileged | bool | `false` | If true, the container will run in privileged mode. |
 | selfRegister | object | `{"config":"rw","enable":true,"groupmod":24,"groupsize":0,"space":"default"}` | Self-registration of the FST filesystem in EOS    When enabled, the FST will register the available filesystem upon booting.    It is possible to configure:     - the eos space where the file system should be added,     - how many filesystems can end up in one scheduling group,     - the maximum number of groups in the space,     - the configuration of the filesystem (rw|wo|ro|drain|draindead|off|empty).   Note:     - <groupsize>=0 means that no groups are built within a space. Must be an integer <=1024.     - <groupmod>=24 comes as default per eos internals. Must be an integer <=256. |
 | sssKeytab | object | `{"secret":null}` | SSS keytab (needed to authenticate against other EOS components).    The name of the kubernetes secret containing the eos keytab to use.   Can be helpful when deploying fst in standalone mode using a custom keytab.    Warning: This chart does not automatically create any secret.     The secret storing they key should be pre-created and its name passed here.     Docs to create secrets: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/    When creating the secret, the key in the data fragment must be 'eos.keytab':     ~# kubectl create secret generic test-keytab --from-file=eos.keytab     secret/test-keytab created     ~# kubectl describe secret test-keytab     [...]     Data     ====     eos.keytab:  138 bytes    Default: eos-sss-keytab     Can be overriden by .Values.global.sssKeytab.secret |
 

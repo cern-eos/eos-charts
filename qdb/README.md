@@ -2,7 +2,7 @@
 
 An EOS QDB chart
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.78](https://img.shields.io/badge/AppVersion-4.8.78-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.78](https://img.shields.io/badge/AppVersion-4.8.78-informational?style=flat-square)
 
 Helm Chart to deploy Quark DB.
 
@@ -10,7 +10,7 @@ Helm Chart to deploy Quark DB.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://registry.cern.ch/chartrepo/eos | utils | 0.1.4 |
+| https://registry.cern.ch/chartrepo/eos | utils | 0.1.5 |
 
 ## Values
 
@@ -32,6 +32,9 @@ Helm Chart to deploy Quark DB.
 | probes.liveness | bool | `true` |  |
 | probes.readiness | bool | `true` |  |
 | replicaCount | int | `3` | Set replicaCount to:     1 for standalone operation     3 (or more) to create a distributed cluster with raft consensus replication |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"privileged":false}` | Security context.    Define the security context for all containers (including initContainers) of the fst pod.   Docs at https://kubernetes.io/docs/tasks/configure-pod-container/security-context/    Default:     - privileged: false     - allowPrivilegeEscalation: false |
+| securityContext.allowPrivilegeEscalation | bool | `false` | If true, a process can gain more privileges than its parent process. |
+| securityContext.privileged | bool | `false` | If true, the container will run in privileged mode. |
 | sssKeytab | object | `{"secret":""}` | SSS keytab (needed to authenticate against other EOS components).     The name of the kubernetes secret containing the eos keytab to use.    Can be helpful when when deploying qdb in standalone mode using a custom keytab.     Warning: This chart does not automatically create any secret.    The secret storing they key should be pre-created and its name passed here.    Docs to create secrets: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/     When creating the secret, the key in the data fragment must be 'eos.keytab':       ~# kubectl create secret generic test-keytab --from-file=eos.keytab       secret/test-keytab created       ~# kubectl describe secret test-keytab       [...]       Data       ====       eos.keytab:  138 bytes     Default: eos-sss-keytab    Can be overriden by .Values.global.sssKeytab.secret |
 
 ----------------------------------------------
