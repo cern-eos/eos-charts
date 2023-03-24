@@ -95,8 +95,20 @@ spec:
         - name: eos-fst
           image: {{ include "utils.image" . }}
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          # NOTE(ebocchi): Horrible HTTP certs workaround
+          #                This is horrible in every possible aspect.
+          # We need the following certs for HTTP interface to work:
+                    #   - /etc/grid-security/daemon/hostcert.pem
+          #   - /etc/grid-security/daemon/hostkey.pem
+          #   - ~/.globus/usercert.pem
+          #   - ~/.globus/userkey.pem
+          #   - /etc/grid-security/grid-mapfile
           command: ["/bin/sh", "-c"]
+          {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+          args: ["/mkcert-ssl.sh && /opt/eos/xrootd/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
+          {{- else }}
           args: ["/opt/eos/xrootd/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
+          {{- end }}
           env:
             - name: EOS_MGM_URL
               value: root://{{ include "utils.mgm_fqdn" . }}

@@ -82,7 +82,13 @@ spec:
             capabilities:
               add:
               - SYS_PTRACE
+          # NOTE(ebocchi): Horrible HTTP certs workaround
+          {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+          command: ["/bin/bash", "-c"]
+          args: ["/mkcert-ssl.sh && /root/mgm_init.sh"]
+          {{- else }}
           command: ["/bin/bash", "/root/mgm_init.sh"]
+          {{- end }}
           volumeMounts:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
@@ -109,8 +115,20 @@ spec:
         - name: eos-mgm
           image: {{ include "utils.image" . }}
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          # NOTE(ebocchi): Horrible HTTP certs workaround
+          #                This is horrible in every possible aspect.
+          # We need the following certs for HTTP interface to work:
+          #   - /etc/grid-security/daemon/hostcert.pem
+          #   - /etc/grid-security/daemon/hostkey.pem
+          #   - ~/.globus/usercert.pem
+          #   - ~/.globus/userkey.pem
+          #   - /etc/grid-security/grid-mapfile
           command: ["/bin/sh", "-c"]
+          {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+          args: ["/mkcert-ssl.sh && /opt/eos/xrootd/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]
+          {{- else }}
           args: ["/opt/eos/xrootd/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]
+          {{- end }}
           env:
             - name: LD_PRELOAD
               value: "/usr/lib64/libjemalloc.so.1"

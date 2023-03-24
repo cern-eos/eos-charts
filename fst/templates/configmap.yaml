@@ -89,12 +89,6 @@ data:
     init_probe eos ns
     echo "INFO: MGM is online."
 
-    # If HTTP support is enabled, we also needs to generate a host certificate (development image only)
-    {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
-    echo "INFO: Generating host certificate..."
-    ./mkcert-ssl.sh
-    {{- end }}
-
     # Start the FST process in background so that we can run other commands
     echo "INFO: Starting FST..."
     /opt/eos/xrootd/bin/xrootd -n fst -c /etc/xrd.cf.fst -m -b -Rdaemon >/dev/null 2>&1
