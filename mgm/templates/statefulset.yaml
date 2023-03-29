@@ -30,6 +30,8 @@ spec:
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
           command: ["/bin/sh", "-c"]
           args: ["mkdir -p /var/log/eos/mgm /var/log/eos/tx /var/eos/ns-queue"]
+          securityContext:
+            runAsUser: 2
           volumeMounts:
             - name: mgm-logs
               mountPath: /var/log/eos
