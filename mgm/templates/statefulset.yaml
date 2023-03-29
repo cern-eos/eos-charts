@@ -16,6 +16,8 @@ spec:
         {{- include "mgm.selectorLabels" . | nindent 8 }}
         {{- toYaml .Values.customLabels | nindent 8 }}
     spec:
+      securityContext:
+        fsGroup: 2
       hostNetwork: {{ default false .Values.hostNetwork }}
       dnsPolicy: {{ default "ClusterFirst" .Values.dnsPolicy }}
       {{- if .Values.podAssignment.enableNodeSelector }}
@@ -23,22 +25,22 @@ spec:
         {{- toYaml .Values.customLabels | nindent 8 }}
       {{- end }}
       initContainers:
-        - name: eos-mgm-init0-logfolder-create
-          image: {{ include "utils.image" . }}
-          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
-          command: ["/bin/sh", "-c"]
-          args: ["for fld in mgm tx; do mkdir -p /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
-          volumeMounts:
-            - name: mgm-logs
-              mountPath: /var/log/eos
-        - name: eos-mgm-init1-vareos-create
-          image: {{ include "utils.image" . }}
-          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
-          command: ["/bin/sh", "-c"]
-          args: ["for fld in ns-queue; do mkdir -p /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]
-          volumeMounts:
-            - name: mgm-data
-              mountPath: /var/eos
+#        - name: eos-mgm-init0-logfolder-create
+#          image: {{ include "utils.image" . }}
+#          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+#          command: ["/bin/sh", "-c"]
+#          args: ["for fld in mgm tx; do mkdir -p /var/log/eos/$fld; done && chown -R daemon:daemon /var/log/eos"]
+#          volumeMounts:
+#            - name: mgm-logs
+#              mountPath: /var/log/eos
+#        - name: eos-mgm-init1-vareos-create
+#          image: {{ include "utils.image" . }}
+#          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+#          command: ["/bin/sh", "-c"]
+#          args: ["for fld in ns-queue; do mkdir -p /var/eos/$fld; done && chown -R daemon:daemon /var/eos"]
+#          volumeMounts:
+#            - name: mgm-data
+#              mountPath: /var/eos
         # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
         - name: eos-mgm-init2-sss-keytab-ownership
           image: {{ include "utils.image" . }}
