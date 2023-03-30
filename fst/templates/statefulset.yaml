@@ -104,7 +104,7 @@ spec:
           #   - ~/.globus/userkey.pem
           #   - /etc/grid-security/grid-mapfile
           command: ["/bin/sh", "-c"]
-          {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+          {{- if and (eq (include "utils.httpAccess.enabled" .) "true") (not .Values.global.hostCertSecretName) }}
           args: ["/mkcert-ssl.sh && /opt/eos/xrootd/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]
           {{- else }}
           args: ["/opt/eos/xrootd/bin/xrootd -n fst -c /etc/xrd.cf.fst -l /var/log/eos/xrdlog.fst -Rdaemon"]

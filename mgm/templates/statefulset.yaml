@@ -83,7 +83,7 @@ spec:
               add:
               - SYS_PTRACE
           # NOTE(ebocchi): Horrible HTTP certs workaround
-          {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+          {{- if and (eq (include "utils.httpAccess.enabled" .) "true") (not .Values.global.hostCertSecretName) }}
           command: ["/bin/bash", "-c"]
           args: ["/mkcert-ssl.sh && /root/mgm_init.sh"]
           {{- else }}
@@ -124,7 +124,7 @@ spec:
           #   - ~/.globus/userkey.pem
           #   - /etc/grid-security/grid-mapfile
           command: ["/bin/sh", "-c"]
-          {{- if eq (include "utils.httpAccess.enabled" .) "true" }}
+          {{- if and (eq (include "utils.httpAccess.enabled" .) "true") (not .Values.global.hostCertSecretName) }}
           args: ["/mkcert-ssl.sh && /opt/eos/xrootd/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]
           {{- else }}
           args: ["/opt/eos/xrootd/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -l /var/log/eos/xrdlog.mgm -Rdaemon"]
