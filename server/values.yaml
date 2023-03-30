@@ -35,6 +35,12 @@ global:
     allowPrivilegeEscalation:
 
   #
+  # The name of a secret in which a X.509 host certificate and private key are stored.
+  #   The fields in the secret should be 'hostcert.pem' and 'hostkey.pem'.
+  #   The certificate and key will be mounted in FST and MGM pods for TLS purposes.
+  hostCertSecretName:
+
+  #
   # Allow HTTP access.
   #
   # Default: false

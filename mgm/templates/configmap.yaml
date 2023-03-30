@@ -148,6 +148,12 @@ data:
     init_probe redis-cli -h {{ include "utils.qdbcluster_hostname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }} -p 7777 ping
     echo "INFO: QDB is online."
 
+    # If HTTP support is enabled but certs are not provided, generate a host certificate (development image only)
+    {{- if and (eq (include "utils.httpAccess.enabled" .) "true") (not .Values.global.hostCertSecretName) }}
+    echo "INFO: Generating host certificate..."
+    ./mkcert-ssl.sh
+    {{- end }}
+
     # Start the MGM process in background so that we can run other commands
     echo "INFO: Starting MGM..."
     /opt/eos/xrootd/bin/xrootd -n mgm -c /etc/xrd.cf.mgm -m -b -Rdaemon >/dev/null 2>&1
