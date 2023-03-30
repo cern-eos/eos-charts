@@ -38,17 +38,17 @@ spec:
             - name: mgm-data
               mountPath: /var/eos
         # Required until https://github.com/kubernetes/kubernetes/issues/81089 is merged
-#        - name: eos-mgm-init2-sss-keytab-ownership
-#          image: {{ include "utils.image" . }}
-#          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
-#          command: ["/bin/bash", "-c"]
-#          args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
-#          volumeMounts:
-#            - name: eos-sss-keytab
-#              mountPath: /root/sss_keytab/input/eos.keytab
-#              subPath: eos.keytab
-#            - name: eos-sss-keytab-fixedownership
-#              mountPath: /root/sss_keytab/output
+        - name: eos-mgm-init2-sss-keytab-ownership
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          command: ["/bin/bash", "-c"]
+          args: ["cp /root/sss_keytab/input/eos.keytab /root/sss_keytab/output/eos.keytab; chown daemon:daemon /root/sss_keytab/output/eos.keytab; chmod 400 /root/sss_keytab/output/eos.keytab"]
+          volumeMounts:
+            - name: eos-sss-keytab
+              mountPath: /root/sss_keytab/input/eos.keytab
+              subPath: eos.keytab
+            - name: eos-sss-keytab-fixedownership
+              mountPath: /root/sss_keytab/output
         {{- if .Values.kerberos.enabled }}
         - name: eos-mgm-init3-get-krb5-keytab
           image: {{ include "utils.image" . }}
@@ -91,8 +91,7 @@ spec:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
-#            - name: eos-sss-keytab-fixedownership
-            - name: eos-sss-keytab
+            - name: eos-sss-keytab-fixedownership
               mountPath: /etc/eos.keytab
               subPath: eos.keytab
             {{- if .Values.kerberos.enabled }}
@@ -157,8 +156,7 @@ spec:
             - name: mgm-cfgmap-xrd-cf-mgm
               mountPath: /etc/xrd.cf.mgm
               subPath: xrd.cf.mgm
-#            - name: eos-sss-keytab-fixedownership
-            - name: eos-sss-keytab
+            - name: eos-sss-keytab-fixedownership
               mountPath: /etc/eos.keytab
               subPath: eos.keytab
             {{- if .Values.kerberos.enabled }}
@@ -257,7 +255,7 @@ spec:
         - name: eos-sss-keytab
           secret:
             secretName: {{ include "utils.sssKeytabName" . }}
-            defaultMode: 0440
+            defaultMode: 0400
         - name: eos-sss-keytab-fixedownership
           emptyDir: {}
         {{- if eq ( include "podSharing.mgmMq" . ) "true" }}
