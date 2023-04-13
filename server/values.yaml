@@ -8,6 +8,19 @@ global:
   clusterDomain: "cluster.local"
 
   #
+  # Define extra arbitrary Kubernetes objects (secrets, configmaps, static PVs, etc.) as items in a list.
+  #   Example:
+  #   extraObjects:
+  #     - |
+  #       apiVersion: v1
+  #       kind: ConfigMap
+  #       metadata:
+  #         name: {{ .Release.Name }}-extra
+  #       data:
+  #         speed: fast
+  extraObjects: []
+
+  #
   # SSS keytab for the eos cluster
   #   All the components (qdb, mq, fst, mgm) will use the keytab specified here.
   #   Options:
