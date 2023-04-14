@@ -1,0 +1,32 @@
+{{- if .Values.externalService.enabled }}
+{{- range $i, $e := until ( .Values.replicaCount | int) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fst.fullname" $ }}-{{ $i | int }}
+  labels:
+    {{- include "fst.labels" $ | nindent 4 }}
+  annotations: {{- $.Values.externalService.annotations | toYaml | trim | nindent 4 }}
+spec:
+  {{- $.Values.externalService.template | toYaml | trim | nindent 2 }}
+  {{- if eq ($.Values.replicaCount | int) (len $.Values.externalService.loadBalancerIPs) }}
+  loadBalancerIP: {{ index $.Values.externalService.loadBalancerIPs $i }}
+  {{- end }}
+  selector:
+    statefulset.kubernetes.io/pod-name: {{ include "fst.fullname" $ }}-{{ $i | int }}
+  ports:
+    - port: {{ include "fst.service.port.xrootd_fst" $ }}
+      targetPort: 1095
+      protocol: TCP
+      name: xrootd-fst
+    - port: {{ include "fst.service.port.microhttp" $ }}
+      targetPort: 8001
+      protocol: TCP
+      name: microhttp
+    - port: {{ include "fst.service.port.xrootd_https" $ }}
+      targetPort: 8443
+      protocol: TCP
+      name: xrootd-https
+{{- end }}
+{{- end }}

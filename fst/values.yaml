@@ -86,6 +86,16 @@ hostNetwork: false
 #    Default: ClusterFirst
 dnsPolicy: ClusterFirst
 
+# -- External services for FSTs, so each one can be individually reached from outside the cluster (requires a LBaaS).
+#    They will be created based on the template if enabled is 'true'. Probably only makes sense for LoadBalancer-type services.
+#    If you want to specify the LB IP addresses of each service, fill the loadBalancerIPs list (must be the same length as the FST replicaCount).
+externalService:
+  enabled: false
+  annotations:
+  template:
+    type: LoadBalancer
+  loadBalancerIPs: []
+
 # -- Service port declaration for fst.
 #    These are the ports exposed by the Kubernetes service.
 #    Defaults:
@@ -154,7 +164,7 @@ geotag: ""
 minFsSizeGb: 5
 
 
-# Additional Extra environment varialbes
+# Additional Extra environment variables
 #   Several formats of defining variables are supported, including:
 #     ```
 #     extraEnv:
@@ -175,7 +185,7 @@ extraEnv: {}
 # -- Manage persistence of data stored by FSTs, namely the actual bytes of files stored in EOS.
 #
 #    If persistence is not enabled, data stored in FSTs will not survive the restart of pods.
-#    It is recommended to configure persistence according to the hosting infrastrcuture.
+#    It is recommended to configure persistence according to the hosting infrastructure.
 #
 #    The persistency can be configured by setting the `enabled` flag:
 #     - false:
