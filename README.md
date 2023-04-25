@@ -18,8 +18,7 @@ The default configuration provided is intended for demo purposes and no persiste
 
 To install EOS using helm charts:
 ```
-helm repo add eos https://registry.cern.ch/chartrepo/eos
-helm install eos eos/server
+helm install eos oci://registry.cern.ch/eos/charts/server
 ```
 
 The name of the deployment in Helm (`eos` in the above example) will be reflected in the DNS name of each component (e.g., `eos-mgm`, `eos-fst`, ...).
@@ -88,11 +87,30 @@ The parameter `global.sssKeytab.file` must point to the file containing the keyt
 
 Relevant documentation about SSS keys is available at:
 - https://eos-docs.web.cern.ch/develop.html#mgm
-- https://xrootd.slac.stanford.edu/doc/dev49/sec_config.htm#_Toc517294121
+- https://xrootd.slac.stanford.edu/doc/dev49/sec\_config.htm#\_Toc517294121
+
+
+### Chartmuseum deprecation notice
+Since 25 April 2023, helm charts will be stored in OCI format. Chartmuseum format is deprecated.
+
+The last chart tags published in chartmuseum format are as follows:
+- fst: 0.1.3
+- fusex: 0.1.3
+- mgm: 0.1.6
+- mq: 0.1.2
+- qdb: 0.1.2
+- server: 0.1.7
+- sps: None
+- utils: 0.1.6
+
+New chart versions will *only* be released in OCI format.
+To receive updates, please replace `https://registry.cern.ch/chartrepo/eos` with `oci://registry.cern.ch/eos/charts/server` in your configuration files.
+
 
 
 ### Known limitations
 Many, for sure. But we have not compiled a list yet.
+
 
 ### Developers help
 Additional instructions for developers can be found in our [developers help page](docs/README.md)
