@@ -2,7 +2,7 @@
 
 An EOS FST chart
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.78](https://img.shields.io/badge/AppVersion-4.8.78-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.78](https://img.shields.io/badge/AppVersion-4.8.78-informational?style=flat-square)
 
 Helm Chart to deploy EOS FSTs.
 
@@ -10,7 +10,7 @@ Helm Chart to deploy EOS FSTs.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://registry.cern.ch/chartrepo/eos | utils | 0.1.6 |
+| oci://registry.cern.ch/eos/charts | utils | 0.1.7 |
 
 ## Values
 
@@ -18,6 +18,7 @@ Helm Chart to deploy EOS FSTs.
 |-----|------|---------|-------------|
 | customLabels | object | `{"component":"eos-fst","service":"eos"}` | Custom labels to identify eos fst pods.    They are used by node selection, if enabled (see above).   Label nodes accordingly to avoid scheduling problems.  |
 | dnsPolicy | string | `"ClusterFirst"` | dnsPolicy regulates how the pod resolves hostnames with DNS servers.    In case hostNetwork is set to true, dnsPolicy must be ClusterFirstWithHostNet    Documentation: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/    Available options: Default, ClusterFirst, ClusterFirstWithHostNet, None    Default: ClusterFirst |
+| externalService | object | `{"annotations":null,"enabled":false,"loadBalancerIPs":[],"template":{"type":"LoadBalancer"}}` | External services for FSTs, so each one can be individually reached from outside the cluster (requires a LBaaS).    They will be created based on the template if enabled is 'true'. Probably only makes sense for LoadBalancer-type services.    If you want to specify the LB IP addresses of each service, fill the loadBalancerIPs list (must be the same length as the FST replicaCount). |
 | extraEnv | object | `{}` |  |
 | geotag | string | `""` | EOS GeoTag    Tag storage node with their geographical location   Docs: https://eos-docs.web.cern.ch/configuration/geotags.html    Defaults to "docker::k8s"   GeoTag can be overriden with:    - .Values.geotag    - Global .Values.global.hostname.eos.geotag in a parent chart.    Global takes precedence over local values. |
 | global.clusterDomain | string | `"cluster.local"` | Set this to the domain name of your cluster if it does not use the kubernetes default. |
@@ -31,7 +32,7 @@ Helm Chart to deploy EOS FSTs.
 | image.repository | string | `"gitlab-registry.cern.ch/dss/eos/eos-all"` | image repository for fst image |
 | image.tag | string | `"4.8.78"` | FST image tag |
 | minFsSizeGb | int | `5` | EOS minimum size of filesystem on FST to allow writes    See EOS_FS_FULL_SIZE_IN_GB in    https://gitlab.cern.ch/dss/eos/-/blob/master/fst/storage/Storage.cc |
-| persistence | object | `{"accessModes":["ReadWriteOnce"],"annotations":{},"enabled":false,"size":"1Ti","storageClass":""}` | Manage persistence of data stored by FSTs, namely the actual bytes of files stored in EOS.     If persistence is not enabled, data stored in FSTs will not survive the restart of pods.    It is recommended to configure persistence according to the hosting infrastrcuture.     The persistency can be configured by setting the `enabled` flag:     - false:       No persistence provided. Data is stored in emptyDir volumes.     - true:       Persistence provided by mounting a PersistentVolume via a claim. Requires either:       - a dynamic provisioner (for example, on Openstack, Cinder CSI or Manila CSI), or       - statically provisioned PersistentVolumes pre-created by an administrator      Note that each FST requires its own separate and independent storage location.     When using a shared filesystem as persistent backend, each PV must live in a separate directory.     This is handed automatically in the case of a dynamic provisioner,     and must be configured manually (by use of 'path' and 'claimRef') in the case of static PVs.       Docs: https://kubernetes.io/docs/concepts/storage/persistent-volumes/      Additional parameters:     - storageClass: If set to "-", disable dynamic provisioning.                     If undefined or null, the default provisioner is chosen.     - accessModes: How to access the pvc (ReadWriteOnce, ReadOnlyMany, ReadWriteMany)     - size: Size of the pvs (example, 10Gi)     - annotations: Custom annotations on the pvc, in key:value format  The persistence type can be overriden via .Values.global.persistence.enabled.  |
+| persistence | object | `{"accessModes":["ReadWriteOnce"],"annotations":{},"enabled":false,"size":"1Ti","storageClass":""}` | Manage persistence of data stored by FSTs, namely the actual bytes of files stored in EOS.     If persistence is not enabled, data stored in FSTs will not survive the restart of pods.    It is recommended to configure persistence according to the hosting infrastructure.     The persistency can be configured by setting the `enabled` flag:     - false:       No persistence provided. Data is stored in emptyDir volumes.     - true:       Persistence provided by mounting a PersistentVolume via a claim. Requires either:       - a dynamic provisioner (for example, on Openstack, Cinder CSI or Manila CSI), or       - statically provisioned PersistentVolumes pre-created by an administrator      Note that each FST requires its own separate and independent storage location.     When using a shared filesystem as persistent backend, each PV must live in a separate directory.     This is handed automatically in the case of a dynamic provisioner,     and must be configured manually (by use of 'path' and 'claimRef') in the case of static PVs.       Docs: https://kubernetes.io/docs/concepts/storage/persistent-volumes/      Additional parameters:     - storageClass: If set to "-", disable dynamic provisioning.                     If undefined or null, the default provisioner is chosen.     - accessModes: How to access the pvc (ReadWriteOnce, ReadOnlyMany, ReadWriteMany)     - size: Size of the pvs (example, 10Gi)     - annotations: Custom annotations on the pvc, in key:value format  The persistence type can be overriden via .Values.global.persistence.enabled.  |
 | podAssignment | object | `{"enableNodeSelector":false,"enablePodAntiAffinity":true}` | Assign fst pods to a node with a specific label    and distribute them on different nodes to avoid single points of failure.  |
 | podAssignment.enableNodeSelector | bool | `false` | If true, requires a node labeled as per customLabels. |
 | podAssignment.enablePodAntiAffinity | bool | `true` | If true, shard the stateful set on as many nodes as possible.    Highly recommended for production scenarios. |

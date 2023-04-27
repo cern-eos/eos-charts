@@ -11,7 +11,7 @@ Helm Chart to deploy EOS MGM.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://registry.cern.ch/chartrepo/eos | utils | 0.1.6 |
+| oci://registry.cern.ch/eos/charts | utils | 0.1.7 |
 
 ## Values
 

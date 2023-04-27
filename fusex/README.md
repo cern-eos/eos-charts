@@ -4,13 +4,13 @@
 
 -----
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.86](https://img.shields.io/badge/AppVersion-4.8.86-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.86](https://img.shields.io/badge/AppVersion-4.8.86-informational?style=flat-square)
 
 ## Requirements
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://registry.cern.ch/chartrepo/eos | utils | 0.1.4 |
+| oci://registry.cern.ch/eos/charts | utils | 0.1.7 |
 
 ### What for
 This chart provides the ability to run an EOS Fusex mount in a pod.

@@ -12,12 +12,12 @@ apiVersion: v2
 #
 name: mq
 type: application
-version: 0.1.2
+version: 0.1.3
 appVersion: 4.8.78
 #
 description: An EOS MQ chart
 icon: https://eos-web.web.cern.ch/eos-web/assets/images/eos-icon-white-713x824.png
 dependencies:
 - name: utils
-  version: 0.1.5
-  repository: "https://registry.cern.ch/chartrepo/eos"
+  version: 0.1.7
+  repository: "oci://registry.cern.ch/eos/charts"

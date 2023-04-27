@@ -2,7 +2,7 @@
 
 An EOS QDB chart
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.78](https://img.shields.io/badge/AppVersion-4.8.78-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.8.78](https://img.shields.io/badge/AppVersion-4.8.78-informational?style=flat-square)
 
 Helm Chart to deploy Quark DB.
 
@@ -10,7 +10,7 @@ Helm Chart to deploy Quark DB.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://registry.cern.ch/chartrepo/eos | utils | 0.1.5 |
+| oci://registry.cern.ch/eos/charts | utils | 0.1.7 |
 
 ## Values
 

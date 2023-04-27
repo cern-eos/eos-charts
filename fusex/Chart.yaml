@@ -2,7 +2,7 @@ apiVersion: v2
 #
 name: fusex
 type: application
-version: 0.1.3
+version: 0.1.4
 appVersion: 4.8.86
 #
 description: An EOS FuseX chart
@@ -11,5 +11,5 @@ annotations:
   documentation: https://github.com/cern-eos/eos/blob/master/fusex/README.md
 dependencies:
 - name: utils
-  version: 0.1.4
-  repository: "https://registry.cern.ch/chartrepo/eos"
+  version: 0.1.7
+  repository: "oci://registry.cern.ch/eos/charts"
