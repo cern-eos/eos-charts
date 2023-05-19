@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
 spec:
-  clusterIP: None
+  {{- $.Values.service.template | toYaml | trim | nindent 2 }}
   ports:
     - port: {{ include "mgm.service.port.xrootd_mgm" . }}
       targetPort: 1094
