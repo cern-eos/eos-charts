@@ -13,7 +13,7 @@ dependencies:
     version: 0.1.3
     repository: "oci://registry.cern.ch/eos/charts"
   - name: mgm
-    version: 0.1.8
+    version: 0.1.7
     repository: "oci://registry.cern.ch/eos/charts"
   - name: mq
     version: 0.1.3
