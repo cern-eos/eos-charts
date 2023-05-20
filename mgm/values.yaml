@@ -125,6 +125,7 @@ ports:
 # which are configured automatically, and the ports which are configured above.
 # By default a headless ClusterIP service is used.
 service:
+  annotations:
   template:
     clusterIP: None
 #

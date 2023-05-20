@@ -4,6 +4,7 @@ metadata:
   name: {{ include "mgm.fullname" . }}
   labels:
     {{- include "mgm.labels" . | nindent 4 }}
+  annotations: {{- $.Values.service.annotations | toYaml | trim | nindent 4 }}
 spec:
   {{- $.Values.service.template | toYaml | trim | nindent 2 }}
   ports:
