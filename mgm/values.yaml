@@ -214,6 +214,15 @@ persistence:
 #   - https://gitlab.cern.ch/eos/eos-charts/-/issues/72
 # The MGM must have visibility of the whole filesystem, while FSTs may still mount subdirectories.
 # This feature can also be used to insert TLS certificates into the pod.
+# Example:
+#  extraVolumes:
+#    volumes:
+#    - name: store
+#      emptyDir:
+#        sizeLimit: 50Mi
+#    volumeMounts:
+#    - name: store
+#      mountPath: /store
 #
 extraVolumes:
   volumes:
