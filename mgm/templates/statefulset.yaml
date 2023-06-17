@@ -167,14 +167,13 @@ spec:
               mountPath: /etc/eos.krb5.keytab
               subPath: eos.krb5.keytab
             {{- end }}
-            {{- if .Values.fstSharedFs }}
-            - name: fst-shared-fs
-              mountPath: /fst_shared_fs
-            {{- end }}
             - name: mgm-data
               mountPath: /var/eos
             - name: mgm-logs
               mountPath: /var/log/eos
+            {{- if .Values.extraVolumes.volumeMounts }}
+            {{ toYaml .Values.extraVolumes.volumeMounts | indent 12 }}
+            {{- end }}
         {{- if eq ( include "podSharing.mgmMq" . ) "true" }}
         - name: eos-mq
           image: {{ include "utils.image" . }}
@@ -278,14 +277,11 @@ spec:
         - name: eos-krb5-keytab
           emptyDir: {}
         {{- end }}
-        {{- if .Values.fstSharedFs }}
-        - name: fst-shared-fs
-          hostPath:
-            path: {{ .Values.fstSharedFs }}
-            type: Directory
-        {{- end }}
         - name: mgm-logs
           emptyDir: {}
+        {{- if .Values.extraVolumes.volumes }}
+        {{ toYaml .Values.extraVolumes.volumes | indent 8 }}
+        {{- end }}
   # For persistent volumes, we have 2 alternatives
   # 1. Persistence is disabled: use emptyDir
   # 2. Persistence is enable and no existingClaim: set the claim
