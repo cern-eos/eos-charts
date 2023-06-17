@@ -142,6 +142,9 @@ spec:
               mountPath: /fst_storage
             - name: fst-logs
               mountPath: /var/log/eos
+            {{- if .Values.extraVolumes.volumeMounts }}
+            {{ toYaml .Values.extraVolumes.volumeMounts | indent 12 }}
+            {{- end }}
       volumes:
         - name: fst-cfgmap-xrd-cf-fst
           configMap:
@@ -159,6 +162,9 @@ spec:
           emptyDir: {}
         - name: fst-logs
           emptyDir: {}
+        {{- if .Values.extraVolumes.volumes }}
+        {{ toYaml .Values.extraVolumes.volumes | indent 8 }}
+        {{- end }}
   # For persistent volumes, we have 2 alternatives
   # 1. Persistence is disabled: use emptyDir
   # 2. Persistence is enable and no existingClaim: set the claim
