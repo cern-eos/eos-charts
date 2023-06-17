@@ -172,7 +172,7 @@ spec:
             - name: mgm-logs
               mountPath: /var/log/eos
             {{- if .Values.extraVolumes.volumeMounts }}
-            {{ toYaml .Values.extraVolumes.volumeMounts | indent 12 }}
+            {{- toYaml .Values.extraVolumes.volumeMounts | nindent 12 }}
             {{- end }}
         {{- if eq ( include "podSharing.mgmMq" . ) "true" }}
         - name: eos-mq
@@ -280,7 +280,7 @@ spec:
         - name: mgm-logs
           emptyDir: {}
         {{- if .Values.extraVolumes.volumes }}
-        {{ toYaml .Values.extraVolumes.volumes | indent 8 }}
+        {{- toYaml .Values.extraVolumes.volumes | nindent 8 }}
         {{- end }}
   # For persistent volumes, we have 2 alternatives
   # 1. Persistence is disabled: use emptyDir
