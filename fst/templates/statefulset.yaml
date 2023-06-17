@@ -143,7 +143,7 @@ spec:
             - name: fst-logs
               mountPath: /var/log/eos
             {{- if .Values.extraVolumes.volumeMounts }}
-            {{- toYaml .Values.extraVolumes.volumeMounts | nindent 12 }}
+            {{- .Values.extraVolumes.volumeMounts | toYaml | nindent 12 }}
             {{- end }}
       volumes:
         - name: fst-cfgmap-xrd-cf-fst
@@ -163,7 +163,7 @@ spec:
         - name: fst-logs
           emptyDir: {}
         {{- if .Values.extraVolumes.volumes }}
-        {{- toYaml .Values.extraVolumes.volumes | nindent 8 }}
+        {{- .Values.extraVolumes.volumes | toYaml | nindent 8 }}
         {{- end }}
   # For persistent volumes, we have 2 alternatives
   # 1. Persistence is disabled: use emptyDir
