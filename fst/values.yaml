@@ -219,6 +219,14 @@ persistence:
   size: 1Ti
 
 #
+# Mount arbitrary volumes (e.g., CephFS, NFS, ConfigMap, Secret) in the FST pod(s).
+# This feature can be used to insert TLS certificates into the pod.
+#
+extraVolumes:
+  volumes:
+  volumeMounts:
+
+#
 # Enable or disable health probes for fst.
 #   Docs: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 #
