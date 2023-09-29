@@ -180,7 +180,7 @@ spec:
         {{- if .Values.extraVolumes.volumes }}
         {{- .Values.extraVolumes.volumes | toYaml | nindent 8 }}
         {{- end }}
-        {{- if initContainer.script }}
+        {{- if .Values.initContainer.script }}
         - name: fst-initscript-configmap
           configMap:
             name: {{ include "fst.fullname" . }}-cfgmap-fst-initscript
