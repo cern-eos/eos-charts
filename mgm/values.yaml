@@ -72,7 +72,7 @@ customLabels:
 
 # -- Security context.
 #
-#   Define the security context for all containers (including initContainers) of the fst pod.
+#   Define the security context for all containers (including initContainers) of the mgm pod.
 #   Docs at https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 #
 #   Default:
@@ -206,8 +206,29 @@ persistence:
     - ReadWriteOnce
   size: 10Gi
 
+# Define an initContainer to run an arbitrary script before the main MGM process starts.
+# 'spec' can define any initContainer parameters (e.g. env) except:
+#   name, image, imagePullPolicy, command, and volumeMounts (which has its own configurable value).
+#   The pod-wide definitions for these volumes should be set in extraVolumes.volumes.
+# Example:
+#initContainer:
+#  enabled: true
+#  script: |
+#    #!/bin/bash
+#    echo $GREETING
+#  spec:
+#    env:
+#      - name: GREETING
+#        value: "Good day sir"
+initContainer:
+  enabled: false
+  script:
+  spec:
+  volumeMounts:
+
 #
-# Mount arbitrary volumes (e.g., CephFS, NFS, ConfigMap, Secret) in the MGM pod(s).
+# Mount arbitrary volumes (any type except PVC, which requires volumeClaimTemplates) in the MGM pod(s).
+# 'volumes' creates pod-wide volume definitions while 'volumeMounts' are only for the main MGM container.
 # This may be used to access the shared filesystem of FSTs for the 'file adoption' feature, see:
 #   - https://eos-docs.web.cern.ch/using/policies.html#shared-filesystem-redirection
 #   - https://eos-community.web.cern.ch/t/direct-access-to-eos-data-on-cephfs-in-k8s/734/
