@@ -91,7 +91,7 @@ spec:
               subPath: fst_init.sh
         {{- end }}
         {{- end }}
-      {{- if .Values.initContainer.enabled and .Values.initContainer.script }}
+      {{- if and .Values.initContainer.enabled .Values.initContainer.script }}
         - name: eos-fst-init99-custom-initscript
           image: {{ include "utils.image" . }}
           imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
