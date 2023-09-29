@@ -143,6 +143,5 @@ metadata:
   labels:
     {{- include "fst.labels" . | nindent 4 }}
 data:
-  initscript.sh: |
-    {{ .Values.initContainer.script | toYaml | nindent 4 }}
+  initscript.sh: {{ .Values.initContainer.script | toYaml | nindent 4 }}
 {{- end }}
