@@ -222,7 +222,17 @@ persistence:
 # Define an initContainer to run an arbitrary script before the main FST process starts.
 # 'spec' can define any initContainer parameters (e.g. env) except:
 #   name, image, imagePullPolicy, command, and volumeMounts (which has its own configurable value).
-#
+#   The pod-wide definitions for these volumes should be set in extraVolumes.volumes.
+# Example:
+#initContainer:
+#  enabled: true
+#  script: |
+#    #!/bin/bash
+#    echo $GREETING
+#  spec:
+#    env:
+#      - name: GREETING
+#        value: "Good day sir"
 initContainer:
   enabled: false
   script:
