@@ -179,7 +179,7 @@ minFsSizeGb: 5
 #     - name: ENV_VAR2
 #       value: "var2"
 #     ```
-extraEnv: {}
+extraEnv:
 
 #
 # -- Manage persistence of data stored by FSTs, namely the actual bytes of files stored in EOS.
