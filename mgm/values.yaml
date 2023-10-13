@@ -121,13 +121,16 @@ ports:
   fusex:
   xrootd_mq:
 #
-# Certain properties of the MGM service may be configured here - except the selector labels
-# which are configured automatically, and the ports which are configured above.
-# By default a headless ClusterIP service is used.
+# Configuration of the MGM service. Any property (e.g. type) may be configured using the template field, except for:
+#   - the selector labels which are configured automatically
+#   - the ports which are configured above
+#   - clusterIP and annotations which have their own fields
+# By default a headless ClusterIP service is used. If the service type is changed to something other than the default (clusterIP),
+# then the clusterIP field may need to be removed by setting that value to null.
 service:
   annotations:
+  clusterIP: None
   template:
-    clusterIP: None
 #
 # Short hostnames of the components to be reached from the mgm and mq.
 # The corresponding FQDNs are generated appending the namespace and '.svc.{{ .Values.global.clusterDomain }}'.

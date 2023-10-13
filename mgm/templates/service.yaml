@@ -6,6 +6,9 @@ metadata:
     {{- include "mgm.labels" . | nindent 4 }}
   annotations: {{- $.Values.service.annotations | toYaml | trim | nindent 4 }}
 spec:
+  {{- if $.Values.service.clusterIP }}
+  clusterIP: {{ $.Values.service.clusterIP }}
+  {{- end }}
   {{- $.Values.service.template | toYaml | trim | nindent 2 }}
   ports:
     - port: {{ include "mgm.service.port.xrootd_mgm" . }}
