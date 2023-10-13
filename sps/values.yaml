@@ -87,7 +87,7 @@ checkMgmOnline:
 #     - name: ENV_VAR2
 #       value: "var2"
 #     ```
-extraEnv: {}
+extraEnv:
 
 #
 # Enable or disable health probes for sps.

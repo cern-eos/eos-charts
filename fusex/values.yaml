@@ -102,7 +102,7 @@ probes:
 #     - name: ENV_VAR2
 #       value: "var2"
 #     ```
-extraEnv: {}
+extraEnv:
 
 #
 # -- Configuration for fusex.

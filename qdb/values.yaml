@@ -112,7 +112,7 @@ ports:
 #     - name: ENV_VAR2
 #       value: "var2"
 #     ```
-extraEnv: {}
+extraEnv:
 
 
 # -- Manage persistence of data stored in QDB,
