@@ -109,6 +109,21 @@ spec:
             - name: mgm-cfgmap-mgm-init
               mountPath: /root/mgm_init.sh
               subPath: mgm_init.sh
+      {{- if and .Values.initContainer.enabled .Values.initContainer.script }}
+        - name: eos-mgm-init99-custom-initscript
+          image: {{ include "utils.image" . }}
+          imagePullPolicy: {{ include "utils.imagePullPolicy" . }}
+          command: ["/bin/bash", "/initconfigmap/initscript.sh"]
+          volumeMounts:
+            - name: mgm-initscript-configmap
+              mountPath: /initconfigmap
+            {{- if .Values.initContainer.volumeMounts }}
+            {{ .Values.initContainer.volumeMounts | toYaml | nindent 12 }}
+            {{- end }}
+          {{- if .Values.initContainer.spec }}
+          {{ .Values.initContainer.spec | toYaml | nindent 10 }}
+          {{- end }}
+      {{- end }}
       containers:
         - name: eos-mgm
           image: {{ include "utils.image" . }}
@@ -281,6 +296,12 @@ spec:
           emptyDir: {}
         {{- if .Values.extraVolumes.volumes }}
         {{- .Values.extraVolumes.volumes | toYaml | nindent 8 }}
+        {{- end }}
+        {{- if .Values.initContainer.script }}
+        - name: mgm-initscript-configmap
+          configMap:
+            name: {{ include "mgm.fullname" . }}-cfgmap-mgm-initscript
+            defaultMode: 0755
         {{- end }}
   # For persistent volumes, we have 2 alternatives
   # 1. Persistence is disabled: use emptyDir

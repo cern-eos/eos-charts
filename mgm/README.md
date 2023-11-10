@@ -63,7 +63,7 @@ Helm Chart to deploy EOS MGM.
 | probes.liveness | bool | `true` |  |
 | probes.readiness | bool | `true` |  |
 | probes.startup | bool | `true` |  |
-| securityContext | object | `{"allowPrivilegeEscalation":false,"privileged":false}` | Security context.    Define the security context for all containers (including initContainers) of the fst pod.   Docs at https://kubernetes.io/docs/tasks/configure-pod-container/security-context/    Default:     - privileged: false     - allowPrivilegeEscalation: false |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"privileged":false}` | Security context.    Define the security context for all containers (including initContainers) of the mgm pod.   Docs at https://kubernetes.io/docs/tasks/configure-pod-container/security-context/    Default:     - privileged: false     - allowPrivilegeEscalation: false |
 | securityContext.allowPrivilegeEscalation | bool | `false` | If true, a process can gain more privileges than its parent process. |
 | securityContext.privileged | bool | `false` | If true, the container will run in privileged mode. |
 | sssKeytab.secret | string | `nil` |  |

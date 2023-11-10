@@ -134,3 +134,14 @@ data:
     echo "INFO: Enabling scheduling group..."
     eos group set $(eos fs ls -m | grep $UUID | grep -o "schedgroup=[^,' ']*" | cut -d= -f2) on
     exit 0
+---
+{{- if .Values.initContainer.script }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "fst.fullname" . }}-cfgmap-fst-initscript
+  labels:
+    {{- include "fst.labels" . | nindent 4 }}
+data:
+  initscript.sh: {{ .Values.initContainer.script | toYaml | nindent 4 }}
+{{- end }}

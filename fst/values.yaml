@@ -219,7 +219,29 @@ persistence:
   size: 1Ti
 
 #
-# Mount arbitrary volumes (e.g., CephFS, NFS, ConfigMap, Secret) in the FST pod(s).
+# Define an initContainer to run an arbitrary script before the main FST process starts.
+# 'spec' can define any initContainer parameters (e.g. env) except:
+#   name, image, imagePullPolicy, command, and volumeMounts (which has its own configurable value).
+#   The pod-wide definitions for these volumes should be set in extraVolumes.volumes.
+# Example:
+#initContainer:
+#  enabled: true
+#  script: |
+#    #!/bin/bash
+#    echo $GREETING
+#  spec:
+#    env:
+#      - name: GREETING
+#        value: "Good day sir"
+initContainer:
+  enabled: false
+  script:
+  spec:
+  volumeMounts:
+
+#
+# Mount arbitrary volumes (any type except PVC, which requires volumeClaimTemplates) for FST.
+# 'volumes' creates pod-wide volume definitions while 'volumeMounts' are only for the main FST container.
 # This feature can be used to insert TLS certificates into the pod.
 #
 extraVolumes:
